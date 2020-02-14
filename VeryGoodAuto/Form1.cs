@@ -16,7 +16,7 @@ namespace VeryGoodAuto
         public const string 화면번호_계좌평가현황요청 = "5001";
         public const string 화면번호_실시간미체결요청 = "5002";
         public const string 화면번호_조건검색 = "5003";
-        public const string 화면번호_조건종목요청 = "5004";
+        public const string 화면번호_조건식종목요청 = "5004";
         public const string 화면번호_기본주식정보요청 = "5005";
         public const string 화면번호_주식매수요청 = "5006";
         public const string 화면번호_주식매도요청 = "5007";
@@ -28,7 +28,10 @@ namespace VeryGoodAuto
         public const string 주식주문 = "6000";
         #endregion
 
-        List<ConditionObject> conditionList; // 조건검색식  리스트.      
+        /// <summary>
+        /// 조건식의 이름과 인덱스를 저장한 클래스 모음.// 조건검색식  리스트.     
+        /// </summary>
+        List<ConditionObject> conditionList;  
                                              // List<OutstandingOrder> outstandingOrderList; // 미체결 리스트.
         List<ItemInfo> itemInfoList;
         bool isTrading = false; //시작버튼 첫 값.
@@ -339,26 +342,50 @@ namespace VeryGoodAuto
         private void AxKHOpenAPI1_OnReceiveRealCondition(object sender, _DKHOpenAPIEvents_OnReceiveRealConditionEvent e)
         {
             string 종목코드 = e.sTrCode;
-            int 조건번호 = int.Parse(e.strConditionIndex);
-            string 조건명 = e.strConditionName;
-            ConditionObject conditionObject = conditionList.Find(o => o.조건번호 == 조건번호);
-
-            if (e.strType.Equals("I"))//종목 편입
+            int 조건식번호 = int.Parse(e.strConditionIndex);
+            string 조건식명 = e.strConditionName;
+            try
             {
-                axKHOpenAPI1.SetInputValue("종목코드", 종목코드);
-                axKHOpenAPI1.CommRqData("주식기본정보요청;" + 조건번호, "opt10001", 0, 화면번호_기본주식정보요청);
+                ConditionObject conditionObject = conditionList.Find(o => o.조건식번호 == 조건식번호);
 
-                // 매수조건식으로   등록된 조건번호에 의한 전달된 종목코드는 자동매수
-
-            }
-            else if (e.strType.Equals("D"))//종목 이탈
-            {
-                StockItemObject stockItem = conditionObject.stockItemList.Find(o => o.종목코드 == 종목코드);
-                if (stockItem != null)
+                if (e.strType.Equals("I"))//종목 편입
                 {
-                    deleteListBox.Items.Add("[종목이탈] 조건명: " + 조건명 + "  종목명" + stockItem.종목명);
-                    conditionObject.stockItemList.Remove(stockItem);
+                    axKHOpenAPI1.SetInputValue("종목코드", 종목코드);
+                    //axKHOpenAPI1.CommRqData("주식기본정보요청;" + 조건식번호, "opt10001", 0, 화면번호_기본주식정보요청);                    
+                    axKHOpenAPI1.CommRqData("편입종목정보요청;" + 조건식번호, "opt10001", 0, 화면번호_기본주식정보요청);
+
+                    // 매수조건식으로   등록된 조건번호에 의한 전달된 종목코드는 자동매수
+                   // insertListBox.Items.Add("종목편입 - 종목코드 =" + 종목코드 + ",조건인텍스 =" + 조건식번호 + " |조건명 =" + 조건식명);
                 }
+                else if (e.strType.Equals("D"))//종목 이탈
+                {
+                    StockItemObject stockItem = conditionObject.stockItemList.Find(o => o.종목코드 == 종목코드);
+                    if (stockItem != null)
+                    {
+                        deleteListBox.Items.Add("[종목이탈] 조건식명: " + 조건식명 + "  종목명" + stockItem.종목명);
+                        conditionObject.stockItemList.Remove(stockItem);
+                    }
+                    //조건식 창의 번호와   이탈되는 조건식의 번호(정보)가 같다면 삭제하라.
+                    if (conditionDataGridView.SelectedCells.Count > 0)
+                    {
+                        int rowIndex = conditionDataGridView.SelectedCells[0].RowIndex;
+                        if (conditionDataGridView["조건식_조건번호", rowIndex].Value.ToString() == 조건식번호.ToString())
+                        {
+                            for (int i = 0; i < condigionItemDataGridView.RowCount; i++)
+                            {
+                                if (condigionItemDataGridView["조건식_조종코드", i].Value.ToString() == 종목코드)
+                                {
+                                    condigionItemDataGridView.Rows.RemoveAt(i);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message.ToString());
             }
         }
 
@@ -374,13 +401,10 @@ namespace VeryGoodAuto
 
                 int codeCount = codeList.Split(';').Length;
 
-                axKHOpenAPI1.CommKwRqData(codeList, 0, codeCount, 0, "조건종목요청;" + 조건번호, 화면번호_조건종목요청);
-
-                Console.WriteLine(codeList);
-
-                // e.nNext;
-                //e.sScrNo;
-                string 조건명 = e.strConditionName;
+                if(codeCount <= 100)
+                axKHOpenAPI1.CommKwRqData(codeList, 0, codeCount, 0, "조건식종목요청;" + 조건번호, 화면번호_조건식종목요청);
+                if (e.nIndex != 0) // 더받을것이 있다면   +추가;
+                    axKHOpenAPI1.SendCondition("6004", e.strConditionName, e.nIndex, 1);               
             }
         }
 
@@ -395,10 +419,10 @@ namespace VeryGoodAuto
                         int rowIndex = conditionDataGridView.SelectedCells[0].RowIndex;
                         if (rowIndex > -1 && rowIndex < conditionDataGridView.Rows.Count)
                         {
-                            int 조건번호 = int.Parse(conditionDataGridView["조건_조건번호", rowIndex].Value.ToString());
-                            string 조건명 = conditionDataGridView["조건_조건명", rowIndex].Value.ToString();
+                            int 조건식번호 = int.Parse(conditionDataGridView["조건식_조건번호", rowIndex].Value.ToString());
+                            string 조건명 = conditionDataGridView["조건식_조건명", rowIndex].Value.ToString();
 
-                            int result = axKHOpenAPI1.SendCondition(화면번호_조건검색, 조건명, 조건번호, 1);
+                            int result = axKHOpenAPI1.SendCondition(화면번호_조건검색, 조건명, 조건식번호, 1);
                             if (result == 1)//성공
                             {
                                 Console.WriteLine("조건검색 성공");
@@ -406,7 +430,7 @@ namespace VeryGoodAuto
                             else
                             {
                                 // Console.WriteLine("조건검색 실패");
-                                ConditionObject conditionObject = conditionList.Find(o => o.조건번호 == 조건번호);
+                                ConditionObject conditionObject = conditionList.Find(o => o.조건식번호 == 조건식번호);
                                 if (conditionObject != null)
                                 {
                                     condigionItemDataGridView.Rows.Clear(); // 전 로우들 삭제.                            
@@ -466,19 +490,19 @@ namespace VeryGoodAuto
                 if (condition.Length == 2)
                 {
                     //
-                    int 조건인덱스 = int.Parse(condition[0]);
-                    string 조건명 = condition[1]; //조건명. 
+                    int 조건식인덱스 = int.Parse(condition[0]);
+                    string 조건식명 = condition[1]; //조건명. 
 
                     conditionDataGridView.Rows.Add();//추가.
-                    conditionDataGridView["조건_조건번호", i].Value = 조건인덱스;
-                    conditionDataGridView["조건_조건명", i].Value = 조건명;
+                    conditionDataGridView["조건식_조건번호", i].Value = 조건식인덱스;
+                    conditionDataGridView["조건식_조건명", i].Value = 조건식명;
 
                     //리스트 객체에 조건 정보 객체 추가.
-                    conditionList.Add(new ConditionObject(조건인덱스, 조건명));
+                    conditionList.Add(new ConditionObject(조건식인덱스, 조건식명));
 
                     //매수&매도 선택할수 있도록  콤보박스에  추가
-                    buyConditionComboBox.Items.Add(조건명);
-                    sellConditionComboBox.Items.Add(조건명);
+                    buyConditionComboBox.Items.Add(조건식명);
+                    sellConditionComboBox.Items.Add(조건식명);
                 }
             }
         }
@@ -584,12 +608,12 @@ namespace VeryGoodAuto
 
                 //outStandingDataGridView.DataSource = outstandingOrderList;// 미체결 리스트에 입력.
             }
-            else if (e.sRQName.Contains("조건종목요청"))
+            else if (e.sRQName.Contains("조건식종목요청"))
             {
                 if (e.sRQName.Split(';').Length == 2)
                 {
                     string[] 조건문배열 = e.sRQName.Split(';');
-                    int 조건번호 = int.Parse(조건문배열[1]);
+                    int 조건식번호 = int.Parse(조건문배열[1]);
 
                     //종목코드,종목명,현재가,전일대비,등락율,거래량
                     int n = axKHOpenAPI1.GetRepeatCnt(e.sTrCode, e.sRQName);
@@ -630,7 +654,7 @@ namespace VeryGoodAuto
                             condigionItemDataGridView["조건종목_등락율", i].Style.ForeColor = Color.Black;
                         }
 
-                        ConditionObject conditionObject = conditionList.Find(o => o.조건번호 == 조건번호);
+                        ConditionObject conditionObject = conditionList.Find(o => o.조건식번호 == 조건식번호);
                         if (conditionObject != null)
                         {
                             conditionObject.stockItemList.Add(new StockItemObject(종목코드, 종목명, 현재가, 전일대비, 등락율, 거래량));
@@ -638,39 +662,96 @@ namespace VeryGoodAuto
                     }
                 }
             }
-            else if (e.sRQName.Contains("주식기본정보요청"))
+            else if (e.sRQName.Contains("편입종목정보요청"))
             {
                 try
                 {
                     if (e.sRQName.Split(';').Length == 2)
                     {
-                        int 조건번호 = int.Parse(e.sRQName.Split(';')[1]);
+                        int 조건식번호 = int.Parse(e.sRQName.Split(';')[1]);
+                        
+                        ConditionObject conditionObject = conditionList.Find(o => o.조건식번호 == 조건식번호); 
+                        
+                        if (conditionObject != null) // 조건식에 항목이 있고
+                        {                            
+                            string 종목코드 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "종목코드");
+                            string 종목명 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "종목명");
+                            int 현재가 = int.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "현재가"));
+                            int 전일대비 = int.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "전일대비"));
+                            double 등락율 = double.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "등락율"));
+                            long 거래량 = long.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "거래량"));
 
-                        string 종목코드 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "종목코드");
-                        string 종목명 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "종목명");
-                        int 현재가 = int.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "현재가"));
-                        int 전일대비 = int.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "전일대비"));
-                        double 등락율 = double.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "등락율"));
-                        long 거래량 = long.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "거래량"));
+                            StockItemObject stockItem = new StockItemObject(종목코드, 종목명, 현재가, 전일대비, 등락율, 거래량);
+                           
+                            //-----------------  추가 사항 ( 리스트의 각 항목중 중첩되는 리스트의 값만 바꿔준다.  ( List class에만 적용)
+                            // 이유 : 중첩으로 리스트가 계속만들어진다.
+                            StockItemObject checkStockItem = conditionObject.stockItemList.Find(o => o.종목명 == 종목명);
+                            if (checkStockItem != null) //조건식에 있고 -> 하위에 같은 종목명의 리스트가 있다면
+                            {
+                                //checkStockItem.종목코드 = 종목코드;
+                                //checkStockItem.종목명 = 종목명;
+                                checkStockItem.현재가 = 현재가;
+                                checkStockItem.등락율 = 등락율;
+                                checkStockItem.거래량 = 거래량;
 
-                        StockItemObject stockItem = new StockItemObject(종목코드, 종목명, 현재가, 전일대비, 등락율, 거래량);
-                        ConditionObject conditionObject = conditionList.Find(o => o.조건번호 == 조건번호);
+                                insertListBox.Items.Add("[종목 중첩 편입] 조건명 : " + conditionObject.조건식명 + " 종목명 :" + 종목명);
+                            }
+                            else
+                            {
+                                conditionObject.stockItemList.Add(stockItem); //조건식 하위에 항목을 추가 한다.
 
-                        if (conditionObject != null)
-                        {
-                            /*
-                           int willRemoveIndex =  conditionObject.stockItemList.FindIndex(o => o.종목명 == 종목명);
-                            conditionObject.stockItemList[willRemoveIndex] = null;
-                            conditionObject.stockItemList[willRemoveIndex] = stockItem;
-                            */
-                            conditionObject.stockItemList.Add(stockItem);
+                                insertListBox.Items.Add("[종목편입] 조건명 : " + conditionObject.조건식명 + " 종목명 :" + 종목명);
 
-                            insertListBox.Items.Add("[종목편입] 조건명 : " + conditionObject.조건명 + " 종목명 :" + 종목명);
+                                if (conditionDataGridView.SelectedCells.Count > 0) //조건식 셀이 선택됬다.
+                                {
+                                    int rowIndex = conditionDataGridView.SelectedCells[0].RowIndex;
+                                    if (int.Parse(conditionDataGridView["조건식_조건번호", rowIndex].Value.ToString()) == 조건식번호)
+                                    {
+                                        condigionItemDataGridView.Rows.Insert(0);
 
+                                        condigionItemDataGridView["조건종목_종목코드", 0].Value = 종목코드.Trim();
+                                        condigionItemDataGridView["조건종목_종목명", 0].Value = 종목명.Trim();
+                                        condigionItemDataGridView["조건종목_현재가", 0].Value = String.Format("{0:###,#}", 현재가);
+                                        condigionItemDataGridView["조건종목_전일대비", 0].Value = String.Format("{0:###,#}", 전일대비);
+                                        condigionItemDataGridView["조건종목_등락율", 0].Value = String.Format("{0:F2}", 등락율) + "%";
+                                        condigionItemDataGridView["조건종목_거래량", 0].Value = String.Format("{0:###,#}", 거래량);
+                                    }
+                                }
+                                if (isTrading)
+                                {
+                                    if (buyConditionCheckBox.Checked)
+                                    {
+                                        if (buyConditionComboBox.Text.Equals(conditionObject.조건식명))
+                                        {
+                                            //해당 종목코드 자동매수 요청.
+                                            if (accountComboBox.Text.Length > 0)
+                                            {
+                                                int 총1회매수금액 = (int)totalAmountNumericUpDown.Value;
+
+                                                if (총1회매수금액 > 0 && 현재가 != 0)
+                                                {
+                                                    int 매수량 = 총1회매수금액 / 현재가;
+                                                    if (매수량 > 0)
+                                                    {
+                                                        int orderResult = axKHOpenAPI1.SendOrder("주식매수요청", 화면번호_주식매수요청, accountComboBox.Text, 1, 종목코드.Trim(), 매수량, 0, "03", "");
+                                                        if (orderResult == 0)
+                                                            insertListBox.Items.Add("[*주문요청 성공*] 조건식명 : " + conditionObject.조건식명 + " 종목명 :" + 종목명);
+                                                        else
+                                                            insertListBox.Items.Add("[*주문요청 실패*] 조건식명 : " + conditionObject.조건식명 + " 종목명 :" + 종목명);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            // --------------   추가사항 끝
+                            
+                            /*   추가사항 안으로 들어갔다.  test하고 삭제 해라.
                             if (conditionDataGridView.SelectedCells.Count > 0) //셀이 선택됬다.
                             {
                                 int rowIndex = conditionDataGridView.SelectedCells[0].RowIndex;
-                                if (int.Parse(conditionDataGridView["조건_조건번호", rowIndex].Value.ToString()) == 조건번호)
+                                if (int.Parse(conditionDataGridView["조건식_조건번호", rowIndex].Value.ToString()) == 조건식번호)
                                 {
                                     condigionItemDataGridView.Rows.Insert(0);
 
@@ -682,11 +763,12 @@ namespace VeryGoodAuto
                                     condigionItemDataGridView["조건종목_거래량", 0].Value = String.Format("{0:###,#}", 거래량);
                                 }
                             }
+                           
                             if (isTrading)
                             {
                                 if (buyConditionCheckBox.Checked)
                                 {
-                                    if (buyConditionComboBox.Text.Equals(conditionObject.조건명))
+                                    if (buyConditionComboBox.Text.Equals(conditionObject.조건식명))
                                     {
                                         //해당 종목코드 자동매수 요청.
                                         if (accountComboBox.Text.Length > 0)
@@ -700,15 +782,17 @@ namespace VeryGoodAuto
                                                 {
                                                     int orderResult = axKHOpenAPI1.SendOrder("주식매수요청", 화면번호_주식매수요청, accountComboBox.Text, 1, 종목코드.Trim(), 매수량, 0, "03", "");
                                                     if (orderResult == 0)
-                                                        insertListBox.Items.Add("[*주문요청 성공*] 조건명 : " + conditionObject.조건명 + " 종목명 :" + 종목명);
+                                                        insertListBox.Items.Add("[*주문요청 성공*] 조건식명 : " + conditionObject.조건식명 + " 종목명 :" + 종목명);
                                                     else
-                                                        insertListBox.Items.Add("[*주문요청 실패*] 조건명 : " + conditionObject.조건명 + " 종목명 :" + 종목명);
+                                                        insertListBox.Items.Add("[*주문요청 실패*] 조건식명 : " + conditionObject.조건식명 + " 종목명 :" + 종목명);
                                                 }
                                             }
                                         }
                                     }
                                 }
+                                
                             }
+                           */
                         }
                     }
                 }
@@ -887,19 +971,19 @@ namespace VeryGoodAuto
     /// </summary>
     class ConditionObject
     {
-        public int 조건번호;
-        public string 조건명;
+        public int 조건식번호;
+        public string 조건식명;
         public List<StockItemObject> stockItemList;
 
-        public ConditionObject(int 조건번호, string 조건명)
+        public ConditionObject(int 조건식번호, string 조건식명)
         {
-            this.조건번호 = 조건번호;
-            this.조건명 = 조건명;
+            this.조건식번호 = 조건식번호;
+            this.조건식명 = 조건식명;
             stockItemList = new List<StockItemObject>();
         }
     }
     /// <summary>
-    /// 조건식 각 내용
+    /// 조건식별 포함되는 종목들의 리스트 묶음
     /// </summary>
     class StockItemObject
     {

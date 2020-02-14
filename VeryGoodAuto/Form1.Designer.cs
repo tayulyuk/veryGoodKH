@@ -72,8 +72,8 @@
             this.sellButton = new System.Windows.Forms.Button();
             this.buyButton = new System.Windows.Forms.Button();
             this.conditionDataGridView = new System.Windows.Forms.DataGridView();
-            this.조건_조건번호 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.조건_조건명 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.조건식_조건번호 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.조건식_조건명 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.condigionItemDataGridView = new System.Windows.Forms.DataGridView();
             this.조건종목_종목코드 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.조건종목_종목명 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -710,8 +710,8 @@
             this.conditionDataGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
             this.conditionDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.conditionDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.조건_조건번호,
-            this.조건_조건명});
+            this.조건식_조건번호,
+            this.조건식_조건명});
             this.conditionDataGridView.Location = new System.Drawing.Point(5, 211);
             this.conditionDataGridView.MultiSelect = false;
             this.conditionDataGridView.Name = "conditionDataGridView";
@@ -721,17 +721,17 @@
             this.conditionDataGridView.Size = new System.Drawing.Size(197, 476);
             this.conditionDataGridView.TabIndex = 3;
             // 
-            // 조건_조건번호
+            // 조건식_조건번호
             // 
-            this.조건_조건번호.HeaderText = "조건번호";
-            this.조건_조건번호.Name = "조건_조건번호";
-            this.조건_조건번호.ReadOnly = true;
+            this.조건식_조건번호.HeaderText = "조건번호";
+            this.조건식_조건번호.Name = "조건식_조건번호";
+            this.조건식_조건번호.ReadOnly = true;
             // 
-            // 조건_조건명
+            // 조건식_조건명
             // 
-            this.조건_조건명.HeaderText = "조건명";
-            this.조건_조건명.Name = "조건_조건명";
-            this.조건_조건명.ReadOnly = true;
+            this.조건식_조건명.HeaderText = "조건명";
+            this.조건식_조건명.Name = "조건식_조건명";
+            this.조건식_조건명.ReadOnly = true;
             // 
             // condigionItemDataGridView
             // 
@@ -1293,8 +1293,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn 미체결_체결가;
         private System.Windows.Forms.DataGridViewTextBoxColumn 미체결_주문구분;
         private System.Windows.Forms.DataGridViewTextBoxColumn 미체결_시간;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 조건_조건번호;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 조건_조건명;
         private System.Windows.Forms.DataGridViewTextBoxColumn 조건종목_종목코드;
         private System.Windows.Forms.DataGridViewTextBoxColumn 조건종목_종목명;
         private System.Windows.Forms.DataGridViewTextBoxColumn 조건종목_현재가;
@@ -1305,6 +1303,8 @@
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.Button searchButton;
         private System.Windows.Forms.TextBox searchTextBox;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 조건식_조건번호;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 조건식_조건명;
     }
 }
 
