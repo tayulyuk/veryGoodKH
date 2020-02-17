@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AxKHOpenAPILib;
@@ -17,11 +18,14 @@ namespace VeryGoodAuto
         public const string 화면번호_실시간미체결요청 = "5002";
         public const string 화면번호_조건검색 = "5003";
         public const string 화면번호_조건식종목요청 = "5004";
+        public const string 화면번호_조건식종목추가요청 = "6004";
         public const string 화면번호_기본주식정보요청 = "5005";
         public const string 화면번호_주식매수요청 = "5006";
         public const string 화면번호_주식매도요청 = "5007";
         public const string 화면번호_실시간데이터요청 = "5008";
         public const string 화면번호_일자별실현손익 = "5009";
+
+        public Object lockThis;
 
         #region 수동
         public const string 주문종목정보 = "5055";
@@ -38,19 +42,25 @@ namespace VeryGoodAuto
 
         public Form1()
         {
-            InitializeComponent();            
+            InitializeComponent();
+
+            lockThis = new Object(); // lock
 
             conditionDataGridView.SelectionChanged += DataGridView_SelectionChanged;
             tradingStartButton.Click += Button_Click;
             tradingStopButton.Click += Button_Click;
 
-            axKHOpenAPI1.OnReceiveChejanData += AxKHOpenAPI1_OnReceiveChejanData;
-            axKHOpenAPI1.OnReceiveRealCondition += AxKHOpenAPI1_OnReceiveRealCondition; //조건검색에 편입/퇴출 감지          
-            axKHOpenAPI1.OnReceiveTrData += AxKHOpenAPI1_OnReceiveTrData;
             axKHOpenAPI1.OnEventConnect += AxKHOpenAPI1_OnEventConnect;
+
+            axKHOpenAPI1.OnReceiveChejanData += AxKHOpenAPI1_OnReceiveChejanData; //채결 .
+            axKHOpenAPI1.OnReceiveRealCondition += AxKHOpenAPI1_OnReceiveRealCondition; //조건검색에 편입/퇴출 감지       
+            
             axKHOpenAPI1.OnReceiveConditionVer += AxKHOpenAPI1_OnReceiveConditionVer;
             axKHOpenAPI1.OnReceiveTrCondition += AxKHOpenAPI1_OnReceiveTrCondition;
+
+            axKHOpenAPI1.OnReceiveTrData += AxKHOpenAPI1_OnReceiveTrData;
             axKHOpenAPI1.OnReceiveRealData += AxKHOpenAPI1_OnReceiveRealData;
+
             axKHOpenAPI1.CommConnect();
 
             #region 수동모드
@@ -102,7 +112,7 @@ namespace VeryGoodAuto
                 }
             }
             else if (sender.Equals(balanceDataGridView)) //잔고 리스트 클릭시 매도할수 있도록.
-            {
+            {                
                 try
                 {
                     if (balanceDataGridView.SelectedCells.Count > 0)// 클릭시.
@@ -125,6 +135,7 @@ namespace VeryGoodAuto
                 {
                     Console.WriteLine(exception.Message.ToString());
                 }
+                //balanceDataGridView.ClearSelection(); // 첫 line index 되는것을 막는다.
             }
         }
 
@@ -139,6 +150,7 @@ namespace VeryGoodAuto
             int 가격 = (int)priceManualNumericUpDown.Value;
             string 거래구분 = guBunComboBox.Text;
             거래구분 = 거래구분.Substring(0, 2);
+            
 
             if (sender.Equals(buyButton))
             {
@@ -242,12 +254,24 @@ namespace VeryGoodAuto
                                     double takeProfit = (double)takeProfitNumericUpDown.Value;
                                     if (손익율 >= takeProfit)
                                     {
-                                        int orderResult = axKHOpenAPI1.SendOrder("매도주문", 화면번호_주식매도요청,
-                                             accountComboBox.Text, 2, 종목코드, 보유수량, 0, "03", "");
+                                        int orderResult = -1;
+                                        lock (lockThis)
+                                        {
+                                            var t = Task.Run(async delegate
+                                            {
+                                                orderResult = axKHOpenAPI1.SendOrder("매도주문", 화면번호_주식매도요청,
+                                                accountComboBox.Text, 2, 종목코드, 보유수량, 0, "03", "");
+                                                await Task.Delay(250);
+                                                return orderResult;
+                                            });
+                                            t.Wait();
+                                        }
                                         if (orderResult == 0)
                                             insertListBox.Items.Add("[*매도 주문요청 성공*] 조건명 : take Profit || 종목명 :" + axKHOpenAPI1.GetMasterCodeName(종목코드));
                                         else
                                             insertListBox.Items.Add("[*매도 주문요청 실패*] 조건명 : take Profit || 종목명 :" + axKHOpenAPI1.GetMasterCodeName(종목코드));
+
+                                        insertListBox.SelectedIndex = insertListBox.Items.Count - 1;// 첫 line으로 항상 이동
                                     }
                                 }
                                 //손절 처리
@@ -256,12 +280,26 @@ namespace VeryGoodAuto
                                     double stopLoss = (double)stopLossNumericUpDown.Value;
                                     if (손익율 <= stopLoss)
                                     {
-                                        int orderResult = axKHOpenAPI1.SendOrder("매도주문", 화면번호_주식매도요청,
-                                            accountComboBox.Text, 2, 종목코드, 보유수량, 0, "03", "");
+                                        int orderResult = -1; //임의값 설정 
+
+                                        lock (lockThis)
+                                        {
+                                            var t = Task.Run(async delegate
+                                            {
+                                                orderResult = axKHOpenAPI1.SendOrder("매도주문", 화면번호_주식매도요청,
+                                               accountComboBox.Text, 2, 종목코드, 보유수량, 0, "03", "");
+                                                await Task.Delay(250);
+                                                return orderResult;
+                                            });
+                                            t.Wait();
+                                        }
+
                                         if (orderResult == 0)
                                             insertListBox.Items.Add("[*매도 주문요청 성공*] 조건명 : stop Loss || 종목명 :" + axKHOpenAPI1.GetMasterCodeName(종목코드));
                                         else
                                             insertListBox.Items.Add("[*매도 주문요청 실패*] 조건명 : stop Loss || 종목명 :" + axKHOpenAPI1.GetMasterCodeName(종목코드));
+
+                                        insertListBox.SelectedIndex = insertListBox.Items.Count - 1;// 첫 line으로 항상 이동
                                     }
                                 }
                             }
@@ -351,8 +389,18 @@ namespace VeryGoodAuto
                 if (e.strType.Equals("I"))//종목 편입
                 {
                     axKHOpenAPI1.SetInputValue("종목코드", 종목코드);
-                    //axKHOpenAPI1.CommRqData("주식기본정보요청;" + 조건식번호, "opt10001", 0, 화면번호_기본주식정보요청);                    
-                    axKHOpenAPI1.CommRqData("편입종목정보요청;" + 조건식번호, "opt10001", 0, 화면번호_기본주식정보요청);
+                    //axKHOpenAPI1.CommRqData("주식기본정보요청;" + 조건식번호, "opt10001", 0, 화면번호_기본주식정보요청);   
+                    lock (lockThis)
+                    {
+                        var t = Task.Run(async delegate
+                        {
+                            axKHOpenAPI1.CommRqData("편입종목정보요청;" + 조건식번호, "opt10001", 0, 화면번호_기본주식정보요청);
+
+                            await Task.Delay(250);
+                            return 0;
+                        });
+                        t.Wait();
+                    }
 
                     // 매수조건식으로   등록된 조건번호에 의한 전달된 종목코드는 자동매수
                    // insertListBox.Items.Add("종목편입 - 종목코드 =" + 종목코드 + ",조건인텍스 =" + 조건식번호 + " |조건명 =" + 조건식명);
@@ -363,6 +411,7 @@ namespace VeryGoodAuto
                     if (stockItem != null)
                     {
                         deleteListBox.Items.Add("[종목이탈] 조건식명: " + 조건식명 + "  종목명" + stockItem.종목명);
+                        deleteListBox.SelectedIndex = deleteListBox.Items.Count - 1;// 첫 line으로 항상 이동
                         conditionObject.stockItemList.Remove(stockItem);
                     }
                     //조건식 창의 번호와   이탈되는 조건식의 번호(정보)가 같다면 삭제하라.
@@ -373,8 +422,8 @@ namespace VeryGoodAuto
                         {
                             for (int i = 0; i < condigionItemDataGridView.RowCount; i++)
                             {
-                                if (condigionItemDataGridView["조건식_조종코드", i].Value.ToString() == 종목코드)
-                                {
+                                 if (condigionItemDataGridView["조건종목_종목코드", i].Value.ToString() == 종목코드)                             
+                                {                                   
                                     condigionItemDataGridView.Rows.RemoveAt(i);
                                     break;
                                 }
@@ -404,7 +453,7 @@ namespace VeryGoodAuto
                 if(codeCount <= 100)
                 axKHOpenAPI1.CommKwRqData(codeList, 0, codeCount, 0, "조건식종목요청;" + 조건번호, 화면번호_조건식종목요청);
                 if (e.nIndex != 0) // 더받을것이 있다면   +추가;
-                    axKHOpenAPI1.SendCondition("6004", e.strConditionName, e.nIndex, 1);               
+                    axKHOpenAPI1.SendCondition(화면번호_조건식종목추가요청, e.strConditionName, e.nIndex, 1);               
             }
         }
 
@@ -420,7 +469,7 @@ namespace VeryGoodAuto
                         if (rowIndex > -1 && rowIndex < conditionDataGridView.Rows.Count)
                         {
                             int 조건식번호 = int.Parse(conditionDataGridView["조건식_조건번호", rowIndex].Value.ToString());
-                            string 조건명 = conditionDataGridView["조건식_조건명", rowIndex].Value.ToString();
+                            string 조건명 = conditionDataGridView["조건식_조건식명", rowIndex].Value.ToString();
 
                             int result = axKHOpenAPI1.SendCondition(화면번호_조건검색, 조건명, 조건식번호, 1);
                             if (result == 1)//성공
@@ -429,7 +478,7 @@ namespace VeryGoodAuto
                             }
                             else
                             {
-                                // Console.WriteLine("조건검색 실패");
+                                 Console.WriteLine("조건검색 실패");
                                 ConditionObject conditionObject = conditionList.Find(o => o.조건식번호 == 조건식번호);
                                 if (conditionObject != null)
                                 {
@@ -495,7 +544,7 @@ namespace VeryGoodAuto
 
                     conditionDataGridView.Rows.Add();//추가.
                     conditionDataGridView["조건식_조건번호", i].Value = 조건식인덱스;
-                    conditionDataGridView["조건식_조건명", i].Value = 조건식명;
+                    conditionDataGridView["조건식_조건식명", i].Value = 조건식명;
 
                     //리스트 객체에 조건 정보 객체 추가.
                     conditionList.Add(new ConditionObject(조건식인덱스, 조건식명));
@@ -505,7 +554,10 @@ namespace VeryGoodAuto
                     sellConditionComboBox.Items.Add(조건식명);
                 }
             }
+
+            conditionDataGridView.ClearSelection(); // 첫 line index 되는것을 막는다.
         }
+
         public void AxKHOpenAPI1_OnReceiveTrData(object sender, AxKHOpenAPILib._DKHOpenAPIEvents_OnReceiveTrDataEvent e)
         {
             if (e.sRQName.Equals("계좌평가현황요청"))
@@ -674,8 +726,8 @@ namespace VeryGoodAuto
                         
                         if (conditionObject != null) // 조건식에 항목이 있고
                         {                            
-                            string 종목코드 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "종목코드");
-                            string 종목명 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "종목명");
+                            string 종목코드 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "종목코드").Trim();
+                            string 종목명 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "종목명").Trim();
                             int 현재가 = int.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "현재가"));
                             int 전일대비 = int.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "전일대비"));
                             double 등락율 = double.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "등락율"));
@@ -695,12 +747,14 @@ namespace VeryGoodAuto
                                 checkStockItem.거래량 = 거래량;
 
                                 insertListBox.Items.Add("[종목 중첩 편입] 조건명 : " + conditionObject.조건식명 + " 종목명 :" + 종목명);
+                                insertListBox.SelectedIndex = insertListBox.Items.Count - 1;// 첫 line으로 항상 이동
                             }
                             else
                             {
                                 conditionObject.stockItemList.Add(stockItem); //조건식 하위에 항목을 추가 한다.
 
                                 insertListBox.Items.Add("[종목편입] 조건명 : " + conditionObject.조건식명 + " 종목명 :" + 종목명);
+                                insertListBox.SelectedIndex = insertListBox.Items.Count - 1;// 첫 line으로 항상 이동
 
                                 if (conditionDataGridView.SelectedCells.Count > 0) //조건식 셀이 선택됬다.
                                 {
@@ -733,11 +787,35 @@ namespace VeryGoodAuto
                                                     int 매수량 = 총1회매수금액 / 현재가;
                                                     if (매수량 > 0)
                                                     {
-                                                        int orderResult = axKHOpenAPI1.SendOrder("주식매수요청", 화면번호_주식매수요청, accountComboBox.Text, 1, 종목코드.Trim(), 매수량, 0, "03", "");
-                                                        if (orderResult == 0)
-                                                            insertListBox.Items.Add("[*주문요청 성공*] 조건식명 : " + conditionObject.조건식명 + " 종목명 :" + 종목명);
+                                                        //이미 매수한 같은 종목이 있는가 확인. -> balanceDataGridView
+                                                        if (BalanceListCheck(종목코드.Trim()))
+                                                        {
+                                                            insertListBox.Items.Add("=보유중인종목= 조건식명 : " + conditionObject.조건식명 + " 종목명 :" + 종목명);
+                                                            insertListBox.SelectedIndex = insertListBox.Items.Count - 1;// 첫 line으로 항상 이동
+                                                        }
                                                         else
-                                                            insertListBox.Items.Add("[*주문요청 실패*] 조건식명 : " + conditionObject.조건식명 + " 종목명 :" + 종목명);
+                                                        {
+                                                            int orderResult = -1; //임의로 정했다.
+
+                                                            lock (lockThis)
+                                                            {
+                                                                var t = Task.Run(async delegate
+                                                                {
+                                                                    orderResult = axKHOpenAPI1.SendOrder("주식매수요청", 화면번호_주식매수요청, accountComboBox.Text, 1, 종목코드.Trim(), 매수량, 0, "03", "");
+
+                                                                    await Task.Delay(250);
+                                                                    return orderResult;
+                                                                });
+                                                                t.Wait();
+                                                            }
+
+                                                            if (orderResult == 0)
+                                                                insertListBox.Items.Add("[*주문요청 성공*] 조건식명 : " + conditionObject.조건식명 + " 종목명 :" + 종목명);
+                                                            else
+                                                                insertListBox.Items.Add("[*주문요청 실패*] 조건식명 : " + conditionObject.조건식명 + " 종목명 :" + 종목명);
+
+                                                            insertListBox.SelectedIndex = insertListBox.Items.Count - 1;// 첫 line으로 항상 이동
+                                                        }
                                                     }
                                                 }
                                             }
@@ -949,6 +1027,20 @@ namespace VeryGoodAuto
 
                 axKHOpenAPI1.CommRqData("실시간미체결요청", "opt10075", 0, 화면번호_실시간미체결요청);
             }
+        }
+
+        bool BalanceListCheck(string kindName)
+        {
+            bool b = false;
+            for (int i = 0; i < balanceDataGridView.RowCount; i++)
+            {
+                if (balanceDataGridView["잔고_종목코드", i].Value.ToString().Trim().Equals(kindName))
+                {
+                    b = true;
+                    break;
+                }                
+            }
+            return b;
         }
     }
 

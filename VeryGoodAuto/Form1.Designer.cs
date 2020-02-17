@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.buyConditionCheckBox = new System.Windows.Forms.CheckBox();
             this.buyConditionComboBox = new System.Windows.Forms.ComboBox();
@@ -73,7 +73,7 @@
             this.buyButton = new System.Windows.Forms.Button();
             this.conditionDataGridView = new System.Windows.Forms.DataGridView();
             this.조건식_조건번호 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.조건식_조건명 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.조건식_조건식명 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.condigionItemDataGridView = new System.Windows.Forms.DataGridView();
             this.조건종목_종목코드 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.조건종목_종목명 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -711,7 +711,7 @@
             this.conditionDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.conditionDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.조건식_조건번호,
-            this.조건식_조건명});
+            this.조건식_조건식명});
             this.conditionDataGridView.Location = new System.Drawing.Point(5, 211);
             this.conditionDataGridView.MultiSelect = false;
             this.conditionDataGridView.Name = "conditionDataGridView";
@@ -727,11 +727,11 @@
             this.조건식_조건번호.Name = "조건식_조건번호";
             this.조건식_조건번호.ReadOnly = true;
             // 
-            // 조건식_조건명
+            // 조건식_조건식명
             // 
-            this.조건식_조건명.HeaderText = "조건명";
-            this.조건식_조건명.Name = "조건식_조건명";
-            this.조건식_조건명.ReadOnly = true;
+            this.조건식_조건식명.HeaderText = "조건명";
+            this.조건식_조건식명.Name = "조건식_조건식명";
+            this.조건식_조건식명.ReadOnly = true;
             // 
             // condigionItemDataGridView
             // 
@@ -742,14 +742,14 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.condigionItemDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.condigionItemDataGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.condigionItemDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.condigionItemDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.condigionItemDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.condigionItemDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.조건종목_종목코드,
@@ -1116,7 +1116,7 @@
             this.balanceDataGridView.Name = "balanceDataGridView";
             this.balanceDataGridView.RowHeadersVisible = false;
             this.balanceDataGridView.RowTemplate.Height = 23;
-            this.balanceDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.balanceDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.balanceDataGridView.Size = new System.Drawing.Size(501, 215);
             this.balanceDataGridView.TabIndex = 11;
             // 
@@ -1304,7 +1304,7 @@
         private System.Windows.Forms.Button searchButton;
         private System.Windows.Forms.TextBox searchTextBox;
         private System.Windows.Forms.DataGridViewTextBoxColumn 조건식_조건번호;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 조건식_조건명;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 조건식_조건식명;
     }
 }
 
