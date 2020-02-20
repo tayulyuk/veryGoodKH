@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.buyConditionCheckBox = new System.Windows.Forms.CheckBox();
             this.buyConditionComboBox = new System.Windows.Forms.ComboBox();
@@ -37,7 +37,7 @@
             this.takeProfitNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.stopLossNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.totalAmountNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown4 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDown = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.tradingStartButton = new System.Windows.Forms.Button();
@@ -123,7 +123,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.takeProfitNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.stopLossNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalAmountNumericUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.axKHOpenAPI1)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.priceManualNumericUpDown)).BeginInit();
@@ -157,7 +157,7 @@
             this.tableLayoutPanel1.Controls.Add(this.takeProfitNumericUpDown, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.stopLossNumericUpDown, 1, 3);
             this.tableLayoutPanel1.Controls.Add(this.totalAmountNumericUpDown, 3, 0);
-            this.tableLayoutPanel1.Controls.Add(this.numericUpDown4, 3, 1);
+            this.tableLayoutPanel1.Controls.Add(this.numericUpDown, 3, 1);
             this.tableLayoutPanel1.Controls.Add(this.label1, 2, 0);
             this.tableLayoutPanel1.Controls.Add(this.label2, 2, 1);
             this.tableLayoutPanel1.Controls.Add(this.tradingStartButton, 2, 4);
@@ -250,13 +250,13 @@
             this.totalAmountNumericUpDown.Size = new System.Drawing.Size(183, 21);
             this.totalAmountNumericUpDown.TabIndex = 8;
             // 
-            // numericUpDown4
+            // numericUpDown
             // 
-            this.numericUpDown4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericUpDown4.Location = new System.Drawing.Point(569, 42);
-            this.numericUpDown4.Name = "numericUpDown4";
-            this.numericUpDown4.Size = new System.Drawing.Size(183, 21);
-            this.numericUpDown4.TabIndex = 9;
+            this.numericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.numericUpDown.Location = new System.Drawing.Point(569, 42);
+            this.numericUpDown.Name = "numericUpDown";
+            this.numericUpDown.Size = new System.Drawing.Size(183, 21);
+            this.numericUpDown.TabIndex = 9;
             // 
             // label1
             // 
@@ -742,14 +742,14 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.condigionItemDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.condigionItemDataGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.condigionItemDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.condigionItemDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.condigionItemDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.condigionItemDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.조건종목_종목코드,
@@ -1193,7 +1193,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.takeProfitNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.stopLossNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalAmountNumericUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.axKHOpenAPI1)).EndInit();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
@@ -1223,7 +1223,7 @@
         private System.Windows.Forms.NumericUpDown takeProfitNumericUpDown;
         private System.Windows.Forms.NumericUpDown stopLossNumericUpDown;
         private System.Windows.Forms.NumericUpDown totalAmountNumericUpDown;
-        private System.Windows.Forms.NumericUpDown numericUpDown4;
+        private System.Windows.Forms.NumericUpDown numericUpDown;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button tradingStartButton;
