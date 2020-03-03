@@ -81,6 +81,7 @@
             this.조건종목_전일대비 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.조건종목_등락율 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.조건종목_거래량 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.조건종목_거래금 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.insertListBox = new System.Windows.Forms.ListBox();
             this.deleteListBox = new System.Windows.Forms.ListBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -718,7 +719,7 @@
             this.conditionDataGridView.RowHeadersVisible = false;
             this.conditionDataGridView.RowTemplate.Height = 23;
             this.conditionDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.conditionDataGridView.Size = new System.Drawing.Size(197, 476);
+            this.conditionDataGridView.Size = new System.Drawing.Size(161, 476);
             this.conditionDataGridView.TabIndex = 3;
             // 
             // 조건식_조건번호
@@ -757,14 +758,15 @@
             this.조건종목_현재가,
             this.조건종목_전일대비,
             this.조건종목_등락율,
-            this.조건종목_거래량});
-            this.condigionItemDataGridView.Location = new System.Drawing.Point(208, 211);
+            this.조건종목_거래량,
+            this.조건종목_거래금});
+            this.condigionItemDataGridView.Location = new System.Drawing.Point(172, 211);
             this.condigionItemDataGridView.MultiSelect = false;
             this.condigionItemDataGridView.Name = "condigionItemDataGridView";
             this.condigionItemDataGridView.RowHeadersVisible = false;
             this.condigionItemDataGridView.RowTemplate.Height = 23;
             this.condigionItemDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.condigionItemDataGridView.Size = new System.Drawing.Size(553, 476);
+            this.condigionItemDataGridView.Size = new System.Drawing.Size(589, 476);
             this.condigionItemDataGridView.TabIndex = 4;
             // 
             // 조건종목_종목코드
@@ -802,6 +804,12 @@
             this.조건종목_거래량.HeaderText = "거래량";
             this.조건종목_거래량.Name = "조건종목_거래량";
             this.조건종목_거래량.ReadOnly = true;
+            // 
+            // 조건종목_거래금
+            // 
+            this.조건종목_거래금.HeaderText = "거래금(백만)";
+            this.조건종목_거래금.Name = "조건종목_거래금";
+            this.조건종목_거래금.ReadOnly = true;
             // 
             // insertListBox
             // 
@@ -1293,18 +1301,19 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn 미체결_체결가;
         private System.Windows.Forms.DataGridViewTextBoxColumn 미체결_주문구분;
         private System.Windows.Forms.DataGridViewTextBoxColumn 미체결_시간;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 조건종목_종목코드;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 조건종목_종목명;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 조건종목_현재가;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 조건종목_전일대비;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 조건종목_등락율;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 조건종목_거래량;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.Button searchButton;
         private System.Windows.Forms.TextBox searchTextBox;
         private System.Windows.Forms.DataGridViewTextBoxColumn 조건식_조건번호;
         private System.Windows.Forms.DataGridViewTextBoxColumn 조건식_조건식명;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 조건종목_종목코드;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 조건종목_종목명;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 조건종목_현재가;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 조건종목_전일대비;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 조건종목_등락율;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 조건종목_거래량;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 조건종목_거래금;
     }
 }
 
