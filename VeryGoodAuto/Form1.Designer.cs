@@ -30,6 +30,8 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.buyConditionCheckBox = new System.Windows.Forms.CheckBox();
             this.buyConditionComboBox = new System.Windows.Forms.ComboBox();
@@ -112,11 +114,11 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.balanceDataGridView = new System.Windows.Forms.DataGridView();
             this.잔고_종목코드 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.잔고_현재가 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.잔고_평가금액 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.잔고_종목명 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.잔고_보유수량 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.잔고_평균단가 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.잔고_현재가 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.잔고_손익금액 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.잔고_손익율 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.잔고_매입금액 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -743,7 +745,6 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.condigionItemDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.condigionItemDataGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle1.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
@@ -867,7 +868,7 @@
             this.outStandingDataGridView.Name = "outStandingDataGridView";
             this.outStandingDataGridView.RowHeadersVisible = false;
             this.outStandingDataGridView.RowTemplate.Height = 23;
-            this.outStandingDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            this.outStandingDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.outStandingDataGridView.Size = new System.Drawing.Size(498, 190);
             this.outStandingDataGridView.TabIndex = 10;
             // 
@@ -1108,77 +1109,111 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.balanceDataGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
-            this.balanceDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.balanceDataGridView.CausesValidation = false;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.balanceDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.balanceDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.잔고_종목코드,
-            this.잔고_현재가,
             this.잔고_평가금액,
             this.잔고_종목명,
             this.잔고_보유수량,
             this.잔고_평균단가,
+            this.잔고_현재가,
             this.잔고_손익금액,
             this.잔고_손익율,
             this.잔고_매입금액});
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.balanceDataGridView.DefaultCellStyle = dataGridViewCellStyle3;
             this.balanceDataGridView.Location = new System.Drawing.Point(5, 127);
             this.balanceDataGridView.MultiSelect = false;
             this.balanceDataGridView.Name = "balanceDataGridView";
             this.balanceDataGridView.RowHeadersVisible = false;
             this.balanceDataGridView.RowTemplate.Height = 23;
-            this.balanceDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            this.balanceDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.balanceDataGridView.Size = new System.Drawing.Size(501, 215);
             this.balanceDataGridView.TabIndex = 11;
             // 
             // 잔고_종목코드
             // 
+            this.잔고_종목코드.FillWeight = 180.7229F;
             this.잔고_종목코드.HeaderText = "종목코드";
             this.잔고_종목코드.Name = "잔고_종목코드";
             this.잔고_종목코드.ReadOnly = true;
-            // 
-            // 잔고_현재가
-            // 
-            this.잔고_현재가.HeaderText = "현재가";
-            this.잔고_현재가.Name = "잔고_현재가";
+            this.잔고_종목코드.Width = 80;
             // 
             // 잔고_평가금액
             // 
+            this.잔고_평가금액.FillWeight = 125.1731F;
             this.잔고_평가금액.HeaderText = "평가금액";
             this.잔고_평가금액.Name = "잔고_평가금액";
+            this.잔고_평가금액.Width = 80;
             // 
             // 잔고_종목명
             // 
+            this.잔고_종목명.FillWeight = 105.2306F;
             this.잔고_종목명.HeaderText = "종목명";
             this.잔고_종목명.Name = "잔고_종목명";
             this.잔고_종목명.ReadOnly = true;
+            this.잔고_종목명.Width = 80;
             // 
             // 잔고_보유수량
             // 
+            this.잔고_보유수량.FillWeight = 89.16319F;
             this.잔고_보유수량.HeaderText = "보유수량";
             this.잔고_보유수량.Name = "잔고_보유수량";
             this.잔고_보유수량.ReadOnly = true;
+            this.잔고_보유수량.Width = 80;
             // 
             // 잔고_평균단가
             // 
+            this.잔고_평균단가.FillWeight = 76.20851F;
             this.잔고_평균단가.HeaderText = "평균단가";
             this.잔고_평균단가.Name = "잔고_평균단가";
             this.잔고_평균단가.ReadOnly = true;
+            this.잔고_평균단가.Width = 80;
+            // 
+            // 잔고_현재가
+            // 
+            this.잔고_현재가.FillWeight = 149.9416F;
+            this.잔고_현재가.HeaderText = "현재가";
+            this.잔고_현재가.Name = "잔고_현재가";
+            this.잔고_현재가.Width = 80;
             // 
             // 잔고_손익금액
             // 
+            this.잔고_손익금액.FillWeight = 65.75549F;
             this.잔고_손익금액.HeaderText = "손익금액";
             this.잔고_손익금액.Name = "잔고_손익금액";
             this.잔고_손익금액.ReadOnly = true;
+            this.잔고_손익금액.Width = 80;
             // 
             // 잔고_손익율
             // 
+            this.잔고_손익율.FillWeight = 57.31396F;
             this.잔고_손익율.HeaderText = "손익율";
             this.잔고_손익율.Name = "잔고_손익율";
             this.잔고_손익율.ReadOnly = true;
+            this.잔고_손익율.Width = 80;
             // 
             // 잔고_매입금액
             // 
+            this.잔고_매입금액.FillWeight = 50.49075F;
             this.잔고_매입금액.HeaderText = "매입금액";
             this.잔고_매입금액.Name = "잔고_매입금액";
             this.잔고_매입금액.ReadOnly = true;
+            this.잔고_매입금액.Width = 80;
             // 
             // Form1
             // 
@@ -1282,15 +1317,6 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.DataGridView balanceDataGridView;
         private AxKHOpenAPILib.AxKHOpenAPI axKHOpenAPI1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_종목코드;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_현재가;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_평가금액;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_종목명;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_보유수량;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_평균단가;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_손익금액;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_손익율;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_매입금액;
         private System.Windows.Forms.DataGridViewTextBoxColumn 미체결_주문번호;
         private System.Windows.Forms.DataGridViewTextBoxColumn 미체결_종목코드;
         private System.Windows.Forms.DataGridViewTextBoxColumn 미체결_종목명;
@@ -1314,6 +1340,15 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn 조건종목_등락율;
         private System.Windows.Forms.DataGridViewTextBoxColumn 조건종목_거래량;
         private System.Windows.Forms.DataGridViewTextBoxColumn 조건종목_거래금;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_종목코드;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_평가금액;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_종목명;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_보유수량;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_평균단가;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_현재가;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_손익금액;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_손익율;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_매입금액;
     }
 }
 
