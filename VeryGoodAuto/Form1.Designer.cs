@@ -39,9 +39,7 @@
             this.takeProfitNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.stopLossNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.totalAmountNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.tradingStartButton = new System.Windows.Forms.Button();
             this.tradingStopButton = new System.Windows.Forms.Button();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
@@ -49,6 +47,7 @@
             this.stopLossChheckBox = new System.Windows.Forms.CheckBox();
             this.axKHOpenAPI1 = new AxKHOpenAPILib.AxKHOpenAPI();
             this.label5 = new System.Windows.Forms.Label();
+            this.isTrailingStopCheckBox = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.priceManualNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.accountComboBox = new System.Windows.Forms.ComboBox();
@@ -121,12 +120,12 @@
             this.잔고_현재가 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.잔고_손익금액 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.잔고_손익율 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.잔고_최고율 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.잔고_매입금액 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.takeProfitNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.stopLossNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalAmountNumericUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.axKHOpenAPI1)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.priceManualNumericUpDown)).BeginInit();
@@ -160,9 +159,7 @@
             this.tableLayoutPanel1.Controls.Add(this.takeProfitNumericUpDown, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.stopLossNumericUpDown, 1, 3);
             this.tableLayoutPanel1.Controls.Add(this.totalAmountNumericUpDown, 3, 0);
-            this.tableLayoutPanel1.Controls.Add(this.numericUpDown, 3, 1);
             this.tableLayoutPanel1.Controls.Add(this.label1, 2, 0);
-            this.tableLayoutPanel1.Controls.Add(this.label2, 2, 1);
             this.tableLayoutPanel1.Controls.Add(this.tradingStartButton, 2, 4);
             this.tableLayoutPanel1.Controls.Add(this.tradingStopButton, 3, 4);
             this.tableLayoutPanel1.Controls.Add(this.checkBox2, 0, 1);
@@ -170,6 +167,7 @@
             this.tableLayoutPanel1.Controls.Add(this.stopLossChheckBox, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.axKHOpenAPI1, 0, 4);
             this.tableLayoutPanel1.Controls.Add(this.label5, 1, 4);
+            this.tableLayoutPanel1.Controls.Add(this.isTrailingStopCheckBox, 2, 2);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(5, 4);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 5;
@@ -253,14 +251,6 @@
             this.totalAmountNumericUpDown.Size = new System.Drawing.Size(183, 21);
             this.totalAmountNumericUpDown.TabIndex = 8;
             // 
-            // numericUpDown
-            // 
-            this.numericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericUpDown.Location = new System.Drawing.Point(569, 42);
-            this.numericUpDown.Name = "numericUpDown";
-            this.numericUpDown.Size = new System.Drawing.Size(183, 21);
-            this.numericUpDown.TabIndex = 9;
-            // 
             // label1
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
@@ -271,17 +261,6 @@
             this.label1.TabIndex = 10;
             this.label1.Text = "1회 매수금액";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label2
-            // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(381, 47);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(181, 12);
-            this.label2.TabIndex = 11;
-            this.label2.Text = "최대종목수";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // tradingStartButton
             // 
@@ -361,6 +340,19 @@
             this.label5.Size = new System.Drawing.Size(205, 12);
             this.label5.TabIndex = 18;
             this.label5.Text = "% 손절은 음수(-0.0)방식으로 입력 %";
+            // 
+            // isTrailingStopCheckBox
+            // 
+            this.isTrailingStopCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.isTrailingStopCheckBox.AutoSize = true;
+            this.isTrailingStopCheckBox.Location = new System.Drawing.Point(381, 74);
+            this.isTrailingStopCheckBox.Name = "isTrailingStopCheckBox";
+            this.isTrailingStopCheckBox.Size = new System.Drawing.Size(181, 28);
+            this.isTrailingStopCheckBox.TabIndex = 19;
+            this.isTrailingStopCheckBox.Text = "트레일링스톱(수익율조절)";
+            this.isTrailingStopCheckBox.UseVisualStyleBackColor = true;
             // 
             // tableLayoutPanel2
             // 
@@ -1127,6 +1119,7 @@
             this.잔고_현재가,
             this.잔고_손익금액,
             this.잔고_손익율,
+            this.잔고_최고율,
             this.잔고_매입금액});
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
             dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
@@ -1207,6 +1200,12 @@
             this.잔고_손익율.ReadOnly = true;
             this.잔고_손익율.Width = 80;
             // 
+            // 잔고_최고율
+            // 
+            this.잔고_최고율.HeaderText = "최고율";
+            this.잔고_최고율.Name = "잔고_최고율";
+            this.잔고_최고율.ReadOnly = true;
+            // 
             // 잔고_매입금액
             // 
             this.잔고_매입금액.FillWeight = 50.49075F;
@@ -1236,7 +1235,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.takeProfitNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.stopLossNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalAmountNumericUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.axKHOpenAPI1)).EndInit();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
@@ -1266,9 +1264,7 @@
         private System.Windows.Forms.NumericUpDown takeProfitNumericUpDown;
         private System.Windows.Forms.NumericUpDown stopLossNumericUpDown;
         private System.Windows.Forms.NumericUpDown totalAmountNumericUpDown;
-        private System.Windows.Forms.NumericUpDown numericUpDown;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button tradingStartButton;
         private System.Windows.Forms.Button tradingStopButton;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
@@ -1348,7 +1344,9 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_현재가;
         private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_손익금액;
         private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_손익율;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_최고율;
         private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_매입금액;
+        private System.Windows.Forms.CheckBox isTrailingStopCheckBox;
     }
 }
 
