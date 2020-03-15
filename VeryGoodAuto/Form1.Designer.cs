@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.buyConditionCheckBox = new System.Windows.Forms.CheckBox();
             this.buyConditionComboBox = new System.Windows.Forms.ComboBox();
@@ -48,6 +48,7 @@
             this.axKHOpenAPI1 = new AxKHOpenAPILib.AxKHOpenAPI();
             this.label5 = new System.Windows.Forms.Label();
             this.isTrailingStopCheckBox = new System.Windows.Forms.CheckBox();
+            this.isAdjustQuantityCheckBox = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.priceManualNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.accountComboBox = new System.Windows.Forms.ComboBox();
@@ -168,6 +169,7 @@
             this.tableLayoutPanel1.Controls.Add(this.axKHOpenAPI1, 0, 4);
             this.tableLayoutPanel1.Controls.Add(this.label5, 1, 4);
             this.tableLayoutPanel1.Controls.Add(this.isTrailingStopCheckBox, 2, 2);
+            this.tableLayoutPanel1.Controls.Add(this.isAdjustQuantityCheckBox, 3, 1);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(5, 4);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 5;
@@ -183,8 +185,6 @@
             // 
             this.buyConditionCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.buyConditionCheckBox.AutoSize = true;
-            this.buyConditionCheckBox.Checked = true;
-            this.buyConditionCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.buyConditionCheckBox.Location = new System.Drawing.Point(4, 10);
             this.buyConditionCheckBox.Name = "buyConditionCheckBox";
             this.buyConditionCheckBox.Size = new System.Drawing.Size(144, 16);
@@ -237,6 +237,11 @@
             this.stopLossNumericUpDown.Name = "stopLossNumericUpDown";
             this.stopLossNumericUpDown.Size = new System.Drawing.Size(219, 21);
             this.stopLossNumericUpDown.TabIndex = 7;
+            this.stopLossNumericUpDown.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            -2147418112});
             // 
             // totalAmountNumericUpDown
             // 
@@ -250,6 +255,11 @@
             this.totalAmountNumericUpDown.Name = "totalAmountNumericUpDown";
             this.totalAmountNumericUpDown.Size = new System.Drawing.Size(183, 21);
             this.totalAmountNumericUpDown.TabIndex = 8;
+            this.totalAmountNumericUpDown.Value = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
             // 
             // label1
             // 
@@ -290,8 +300,6 @@
             // 
             this.checkBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBox2.AutoSize = true;
-            this.checkBox2.Checked = true;
-            this.checkBox2.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox2.Location = new System.Drawing.Point(4, 45);
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(144, 16);
@@ -314,6 +322,8 @@
             // 
             this.stopLossChheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.stopLossChheckBox.AutoSize = true;
+            this.stopLossChheckBox.Checked = true;
+            this.stopLossChheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.stopLossChheckBox.Location = new System.Drawing.Point(4, 115);
             this.stopLossChheckBox.Name = "stopLossChheckBox";
             this.stopLossChheckBox.Size = new System.Drawing.Size(144, 16);
@@ -353,6 +363,19 @@
             this.isTrailingStopCheckBox.TabIndex = 19;
             this.isTrailingStopCheckBox.Text = "트레일링스톱(수익율조절)";
             this.isTrailingStopCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // isAdjustQuantityCheckBox
+            // 
+            this.isAdjustQuantityCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.isAdjustQuantityCheckBox.AutoSize = true;
+            this.isAdjustQuantityCheckBox.Location = new System.Drawing.Point(569, 39);
+            this.isAdjustQuantityCheckBox.Name = "isAdjustQuantityCheckBox";
+            this.isAdjustQuantityCheckBox.Size = new System.Drawing.Size(183, 28);
+            this.isAdjustQuantityCheckBox.TabIndex = 20;
+            this.isAdjustQuantityCheckBox.Text = "매수량(자동설정기능)";
+            this.isAdjustQuantityCheckBox.UseVisualStyleBackColor = true;
             // 
             // tableLayoutPanel2
             // 
@@ -737,13 +760,13 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.condigionItemDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.condigionItemDataGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.condigionItemDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle13.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle13.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            dataGridViewCellStyle13.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle13.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle13.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.condigionItemDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle13;
             this.condigionItemDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.condigionItemDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.조건종목_종목코드,
@@ -1102,14 +1125,14 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.balanceDataGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
             this.balanceDataGridView.CausesValidation = false;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.balanceDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle14.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle14.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            dataGridViewCellStyle14.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle14.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle14.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.balanceDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle14;
             this.balanceDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.잔고_종목코드,
             this.잔고_평가금액,
@@ -1121,14 +1144,14 @@
             this.잔고_손익율,
             this.잔고_최고율,
             this.잔고_매입금액});
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.balanceDataGridView.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle15.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle15.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            dataGridViewCellStyle15.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle15.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle15.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle15.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.balanceDataGridView.DefaultCellStyle = dataGridViewCellStyle15;
             this.balanceDataGridView.Location = new System.Drawing.Point(5, 127);
             this.balanceDataGridView.MultiSelect = false;
             this.balanceDataGridView.Name = "balanceDataGridView";
@@ -1347,6 +1370,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_최고율;
         private System.Windows.Forms.DataGridViewTextBoxColumn 잔고_매입금액;
         private System.Windows.Forms.CheckBox isTrailingStopCheckBox;
+        private System.Windows.Forms.CheckBox isAdjustQuantityCheckBox;
     }
 }
 
