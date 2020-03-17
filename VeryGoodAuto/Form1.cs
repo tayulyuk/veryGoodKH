@@ -49,6 +49,16 @@ namespace VeryGoodAuto
         public int beforeConditionCode;
 
         /// <summary>
+        /// 잔고와 미체결 관리를 한다.
+        /// </summary>
+        List<BalanceItem> balanceItemList;
+
+        /// <summary>
+        /// 잔고에서 미체결 리스트를 별도 관리 저장.
+        /// </summary>
+        List<BalanceItem> changeOutStandingList;
+
+        /// <summary>
         /// Text  입력시 코드를 반환하기 위해 만든 list.
         /// </summary>
         List<ItemInfo> itemInfoList;
@@ -84,8 +94,12 @@ namespace VeryGoodAuto
         public Form1()
         {
             InitializeComponent();
+
             conditionList = new List<ConditionObject>();
             itemInfoList = new List<ItemInfo>(); // 주식명 검색을 위한 리스트.
+            balanceItemList = new List<BalanceItem>();// 잔고와 미체결 관리를 한다.
+            changeOutStandingList = new List<BalanceItem>();
+
 
             lockThis = new object(); // lock
             lockRemove = new object();// 삭제 종목명.
@@ -116,11 +130,11 @@ namespace VeryGoodAuto
 
             startThead = new Thread(new ThreadStart(UseDeleteMethod));
             startThead.IsBackground = true;
-            startThead.Start();
+            startThead.Start();         
 
             orderClassManagerThread = new Thread(new ThreadStart(UseOrderClassMethod));
             orderClassManagerThread.IsBackground = true;
-            orderClassManagerThread.Start();
+            orderClassManagerThread.Start();            
             //----
             #region 수동모드
             itemCodeTextBox.TextChanged += TextBox_TextChanged;
@@ -176,7 +190,7 @@ namespace VeryGoodAuto
                         {
                             this.Invoke(new Action(delegate ()
                             {
-                                DelayOrder(250, orderClassList.First());
+                                DelayOrder(1000, orderClassList.First());
                             }));
                         });
                         t.Start();
@@ -274,8 +288,7 @@ namespace VeryGoodAuto
             {
                 if (계좌번호.Length > 0 && 종목코드.Length == 6 && 수량 > 0 && 가격 > 0 && 거래구분.Length == 2)
                 {
-                    orderClassList.Add(new OrderClass("매수주문", 주식주문,
-                                                                                            계좌번호, 1, 종목코드, 수량, 가격, 거래구분, ""));
+                    orderClassList.Add(new OrderClass("매수주문", 주식주문, 계좌번호, 1, 종목코드, 수량, 가격, 거래구분, ""));
                 }
                    // axKHOpenAPI1.SendOrder("주식주문", 주식주문, 계좌번호, 1, 종목코드, 수량, 가격, 거래구분, "");
             }
@@ -295,14 +308,12 @@ namespace VeryGoodAuto
                                   
                 if (매매구분.Equals("매수"))
                 {
-                    orderClassList.Add(new OrderClass("매수주문 변경", 주식주문,
-                                                                                            계좌번호, 5, 종목코드, 수량, 가격, 거래구분, 주문번호));
+                    orderClassList.Add(new OrderClass("매수주문 변경", 주식주문, 계좌번호, 5, 종목코드, 수량, 가격, 거래구분, 주문번호));
                 }
                         //axKHOpenAPI1.SendOrder("주식주문", 주식주문, 계좌번호, 5, 종목코드, 수량, 가격, 거래구분, 주문번호);
                 else if (매매구분.Equals("매도"))
                 {
-                    orderClassList.Add(new OrderClass("매도주문 변경", 주식주문,
-                                                                                            계좌번호, 6, 종목코드, 수량, 가격, 거래구분, 주문번호));
+                    orderClassList.Add(new OrderClass("매도주문 변경", 주식주문, 계좌번호, 6, 종목코드, 수량, 가격, 거래구분, 주문번호));
                 }
                         //axKHOpenAPI1.SendOrder("주식주문", 주식주문, 계좌번호, 6, 종목코드, 수량, 가격, 거래구분, 주문번호);               
             }
@@ -313,14 +324,12 @@ namespace VeryGoodAuto
               
                 if (매매구분.Equals("매수"))
                 {
-                    orderClassList.Add(new OrderClass("매수 취소", 주식주문,
-                                                                                           계좌번호, 3, 종목코드, 수량, 가격, 거래구분, 주문번호));
+                    orderClassList.Add(new OrderClass("매수 취소", 주식주문,계좌번호, 3, 종목코드, 수량, 가격, 거래구분, 주문번호));
                 }
                     //axKHOpenAPI1.SendOrder("주식주문", 주식주문, 계좌번호, 3, 종목코드, 수량, 가격, 거래구분, 주문번호);
                 else if (매매구분.Equals("매도"))
                 {
-                    orderClassList.Add(new OrderClass("매도 취소", 주식주문,
-                                                                                          계좌번호, 4, 종목코드, 수량, 가격, 거래구분, 주문번호));
+                    orderClassList.Add(new OrderClass("매도 취소", 주식주문, 계좌번호, 4, 종목코드, 수량, 가격, 거래구분, 주문번호));
                 }
                     //axKHOpenAPI1.SendOrder("주식주문", 주식주문, 계좌번호, 4, 종목코드, 수량, 가격, 거래구분, 주문번호);
                
@@ -357,7 +366,8 @@ namespace VeryGoodAuto
                 }
         }
 
-        string 저장타입 = "";
+        string 저장타입 = "";        
+
         private void AxKHOpenAPI1_OnReceiveRealData(object sender, _DKHOpenAPIEvents_OnReceiveRealDataEvent e)
         {
             //종목코드,종목명,현재가10,전일대비11,등락율12,거래량15
@@ -428,7 +438,8 @@ namespace VeryGoodAuto
                             balanceDataGridView["잔고_평가금액", i].Value = String.Format("{0:###,#}", 평가금액);
                             balanceDataGridView["잔고_손익금액", i].Value = String.Format("{0:###,#}", 손익금액);
                             balanceDataGridView["잔고_손익율", i].Value = String.Format("{0:F2}", 손익율) + "%"; //소수 2자리.  flout?
-
+                           //???  미체결 리스트의 변경되는 값도 실시간으로 직접 바꿔줘야 하나? 내일 test
+                           
                             // 최고율만 저장하는 딕셔너리를 만들자.
                             if (balanceDataGridView["잔고_최고율", i].Value == null) //최고율에 값이 없다면
                             {
@@ -538,7 +549,7 @@ namespace VeryGoodAuto
                         }
                     }
 
-                    condigionItemDataGridView.Rows.Insert(0);
+                  
 
                    
                     if (현재가1 < 0)// - 부호를 없애기 위해 -현재가를 곱해  양수로 만든다.                   
@@ -546,7 +557,7 @@ namespace VeryGoodAuto
                    else       
                         현재가 = 현재가1;
 
-                    condigionItemDataGridView["조건종목_현재가", 0].Style.ForeColor = Color.Green;
+                    condigionItemDataGridView.Rows.Insert(0);                   
 
                     condigionItemDataGridView["조건종목_종목코드", 0].Value = 종목코드.Trim();
                     condigionItemDataGridView["조건종목_종목명", 0].Value = 종목명.Trim();
@@ -554,8 +565,9 @@ namespace VeryGoodAuto
                     condigionItemDataGridView["조건종목_전일대비", 0].Value = String.Format("{0:###,#}", 전일대비);
                     condigionItemDataGridView["조건종목_등락율", 0].Value = String.Format("{0:F2}", 등락율) + " %";
                     condigionItemDataGridView["조건종목_거래량", 0].Value = String.Format("{0:###,#}", 거래량);
-                    condigionItemDataGridView["조건종목_거래금", 0].Value = String.Format("{0:###,#}", 거래금);                  
-                       
+                    condigionItemDataGridView["조건종목_거래금", 0].Value = String.Format("{0:###,#}", 거래금);
+
+                    condigionItemDataGridView["조건종목_현재가", 0].Style.ForeColor = Color.Green;
 
                     if (전일대비 > 0)
                     {
@@ -588,8 +600,8 @@ namespace VeryGoodAuto
                                     int 예탁금 = 0;
                                     int 총1회매수금액 = (int)totalAmountNumericUpDown.Value;
                                    
-                                    if (int.Parse(예탁자산평가액Label.Text.ToString().Replace(",", "").Trim()) > 0)
-                                        예탁금 = int.Parse(예탁자산평가액Label.Text.ToString().Replace(",", "").Trim());                                
+                                    if (int.Parse(예탁자산평가액Label.Text.Replace(",", "").Trim()) > 0)
+                                        예탁금 = int.Parse(예탁자산평가액Label.Text.Replace(",", "").Trim());                                
                                                                                                         
                                     if ((총1회매수금액 > 0) && (현재가1 > 0) && (예탁금 > 총1회매수금액))
                                     {                                       
@@ -606,7 +618,9 @@ namespace VeryGoodAuto
                                             {
                                                 int 적정매수량 = 0;
                                                 if (isAdjustQuantityCheckBox.Checked) {
-                                                    적정매수량 = AdjustQuantity(매수할종목평균수량,매수량);
+                                                    int 예탁자산 = int.Parse(예탁자산평가액Label.Text.Replace(",","").Trim());
+                                                    int 예탁자산총매수량 = 예탁자산 / (int)현재가1;
+                                                    적정매수량 = AdjustQuantity(매수할종목평균수량, 예탁자산총매수량);
                                                     orderClassList.Add(new OrderClass("주식매수요청", 화면번호_주식매수요청,
                                                                                                accountComboBox.Text, 1, 종목코드.Trim(), 적정매수량, 0, "03", ""));
                                                 }
@@ -678,10 +692,10 @@ namespace VeryGoodAuto
                 try
                 {
                     #region  수동주문
-                    if (axKHOpenAPI1.GetChejanData(9001).Equals(String.Empty))
+                    if (axKHOpenAPI1.GetChejanData(905).Equals("+매수"))
                     {
                         string 주문번호 = axKHOpenAPI1.GetChejanData(9203).Trim();
-                        string 종목코드 = axKHOpenAPI1.GetChejanData(9001).Trim();
+                        string 종목코드 = axKHOpenAPI1.GetChejanData(9001).Replace("A","").Trim();
                         string 종목명 = axKHOpenAPI1.GetChejanData(302).Trim();
                         int 주문수량 = int.Parse(axKHOpenAPI1.GetChejanData(900).Trim());
                         int 미체결수량 = int.Parse(axKHOpenAPI1.GetChejanData(902).Trim());
@@ -691,17 +705,61 @@ namespace VeryGoodAuto
                         string 주문구분 = axKHOpenAPI1.GetChejanData(905).Trim();
                         string 시간 = axKHOpenAPI1.GetChejanData(908).Trim();
                         long 원주문번호 = long.Parse(axKHOpenAPI1.GetChejanData(904));
-                        Console.WriteLine("종목번호 :" + 주문번호);
-                        Console.WriteLine("종목코드 :" + 종목코드);
-                        Console.WriteLine("종목명 :" + 종목명);
-                        Console.WriteLine("주문수량 :" + 주문수량);
-                        Console.WriteLine("미체결수량 :" + 미체결수량);
-                        Console.WriteLine("주문가격 :" + 주문가격);
-                        Console.WriteLine("현재가 :" + 현재가);
-                        Console.WriteLine("체결가 :" + 체결가);
-                        Console.WriteLine("주문구분 :" + 주문구분);
-                        Console.WriteLine("원주문번호 :" + 원주문번호);
-                        Console.WriteLine("시간 :" + 시간);
+                       
+                        for(int i=0; i< balanceDataGridView.RowCount; i++)
+                        {
+                            if(balanceDataGridView["잔고_종목코드", i].Value.ToString().Equals(종목코드))
+                            {
+                                BalanceItem bi = balanceItemList.Find(o => o.종목코드 == 종목코드);
+                                //변화된 값을 입력한다.
+                                if (bi != null)
+                                {
+                                    bi.미체결수량 = 미체결수량;
+                                    bi.현재가 = 현재가;
+                                    bi.시간 = 시간;                                    
+                                }
+                                return;
+                            }
+                        }
+
+                        //balanceDataGridView 에 없다면.
+                        balanceItemList.Add(new BalanceItem(주문번호, 종목코드, 종목명, 주문수량, 주문가격, 미체결수량, 주문구분, 체결가, 현재가, 시간));
+
+                        balanceDataGridView.Rows.Clear();
+
+                        for(int i =0; i < balanceItemList.Count; i++)
+                        {                           
+                            BalanceItem bi = balanceItemList[i];
+                            balanceDataGridView.Rows.Add();
+
+                            balanceDataGridView["잔고_종목코드", i].Value = bi.주문번호;
+                            // outStandingDataGridView["잔고_평가금액", i].Value = osdi.평가금액;
+                            balanceDataGridView["잔고_종목명", i].Value = bi.종목명;
+                            balanceDataGridView["잔고_보유수량", i].Value = bi.주문수량;
+                            balanceDataGridView["잔고_평균단가", i].Value = bi.체결가;
+                            balanceDataGridView["잔고_현재가", i].Value = bi.현재가;
+                            balanceDataGridView["잔고_손익금액", i].Value = 0;
+                            balanceDataGridView["잔고_손익율", i].Value = 0;
+                            balanceDataGridView["잔고_최고율", i].Value = 0;
+                            balanceDataGridView["잔고_매입금액", i].Value = bi.주문가격;
+
+                            if (bi.미체결수량 > 0)
+                            {
+                                BalanceItem changeBi = changeOutStandingList.Find(o => o.종목코드 == bi.종목코드);
+                                if (changeBi != null)
+                                {
+                                    changeOutStandingList.Remove(changeBi);
+                                    changeOutStandingList.Add(bi);
+                                }
+                                else
+                                    changeOutStandingList.Add(bi);
+                            }
+                                
+                        }
+
+                        // 미체결 뷰에서 보여주기.
+                        outStandingDataGridView.Rows.Clear();
+                        outStandingDataGridView.DataSource = changeOutStandingList;
                     }
                     #endregion 수동주문
                 }
@@ -730,9 +788,10 @@ namespace VeryGoodAuto
                 당일손익율Label.Text = 당일손익율;
                 //당일손익율Label.Text = 당일실현손익률;
                 Console.WriteLine("----------------------------------------------------------");
-               // RequestAccountEstimation(); //잔고 요청 함수. //예수금,총매입금액,예탁자산평가액,당일투자손익,당일손익율
-             //   RequestOutStanding(); //미채결 요청 함수. -- ?? 필요 없다   실시간으로 남은수치를 보여주니까. 처음1회 만보여주고 나머진 x
-                //RequestRealizationProfit(); //일자별 수익율.-단순한 손익만 보여주는 것으로 처음1회만 보여주고 후엔 실시간 로딩.
+                
+                RequestAccountEstimation(); //잔고 요청 함수. //예수금,총매입금액,예탁자산평가액,당일투자손익,당일손익율
+               RequestOutStanding(); //미채결 요청 함수. -- ?? 필요 없다   실시간으로 남은수치를 보여주니까. 처음1회 만보여주고 나머진 x
+               // RequestRealizationProfit(); //일자별 수익율.-단순한 손익만 보여주는 것으로 처음1회만 보여주고 후엔 실시간 로딩.
             }
         }
 
@@ -853,7 +912,7 @@ namespace VeryGoodAuto
                             //미체결 요청.
                             RequestOutStanding();
                             //일자별 수익율.
-                           // RequestRealizationProfit();
+                            RequestRealizationProfit();
                           // axKHOpenAPI1.SetRealReg(현재_스크린번호,"990","990",)
                             int result = axKHOpenAPI1.SendCondition(화면번호_조건검색, 현재_석택된_조건식명, 현재_선택된_조건식번호, 1);                         
 
@@ -1014,7 +1073,7 @@ namespace VeryGoodAuto
                     int 현재가 = int.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "현재가"));
                     string 시간 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "시간").Trim(); ;
 
-                    //outstandingOrderList.Add(new OutstandingOrder(주문번호,종목코드,종목명,주문수량,주문가격,미체결수량, 주문구분,체결가,현재가,시간));
+                    balanceItemList.Add(new BalanceItem(주문번호,종목코드,종목명,주문수량,주문가격,미체결수량, 주문구분,체결가,현재가,시간));
                    
                     outStandingDataGridView.Rows.Add();//생성
                     outStandingDataGridView["미체결_주문번호", i].Value = 주문번호;
@@ -1325,6 +1384,7 @@ namespace VeryGoodAuto
                 axKHOpenAPI1.SetInputValue("종료일자", DateTime.Now.ToString("yyyyMMdd"));
 
                 axKHOpenAPI1.CommRqData("일자별실현손익", "opt10074", 0, 화면번호_일자별실현손익);
+                //axKHOpenAPI1.CommRqData("일자별실현손익", "opt10074", 2, 화면번호_일자별실현손익);
             }
         }
         /// <summary>
@@ -1340,6 +1400,7 @@ namespace VeryGoodAuto
                 axKHOpenAPI1.SetInputValue("비밀번호입력매체구분", "00");
 
                 axKHOpenAPI1.CommRqData("계좌평가현황요청", "OPW00004", 0, 화면번호_계좌평가현황요청);
+                //axKHOpenAPI1.CommRqData("계좌평가현황요청", "OPW00004", 2, 화면번호_계좌평가현황요청);
             }
         }
         //https://goni9071.tistory.com/262
@@ -1357,6 +1418,7 @@ namespace VeryGoodAuto
                 axKHOpenAPI1.SetInputValue("매매구분", "0");//전체:0  매도:1 매수:2
 
                 axKHOpenAPI1.CommRqData("실시간미체결요청", "opt10075", 0, 화면번호_실시간미체결요청);
+                //axKHOpenAPI1.CommRqData("실시간미체결요청", "opt10075", 2, 화면번호_실시간미체결요청);
             }
         }
 
@@ -1392,8 +1454,7 @@ namespace VeryGoodAuto
             {
                 if (condigionItemDataGridView["조건종목_종목코드", i].Value.ToString().Trim() == 저장삭제코드.Trim())
                 {
-                    condigionItemDataGridView.Rows.RemoveAt(i); 
-                   // Console.WriteLine("종목명 :" + axKHOpenAPI1.GetMasterCodeName(저장삭제코드) + "2 쓰래드 삭제");
+                    condigionItemDataGridView.Rows.RemoveAt(i);                    
                     break;
                 }
             }
@@ -1506,7 +1567,7 @@ namespace VeryGoodAuto
     /// <summary>
     /// 미체결 잔고 묶음.
     /// </summary>
-    public class OutstandingOrder
+    public class BalanceItem
     {
         public string 주문번호;
         public string 종목코드;
@@ -1519,7 +1580,7 @@ namespace VeryGoodAuto
         public int 현재가;
         public string 시간;
 
-        public OutstandingOrder(string 주문번호, string 종목코드, string 종목명, int 주문수량, int 주문가격,
+        public BalanceItem(string 주문번호, string 종목코드, string 종목명, int 주문수량, int 주문가격,
             int 미체결수량, string 주문구분, int 체결가, int 현재가, string 시간)
         {
           this. 주문번호= 주문번호;
