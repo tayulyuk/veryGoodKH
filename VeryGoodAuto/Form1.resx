@@ -131,85 +131,87 @@
   <metadata name="조건식_조건식명.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <metadata name="조건종목_종목코드.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <metadata name="조건식_조건번호.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <metadata name="조건종목_종목명.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <metadata name="조건식_조건식명.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <metadata name="조건종목_현재가.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="조건종목_전일대비.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="조건종목_등락율.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="조건종목_거래량.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="조건종목_거래금.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="미체결_주문번호.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="미체결_종목코드.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="미체결_종목명.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="미체결_주문수량.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="미체결_주문가격.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="미체결_미체결수량.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="미체결_주문구분.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="미체결_체결가.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="미체결_현재가.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="미체결_시간.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="잔고_종목코드.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="잔고_평가금액.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="잔고_종목명.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="잔고_보유수량.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="잔고_평균단가.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="잔고_현재가.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="잔고_손익금액.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="잔고_손익율.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="잔고_최고율.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="잔고_매입금액.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAEAICAAAAEAIACoEAAAFgAAACgAAAAgAAAAQAAAAAEAIAAAAAAAABAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAABwAA
+        AAcAAAAHAAAABwAAAAcAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        ABsIEwSmFjMKtxYzCrcWNAq3ESgItwIFAW0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAJho8DOtGoh//R6Ug/0inIP83gRn/BxADmgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAmHEEN50uvIv9MsiL/TbQj/zyLG/8HEQOXAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACYcQQznS64i/0yxIv9NsyL/O4ob/wcRA5cAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJhxBDOdLriL/TLEi/02zIv87ihv/BxEDlwAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        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
+        EAGACBAB//gf///4H///+B////////////8=
+</value>
+  </data>
 </root>

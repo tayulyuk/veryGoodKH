@@ -56,7 +56,7 @@ namespace VeryGoodAuto
         /// <summary>
         /// 잔고에서 미체결 리스트를 별도 관리 저장.
         /// </summary>
-        List<BalanceItem> changeOutStandingList;
+        List<OutStanding> outStandingList;
 
         /// <summary>
         /// Text  입력시 코드를 반환하기 위해 만든 list.
@@ -76,11 +76,13 @@ namespace VeryGoodAuto
 
         public string 삭제코드 = "";
 
+        //Thread autoViews;
         Thread startThead; // 무한 while 하면서 삭제할 종목이 있다면 계속 삭제하는 일만 한다.
         Thread orderClassManagerThread; // 매수와 매도가 orderClassList에 있다면 무조건 실행해라. 제한 넘지 않게.
 
         public List<string> deleteCode;// 삭제할 종목
         public List<OrderClass> orderClassList; // 매수와 매도를 함깨 동기화하여 시간제한 1초/4회 를 넘지 안게 관리한다.
+        public List<StockItemObject> conditionViewList; // 단순 컨디션 뷰 보여주기위한 목록,
         /// <summary>
         /// 실시간으로 받아오는 매수평균치 -> 매도시 언제라도 팔수 있는 량을 매수에 사용한다.
         /// </summary>
@@ -95,10 +97,12 @@ namespace VeryGoodAuto
         {
             InitializeComponent();
 
-            conditionList = new List<ConditionObject>();
+            conditionList = new List<ConditionObject>();// 조건검색식에 따른 항목리스트
+
+            conditionViewList = new List<StockItemObject>(); //실시간창에 리스트를 보여준다.
             itemInfoList = new List<ItemInfo>(); // 주식명 검색을 위한 리스트.
             balanceItemList = new List<BalanceItem>();// 잔고와 미체결 관리를 한다.
-            changeOutStandingList = new List<BalanceItem>();
+            outStandingList = new List<OutStanding>();
 
 
             lockThis = new object(); // lock
@@ -144,11 +148,55 @@ namespace VeryGoodAuto
             cancelButton.Click += ManualButton_Click;
 
             searchButton.Click += ManualButton_Click;
-            outStandingDataGridView.SelectionChanged += DataGridView_SelectedChanged;
-            balanceDataGridView.SelectionChanged += DataGridView_SelectedChanged;
+
+            outStandingDataGridView.CellContentClick += DataGridView_SelectedBalanceDataGridView;
+            balanceDataGridView.CellContentClick += DataGridView_SelectedBalanceDataGridView;
+
             #endregion 수동모드
         }
 
+
+        private void DataGridView_SelectedBalanceDataGridView(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                if (sender.Equals(balanceDataGridView))
+                {
+                    string code = this.balanceDataGridView.Rows[e.RowIndex].Cells[0].Value.ToString();
+                    BalanceItem bi = balanceItemList.Find(o => o.종목코드 == code.Trim());
+                    if (bi != null)
+                    {
+                        tradeOptionComboBox.Text = "매도";
+
+                        itemCodeTextBox.Text = bi.종목코드;
+                        itemNameLabel.Text = bi.종목명;
+                        amountManulNumericUpDown.Value = decimal.Parse(bi.보유수량.ToString());
+                        priceManualNumericUpDown.Value = decimal.Parse(bi.현재가.ToString());
+                    }
+                }
+                else if (sender.Equals(outStandingDataGridView))
+                {
+                    string code = this.outStandingDataGridView.Rows[e.RowIndex].Cells[1].Value.ToString();
+                    OutStanding os = outStandingList.Find(o => o.종목코드 == code.Trim());
+                    if (os != null)
+                    {
+                        string 주문구분 = os.주문구분.Replace("+", "").Replace("-", "");
+                        if (주문구분.Length >= 2)
+                            tradeOptionComboBox.Text = os.주문구분.Substring(0, 2);
+
+                        originOrderNumtextBox.Text = os.주문번호;
+                        itemCodeTextBox.Text = os.종목코드;
+                        itemNameLabel.Text = os.종목명;
+                        amountManulNumericUpDown.Value = int.Parse(os.미체결수량.ToString());
+                        priceManualNumericUpDown.Value = int.Parse(os.주문가격.ToString());
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message.ToString() + "199");
+            }
+        }
         /// <summary>
         /// 삭제 종목을 확인하여 계속 삭제하는 일만 한다.
         /// </summary>
@@ -197,75 +245,6 @@ namespace VeryGoodAuto
                         t.Join();
                     }
                 }
-            }
-        }
-
-
-        /// <summary>
-        /// 미체결 리스트트 클릭시 시행 함수.
-        /// </summary>     
-        private void DataGridView_SelectedChanged(object sender, EventArgs e)
-        {
-            if (sender.Equals(outStandingDataGridView))
-            {
-                try
-                {                   
-                    if (outStandingDataGridView.SelectedCells.Count > 0)// 클릭시.
-                    {                       
-                        int selectedRowIndex = outStandingDataGridView.SelectedCells[0].RowIndex;
-                        if (outStandingDataGridView["미체결_주문번호", selectedRowIndex].Value != null)
-                        {
-                            string 주문번호 = outStandingDataGridView["미체결_주문번호", selectedRowIndex].Value.ToString();
-                            string 종목코드 = outStandingDataGridView["미체결_종목코드", selectedRowIndex].Value.ToString();
-                            string 종목명 = outStandingDataGridView["미체결_종목명", selectedRowIndex].Value.ToString();
-                            string 미체결수량 = outStandingDataGridView["미체결_미체결수량", selectedRowIndex].Value.ToString();
-                            string 주문가격 = outStandingDataGridView["미체결_주문가격", selectedRowIndex].Value.ToString();
-                            string 주문구분 = outStandingDataGridView["미체결_주문구분", selectedRowIndex].Value.ToString();
-
-                            주문구분 = 주문구분.Replace("+", "").Replace("-", "");
-                            if (주문구분.Length >= 2)
-                                tradeOptionComboBox.Text = 주문구분.Substring(0, 2);
-
-                            originOrderNumtextBox.Text = 주문번호;
-                            itemCodeTextBox.Text = 종목코드;
-                            itemNameLabel.Text = 종목명;
-                            amountManulNumericUpDown.Value = int.Parse(미체결수량);
-                            priceManualNumericUpDown.Value = int.Parse(주문가격);
-                        }
-                    }
-                }catch(Exception exception)
-                {
-                    Console.WriteLine(exception.Message.ToString()+"201");
-                }
-            }
-            else if (sender.Equals(balanceDataGridView)) //잔고 리스트 클릭시 매도할수 있도록.
-            {                
-                try
-                {
-                    if (balanceDataGridView.SelectedCells.Count > 0)// 클릭시.
-                    {
-                        int selectedRowIndex = balanceDataGridView.SelectedCells[0].RowIndex;
-                      
-                        if (balanceDataGridView["잔고_종목코드", selectedRowIndex].Value != null) // 시작과 동시에 호출 되서 null 을 인식한다.
-                        {
-                            string 종목코드 = balanceDataGridView["잔고_종목코드", selectedRowIndex].Value.ToString();
-                            string 종목명 = balanceDataGridView["잔고_종목명", selectedRowIndex].Value.ToString();
-                            string 보유수량 = balanceDataGridView["잔고_보유수량", selectedRowIndex].Value.ToString();
-                            string 현재가격 = balanceDataGridView["잔고_현재가", selectedRowIndex].Value.ToString();
-                            tradeOptionComboBox.Text = "매도";
-
-                            itemCodeTextBox.Text = 종목코드;
-                            itemNameLabel.Text = 종목명;
-                            amountManulNumericUpDown.Value = decimal.Parse(보유수량.Trim());
-                            priceManualNumericUpDown.Value = decimal.Parse(현재가격.Trim());
-                        }
-                    }
-                }
-                catch (Exception exception)
-                {
-                    Console.WriteLine(exception.Message.ToString() +"229");
-                }
-                balanceDataGridView.ClearSelection(); // 첫 line index 되는것을 막는다.
             }
         }
 
@@ -371,10 +350,9 @@ namespace VeryGoodAuto
         private void AxKHOpenAPI1_OnReceiveRealData(object sender, _DKHOpenAPIEvents_OnReceiveRealDataEvent e)
         {
             //종목코드,종목명,현재가10,전일대비11,등락율12,거래량15
-            //List에 키값을 찾아 항목의 값을 변경해라. 
             //string 종목코드 = e.sRealKey;     
             //예수금951/손익율8019/당일실현손익990/당일신현손익율991/
-            // [ opw00018 : 계좌평가잔고내역요청 ]
+         
             if (!저장타입.Equals(e.sRealType))
             {
                 저장타입 = e.sRealType;
@@ -410,123 +388,335 @@ namespace VeryGoodAuto
                 double 등락율 = double.Parse(axKHOpenAPI1.GetCommRealData(e.sRealKey, 12).Trim());
                 long 거래량 = long.Parse(axKHOpenAPI1.GetCommRealData(e.sRealKey, 13).Trim());
                 long 거래금 = long.Parse(axKHOpenAPI1.GetCommRealData(e.sRealKey, 14).Trim());
+                long 보유수량 = 0; // 처음 감시 되면 무조건 보유수량은 없으니까.
 
-               
                 try
                 {
                     long 현재가 = 0;
-                    for (int i = 0; i < balanceDataGridView.RowCount; i++)
+                    if (현재가1 < 0)// - 부호를 없애기 위해 -현재가를 곱해  양수로 만든다.                          
+                        현재가 = -현재가1;
+
+                    BalanceItem bi = balanceItemList.Find(o => o.종목코드.Equals(종목코드));
+                    if (bi != null)
                     {
-                        if ( balanceDataGridView["잔고_종목코드", i].Value.ToString().Equals(종목코드))
+                        Console.WriteLine("있다");
+                        bi.현재가 = 현재가;
+
+                        long 평가금액 = bi.보유수량 * 현재가; //  -(세금 + 수수료)
+
+                        bi.손익금액 = 평가금액 - bi.매수금;
+                        bi.손익율 = 100 * (평가금액 - bi.매수금) / (double) bi.매수금;
+
+                        if (bi.손익율 > bi.최고율)
+                            bi.최고율 = bi.손익율;
+
+                        //  보여줌.
+                        balanceDataGridView.DataSource = null;
+                        balanceDataGridView.DataSource = balanceItemList;
+                        balanceDataGridView.CurrentRow.Selected = false;
+
+                        if (isTrading) //시작버튼 활성시.
                         {
-                            // int 현재가 = int.Parse(axKHOpenAPI1.GetCommRealData(e.sRealType, 10));
-                            if (현재가1 < 0)// - 부호를 없애기 위해 -현재가를 곱해  양수로 만든다.                          
-                                현재가 = -현재가1;                            
-                            else                           
-                                현재가 = 현재가1;
-
-                            balanceDataGridView["잔고_현재가", i].Style.ForeColor = Color.Green;                          
-
-                            int 보유수량 = int.Parse(balanceDataGridView["잔고_보유수량", i].Value.ToString().Replace(",", ""));
-                            long 매입금액 = long.Parse(balanceDataGridView["잔고_매입금액", i].Value.ToString().Replace(",", ""));
-
-                            long 평가금액 = 보유수량 * 현재가;//  -(세금 + 수수료)
-                            long 손익금액 = 평가금액 - 매입금액;
-                            double 손익율 = 100 * (평가금액 - 매입금액) / (double)매입금액; // long / long = 정수이므로 일부러 double 변환
-
-                            balanceDataGridView["잔고_현재가", i].Value = String.Format("{0:###,#}", 현재가);
-                            balanceDataGridView["잔고_평가금액", i].Value = String.Format("{0:###,#}", 평가금액);
-                            balanceDataGridView["잔고_손익금액", i].Value = String.Format("{0:###,#}", 손익금액);
-                            balanceDataGridView["잔고_손익율", i].Value = String.Format("{0:F2}", 손익율) + "%"; //소수 2자리.  flout?
-                           //???  미체결 리스트의 변경되는 값도 실시간으로 직접 바꿔줘야 하나? 내일 test
-                           
-                            // 최고율만 저장하는 딕셔너리를 만들자.
-                            if (balanceDataGridView["잔고_최고율", i].Value == null) //최고율에 값이 없다면
+                            if (isTrailingStopCheckBox.Checked)
                             {
-                                if (!highestRate.ContainsKey(종목코드))
+                                // double 최고치 = 0;
+                                // if (highestRate.ContainsKey(종목코드))
+                                // 최고치 = highestRate[종목코드];
+
+                                if (2 < bi.최고율)
                                 {
-                                    highestRate.Add(종목코드, 손익율);
-                                }                              
-                               // balanceDataGridView["잔고_최고율", i].Value = String.Format("{0:F2}", 손익율);
-                            }
-                            else //최고율에 값이 있다면.
-                            {
-                                if (highestRate.ContainsKey(종목코드))
-                                {
-                                    double 저장최고율 = highestRate[종목코드];
-                                    if (손익율 > 저장최고율)
-                                        highestRate[종목코드] = 손익율;
-                                }
-                                else                                 
-                                    highestRate.Add(종목코드, 손익율);                             
-                            }
 
-                            balanceDataGridView["잔고_최고율", i].Value = String.Format("{0:F2}", highestRate[종목코드]);
-                            balanceDataGridView["잔고_최고율", i].Style.ForeColor = Color.DarkViolet;
-
-                            if (isTrading) //시작버튼 활성시.
-                            {
-                                if (isTrailingStopCheckBox.Checked)
-                                {
-                                    double 최고치 = 0;
-                                    if (highestRate.ContainsKey(종목코드))
-                                         최고치 = highestRate[종목코드];
-
-                                     if (2 < 최고치)
-                                    {
-
-                                        if (손익율 < (최고치 - 1))
-                                        {
-                                            orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
-                                                                                          accountComboBox.Text, 2, 종목코드.Trim(), 보유수량, 0, "03", ""));
-
-                                            insertListBox.SelectedIndex = insertListBox.Items.Count - 1;// 첫 line으로 항상 이동
-                                        }
-                                    }
-                                    else if (( 0.5 <= 최고치) && (최고치 < 2))
-                                    {
-                                        if (손익율 < (최고치 - 0.5f))
-                                        {
-                                            orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
-                                                                                          accountComboBox.Text, 2, 종목코드.Trim(), 보유수량, 0, "03", ""));
-
-                                            insertListBox.SelectedIndex = insertListBox.Items.Count - 1;// 첫 line으로 항상 이동
-                                        }
-                                    }                                    
-                                }
-                                //수익매매 처리
-                                else if (takeProfitCheckBox.Checked)
-                                {
-                                    double takeProfit = (double)takeProfitNumericUpDown.Value;
-                                    if (손익율 >= takeProfit)
+                                    if (bi.손익율 < (bi.최고율 - 1))
                                     {
                                         orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
-                                                                                           accountComboBox.Text, 2, 종목코드.Trim(), 보유수량, 0, "03", ""));
+                                            accountComboBox.Text, 2, 종목코드.Trim(), (int) bi.보유수량, 0, "03", ""));
 
-                                        insertListBox.SelectedIndex = insertListBox.Items.Count - 1;// 첫 line으로 항상 이동
+                                        insertListBox.SelectedIndex = insertListBox.Items.Count - 1; // 첫 line으로 항상 이동
                                     }
                                 }
-                                //손절 처리
-                                if (stopLossChheckBox.Checked)
+                                else if ((0.5 <= bi.최고율) && (bi.최고율 < 2))
                                 {
-                                    double stopLoss = (double)stopLossNumericUpDown.Value;
-                                    if (손익율 <= stopLoss)
+                                    if (bi.손익율 < (bi.최고율 - 0.5f))
                                     {
                                         orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
-                                                                                             accountComboBox.Text, 2, 종목코드.Trim(), 보유수량, 0, "03", ""));
-                                        insertListBox.SelectedIndex = insertListBox.Items.Count - 1;// 첫 line으로 항상 이동
+                                            accountComboBox.Text, 2, 종목코드.Trim(), (int) bi.보유수량, 0, "03", ""));
+
+                                        insertListBox.SelectedIndex = insertListBox.Items.Count - 1; // 첫 line으로 항상 이동
                                     }
                                 }
                             }
-                            return;
+                            //수익매매 처리
+                            else if (takeProfitCheckBox.Checked)
+                            {
+                                double takeProfit = (double) takeProfitNumericUpDown.Value;
+                                if (bi.손익율 >= takeProfit)
+                                {
+                                    orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                        accountComboBox.Text, 2, 종목코드.Trim(), (int) bi.보유수량, 0, "03", ""));
+
+                                    insertListBox.SelectedIndex = insertListBox.Items.Count - 1; // 첫 line으로 항상 이동
+                                }
+                            }
+
+                            //손절 처리
+                            if (stopLossChheckBox.Checked)
+                            {
+                                double stopLoss = (double) stopLossNumericUpDown.Value;
+                                if (bi.손익율 <= stopLoss)
+                                {
+                                    orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                        accountComboBox.Text, 2, 종목코드.Trim(), (int) bi.보유수량, 0, "03", ""));
+                                    insertListBox.SelectedIndex = insertListBox.Items.Count - 1; // 첫 line으로 항상 이동
+                                }
+                            }
+                        }
+
+                        balanceDataGridView.CurrentRow.Selected = false; //cosor
+
+                        //Color
+                        for (int i = 0; i < balanceDataGridView.RowCount; i++)
+                        {
+                            // 손익금액  값 비교.
+                            int val = int.Parse(balanceDataGridView.Rows[i].Cells[5].Value.ToString());
+                            // Console.WriteLine("val :" + val);
+                            if (val > 0)
+                            {
+                                balanceDataGridView.Rows[i].Cells[5].Style.ForeColor = Color.Red;
+                                balanceDataGridView.Rows[i].Cells[6].Style.ForeColor = Color.Red;
+                            }
+                            else if (val < 0)
+                            {
+                                balanceDataGridView.Rows[i].Cells[5].Style.ForeColor = Color.Blue;
+                                balanceDataGridView.Rows[i].Cells[6].Style.ForeColor = Color.Blue;
+                            }
+                            else
+                            {
+                                balanceDataGridView.Rows[i].Cells[5].Style.ForeColor = Color.Black;
+                                balanceDataGridView.Rows[i].Cells[6].Style.ForeColor = Color.Black;
+                            }
+
+                            balanceDataGridView.Rows[i].Cells[7].Style.ForeColor = Color.DarkViolet; //최고율
+                        }
+                    }
+                    else
+                    {
+                        //조건식에 맞는    리스트를 
+                        // conditionGridView 에 보여준다.
+                        StockItemObject sio = conditionViewList.Find(o => o.종목코드 == 종목코드);
+                        if (sio != null) // 입력되고 있는 조건식번호 입력  
+                        {
+                            Console.WriteLine("없 다");
+
+                            sio.현재가 = 현재가;
+                            sio.거래금 = 거래금;
+                            sio.거래량 = 거래량;
+                            sio.등락율 = 등락율;
+                            sio.전일대비 = 전일대비;
+                            conditionItemDataGridView.DataSource = null;
+                            conditionItemDataGridView.DataSource = conditionViewList;
+                        }
+                        else
+                        {
+                            Console.WriteLine("없 다   =============");
+                            conditionViewList.Add(new StockItemObject(종목코드, 종목명, 현재가, 전일대비, 등락율, 거래량, 거래금));
+                            conditionItemDataGridView.DataSource = null;
+                            conditionItemDataGridView.DataSource = conditionViewList;
+                        }
+
+                        conditionItemDataGridView.CurrentRow.Selected = false;
+                        //Color
+                        for (int i = 0; i < conditionItemDataGridView.RowCount; i++)
+                        {
+                            // 전일대비  값 비교.
+                            int val = int.Parse(conditionItemDataGridView.Rows[i].Cells[3].Value.ToString());
+                            // Console.WriteLine("val :" + val);
+                            if (val > 0)
+                            {
+                                conditionItemDataGridView.Rows[i].Cells[4].Style.ForeColor = Color.Red;
+                                conditionItemDataGridView.Rows[i].Cells[3].Style.ForeColor = Color.Red;
+                            }
+                            else if (val < 0)
+                            {
+                                conditionItemDataGridView.Rows[i].Cells[4].Style.ForeColor = Color.Blue;
+                                conditionItemDataGridView.Rows[i].Cells[3].Style.ForeColor = Color.Blue;
+                            }
+                            else
+                            {
+                                conditionItemDataGridView.Rows[i].Cells[4].Style.ForeColor = Color.Black;
+                                conditionItemDataGridView.Rows[i].Cells[3].Style.ForeColor = Color.Black;
+                            }
+                        }
+
+                        //매수  시작--
+                        if (isTrading)
+                        {
+                            if (buyConditionCheckBox.Checked)
+                            {
+                                if (buyConditionComboBox.Text.Equals(현재_석택된_조건식명))
+                                {
+                                    //해당 종목코드 자동매수 요청.
+                                    if (accountComboBox.Text.Length > 0)
+                                    {
+                                        int 예탁금 = 0;
+                                        int 총1회매수금액 = (int)totalAmountNumericUpDown.Value;
+
+                                        if (int.Parse(예탁자산평가액Label.Text.Replace(",", "").Trim()) > 0)
+                                            예탁금 = int.Parse(예탁자산평가액Label.Text.Replace(",", "").Trim());
+
+                                        if ((총1회매수금액 > 0) && (현재가1 > 0) && (예탁금 > 총1회매수금액))
+                                        {
+                                            int 매수량 = 총1회매수금액 / (int)현재가1;
+
+                                            if (매수량 > 0)
+                                            {
+                                                //이미 매수한 같은 종목이 있는가 확인. -> balanceDataGridView
+                                                if (BalanceListCheck(종목코드.Trim()))
+                                                {
+                                                    insertListBox.Items.Add("=이미보유종목= 조건식명 : " + 현재_석택된_조건식명 + " 종목명 :" + 종목명);
+                                                }
+                                                else
+                                                {
+                                                    int 적정매수량 = 0;
+                                                    if (isAdjustQuantityCheckBox.Checked)
+                                                    {
+                                                        int 예탁자산 = int.Parse(예탁자산평가액Label.Text.Replace(",", "").Trim());
+                                                        int 예탁자산총매수량 = 예탁자산 / (int)현재가1;
+                                                        적정매수량 = AdjustQuantity(매수할종목평균수량, 예탁자산총매수량);
+                                                        orderClassList.Add(new OrderClass("주식매수요청", 화면번호_주식매수요청,
+                                                                                                   accountComboBox.Text, 1, 종목코드.Trim(), 적정매수량, 0, "03", ""));
+                                                    }
+                                                    else
+                                                        orderClassList.Add(new OrderClass("주식매수요청", 화면번호_주식매수요청,
+                                                                                                accountComboBox.Text, 1, 종목코드.Trim(), 매수량, 0, "03", ""));
+                                                }
+                                                insertListBox.SelectedIndex = insertListBox.Items.Count - 1;// 첫 line으로 항상 이동
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("1회 매수 비용이 작습니다");
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
 
-                   현재가 = 0;
-                    for (int i = 0; i < condigionItemDataGridView.RowCount; i++)
+                    /* 
+                                      // for (int i = 0; i < balanceDataGridView.RowCount; i++)
+                                     // {
+                                       //   if ( balanceDataGridView["잔고_종목코드", i].Value.ToString().Equals(종목코드))
+                                      //    {
+                                              // int 현재가 = int.Parse(axKHOpenAPI1.GetCommRealData(e.sRealType, 10));
+                                           if (현재가1 < 0)// - 부호를 없애기 위해 -현재가를 곱해  양수로 만든다.                          
+                                                  현재가 = -현재가1;                            
+                                              else                           
+                                                  현재가 = 현재가1;
+
+                                              balanceDataGridView["잔고_현재가", i].Style.ForeColor = Color.Green;                          
+
+                                              int 보유수량 = int.Parse(balanceDataGridView["잔고_보유수량", i].Value.ToString().Replace(",", ""));
+                                              long 매입금액 = long.Parse(balanceDataGridView["잔고_매입금액", i].Value.ToString().Replace(",", ""));
+
+                                              long 평가금액 = 보유수량 * 현재가;//  -(세금 + 수수료)
+                                              long 손익금액 = 평가금액 - 매입금액;
+                                              double 손익율 = 100 * (평가금액 - 매입금액) / (double)매입금액; // long / long = 정수이므로 일부러 double 변환
+
+
+                                              balanceDataGridView["잔고_현재가", i].Value = String.Format("{0:###,#}", 현재가);
+                                              balanceDataGridView["잔고_평가금액", i].Value = String.Format("{0:###,#}", 평가금액);
+                                              balanceDataGridView["잔고_손익금액", i].Value = String.Format("{0:###,#}", 손익금액);
+                                              balanceDataGridView["잔고_손익율", i].Value = String.Format("{0:F2}", 손익율) + "%"; //소수 2자리.  flout?
+                                             //???  미체결 리스트의 변경되는 값도 실시간으로 직접 바꿔줘야 하나? 내일 test
+
+                                              // 최고율만 저장하는 딕셔너리를 만들자.
+                                              if (balanceDataGridView["잔고_최고율", i].Value == null) //최고율에 값이 없다면
+                                              {
+                                                  if (!highestRate.ContainsKey(종목코드))
+                                                  {
+                                                      highestRate.Add(종목코드, 손익율);
+                                                  }                              
+                                                 // balanceDataGridView["잔고_최고율", i].Value = String.Format("{0:F2}", 손익율);
+                                              }
+                                              else //최고율에 값이 있다면.
+                                              {
+                                                  if (highestRate.ContainsKey(종목코드))
+                                                  {
+                                                      double 저장최고율 = highestRate[종목코드];
+                                                      if (손익율 > 저장최고율)
+                                                          highestRate[종목코드] = 손익율;
+                                                  }
+                                                  else                                 
+                                                      highestRate.Add(종목코드, 손익율);                             
+                                              }
+
+                                              balanceDataGridView["잔고_최고율", i].Value = String.Format("{0:F2}", highestRate[종목코드]);
+                                              balanceDataGridView["잔고_최고율", i].Style.ForeColor = Color.DarkViolet;
+
+                                              if (isTrading) //시작버튼 활성시.
+                                              {
+                                                  if (isTrailingStopCheckBox.Checked)
+                                                  {
+                                                     // double 최고치 = 0;
+                                                     // if (highestRate.ContainsKey(종목코드))
+                                                          // 최고치 = highestRate[종목코드];
+
+                                                       if (2 < bi.최고율)
+                                                      {
+
+                                                          if (bi.손익율 < (bi.최고율 - 1))
+                                                          {
+                                                              orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                                                                                            accountComboBox.Text, 2, 종목코드.Trim(), (int)bi.보유수량, 0, "03", ""));
+
+                                                              insertListBox.SelectedIndex = insertListBox.Items.Count - 1;// 첫 line으로 항상 이동
+                                                          }
+                                                      }
+                                                      else if (( 0.5 <= bi.최고율) && (bi.최고율 < 2))
+                                                      {
+                                                          if (bi.손익율 < (bi.최고율 - 0.5f))
+                                                          {
+                                                              orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                                                                                            accountComboBox.Text, 2, 종목코드.Trim(), (int)bi.보유수량, 0, "03", ""));
+
+                                                              insertListBox.SelectedIndex = insertListBox.Items.Count - 1;// 첫 line으로 항상 이동
+                                                          }
+                                                      }                                    
+                                                  }
+                                                  //수익매매 처리
+                                                  else if (takeProfitCheckBox.Checked)
+                                                  {
+                                                      double takeProfit = (double)takeProfitNumericUpDown.Value;
+                                                      if (bi.손익율 >= takeProfit)
+                                                      {
+                                                          orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                                                                                             accountComboBox.Text, 2, 종목코드.Trim(), (int)bi.보유수량, 0, "03", ""));
+
+                                                          insertListBox.SelectedIndex = insertListBox.Items.Count - 1;// 첫 line으로 항상 이동
+                                                      }
+                                                  }
+                                                  //손절 처리
+                                                  if (stopLossChheckBox.Checked)
+                                                  {
+                                                      double stopLoss = (double)stopLossNumericUpDown.Value;
+                                                      if (bi.손익율 <= stopLoss)
+                                                      {
+                                                          orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                                                                                               accountComboBox.Text, 2, 종목코드.Trim(), (int)bi.보유수량, 0, "03", ""));
+                                                          insertListBox.SelectedIndex = insertListBox.Items.Count - 1;// 첫 line으로 항상 이동
+                                                      }
+                                                  }
+                                              }
+                                            //  return;
+                                         // }
+                                     // }
+                                        */
+                    /*
+                    현재가 = 0;
+                    for (int i = 0; i < conditionItemDataGridView.RowCount; i++)
                     {
 
-                        if (condigionItemDataGridView["조건종목_종목코드", i].Value.ToString().Equals(종목코드.Trim()))
+                        if (conditionItemDataGridView["조건종목_종목코드", i].Value.ToString().Equals(종목코드.Trim()))
                         {
                             // condigionItemDataGridView["조건종목_종목코드", i].Value = 종목코드.Trim();
                             // condigionItemDataGridView["조건종목_종목명", i].Value = 종목명.Trim();
@@ -536,15 +726,15 @@ namespace VeryGoodAuto
                             else                         
                                 현재가 = 현재가1;
 
-                            condigionItemDataGridView["조건종목_현재가", i].Style.ForeColor = Color.Green;
+                            conditionItemDataGridView["조건종목_현재가", i].Style.ForeColor = Color.Green;
                         
-                            condigionItemDataGridView["조건종목_현재가", i].Value = String.Format("{0:###,#}", 현재가);
-                            condigionItemDataGridView["조건종목_전일대비", i].Value = String.Format("{0:###,#}", 전일대비);
-                            condigionItemDataGridView["조건종목_등락율", i].Value = String.Format("{0:F2}", 등락율) + " %";
-                            condigionItemDataGridView["조건종목_거래량", i].Value = String.Format("{0:###,#}", 거래량);
-                            condigionItemDataGridView["조건종목_거래금", i].Value = String.Format("{0:###,#}", 거래금);
+                            conditionItemDataGridView["조건종목_현재가", i].Value = String.Format("{0:###,#}", 현재가);
+                            conditionItemDataGridView["조건종목_전일대비", i].Value = String.Format("{0:###,#}", 전일대비);
+                            conditionItemDataGridView["조건종목_등락율", i].Value = String.Format("{0:F2}", 등락율) + " %";
+                            conditionItemDataGridView["조건종목_거래량", i].Value = String.Format("{0:###,#}", 거래량);
+                            conditionItemDataGridView["조건종목_거래금", i].Value = String.Format("{0:###,#}", 거래금);
 
-                            condigionItemDataGridView.ClearSelection(); // 첫 line index 되는것을 막는다.
+                            conditionItemDataGridView.ClearSelection(); // 첫 line index 되는것을 막는다.
                             return;
                         }
                     }
@@ -557,35 +747,35 @@ namespace VeryGoodAuto
                    else       
                         현재가 = 현재가1;
 
-                    condigionItemDataGridView.Rows.Insert(0);                   
+                    conditionItemDataGridView.Rows.Insert(0);                   
 
-                    condigionItemDataGridView["조건종목_종목코드", 0].Value = 종목코드.Trim();
-                    condigionItemDataGridView["조건종목_종목명", 0].Value = 종목명.Trim();
-                    condigionItemDataGridView["조건종목_현재가", 0].Value = String.Format("{0:###,#}", 현재가);
-                    condigionItemDataGridView["조건종목_전일대비", 0].Value = String.Format("{0:###,#}", 전일대비);
-                    condigionItemDataGridView["조건종목_등락율", 0].Value = String.Format("{0:F2}", 등락율) + " %";
-                    condigionItemDataGridView["조건종목_거래량", 0].Value = String.Format("{0:###,#}", 거래량);
-                    condigionItemDataGridView["조건종목_거래금", 0].Value = String.Format("{0:###,#}", 거래금);
+                    conditionItemDataGridView["조건종목_종목코드", 0].Value = 종목코드.Trim();
+                    conditionItemDataGridView["조건종목_종목명", 0].Value = 종목명.Trim();
+                    conditionItemDataGridView["조건종목_현재가", 0].Value = String.Format("{0:###,#}", 현재가);
+                    conditionItemDataGridView["조건종목_전일대비", 0].Value = String.Format("{0:###,#}", 전일대비);
+                    conditionItemDataGridView["조건종목_등락율", 0].Value = String.Format("{0:F2}", 등락율) + " %";
+                    conditionItemDataGridView["조건종목_거래량", 0].Value = String.Format("{0:###,#}", 거래량);
+                    conditionItemDataGridView["조건종목_거래금", 0].Value = String.Format("{0:###,#}", 거래금);
 
-                    condigionItemDataGridView["조건종목_현재가", 0].Style.ForeColor = Color.Green;
+                    conditionItemDataGridView["조건종목_현재가", 0].Style.ForeColor = Color.Green;
 
                     if (전일대비 > 0)
                     {
-                        condigionItemDataGridView["조건종목_전일대비", 0].Style.ForeColor = Color.Red;
-                        condigionItemDataGridView["조건종목_등락율", 0].Style.ForeColor = Color.Red;
+                        conditionItemDataGridView["조건종목_전일대비", 0].Style.ForeColor = Color.Red;
+                        conditionItemDataGridView["조건종목_등락율", 0].Style.ForeColor = Color.Red;
                     }
                     else if (전일대비 < 0)
                     {
-                        condigionItemDataGridView["조건종목_전일대비", 0].Style.ForeColor = Color.Blue;
-                        condigionItemDataGridView["조건종목_등락율", 0].Style.ForeColor = Color.Blue;
+                        conditionItemDataGridView["조건종목_전일대비", 0].Style.ForeColor = Color.Blue;
+                        conditionItemDataGridView["조건종목_등락율", 0].Style.ForeColor = Color.Blue;
                     }
                     else
                     {
-                        condigionItemDataGridView["조건종목_전일대비", 0].Style.ForeColor = Color.Black;
-                        condigionItemDataGridView["조건종목_등락율", 0].Style.ForeColor = Color.Black;
+                        conditionItemDataGridView["조건종목_전일대비", 0].Style.ForeColor = Color.Black;
+                        conditionItemDataGridView["조건종목_등락율", 0].Style.ForeColor = Color.Black;
                     }
 
-                    condigionItemDataGridView.ClearSelection(); // 첫 line index 되는것을 막는다.
+                    conditionItemDataGridView.ClearSelection(); // 첫 line index 되는것을 막는다.
 
                     //매수  시작--
                     if (isTrading)
@@ -638,11 +828,12 @@ namespace VeryGoodAuto
                                 }
                             }
                         }
-                    }                   
+                    }
+                    */
                 }
                 catch (Exception exception)
                 {
-                    Console.WriteLine(exception.Message.ToString() + "554");
+                    Console.WriteLine(exception.Message.ToString() + "717");
                 }
             }
         }
@@ -691,77 +882,52 @@ namespace VeryGoodAuto
                 // Console.WriteLine("sFIdList : " + e.sFIdList);
                 try
                 {
-                    #region  수동주문
-                    if (axKHOpenAPI1.GetChejanData(905).Equals("+매수"))
+                    string 주문번호 = axKHOpenAPI1.GetChejanData(9203).Trim();
+                    string 종목코드 = axKHOpenAPI1.GetChejanData(9001).Replace("A", "").Trim();
+                    string 종목명 = axKHOpenAPI1.GetChejanData(302).Trim();
+                    int 주문수량 = int.Parse(axKHOpenAPI1.GetChejanData(900).Trim());
+                    int 미체결수량 = int.Parse(axKHOpenAPI1.GetChejanData(902).Trim());
+                    int 주문가격 = int.Parse(axKHOpenAPI1.GetChejanData(901).Trim());
+                    int 현재가 = int.Parse(axKHOpenAPI1.GetChejanData(10).Trim());
+                    string 체결가 = axKHOpenAPI1.GetChejanData(910).Trim();
+                    string 주문구분 = axKHOpenAPI1.GetChejanData(905).Trim();
+                    string 시간 = axKHOpenAPI1.GetChejanData(908).Trim();
+                    long 원주문번호 = long.Parse(axKHOpenAPI1.GetChejanData(904));
+
+                    if (axKHOpenAPI1.GetChejanData(913).Trim() == "접수")
                     {
-                        string 주문번호 = axKHOpenAPI1.GetChejanData(9203).Trim();
-                        string 종목코드 = axKHOpenAPI1.GetChejanData(9001).Replace("A","").Trim();
-                        string 종목명 = axKHOpenAPI1.GetChejanData(302).Trim();
-                        int 주문수량 = int.Parse(axKHOpenAPI1.GetChejanData(900).Trim());
-                        int 미체결수량 = int.Parse(axKHOpenAPI1.GetChejanData(902).Trim());
-                        int 주문가격 = int.Parse(axKHOpenAPI1.GetChejanData(901).Trim());
-                        int 현재가 = int.Parse(axKHOpenAPI1.GetChejanData(10).Trim());
-                        int 체결가 = int.Parse(axKHOpenAPI1.GetChejanData(910).Trim());
-                        string 주문구분 = axKHOpenAPI1.GetChejanData(905).Trim();
-                        string 시간 = axKHOpenAPI1.GetChejanData(908).Trim();
-                        long 원주문번호 = long.Parse(axKHOpenAPI1.GetChejanData(904));
-                       
-                        for(int i=0; i< balanceDataGridView.RowCount; i++)
-                        {
-                            if(balanceDataGridView["잔고_종목코드", i].Value.ToString().Equals(종목코드))
-                            {
-                                BalanceItem bi = balanceItemList.Find(o => o.종목코드 == 종목코드);
-                                //변화된 값을 입력한다.
-                                if (bi != null)
-                                {
-                                    bi.미체결수량 = 미체결수량;
-                                    bi.현재가 = 현재가;
-                                    bi.시간 = 시간;                                    
-                                }
-                                return;
-                            }
-                        }
-
-                        //balanceDataGridView 에 없다면.
-                        balanceItemList.Add(new BalanceItem(주문번호, 종목코드, 종목명, 주문수량, 주문가격, 미체결수량, 주문구분, 체결가, 현재가, 시간));
-
-                        balanceDataGridView.Rows.Clear();
-
-                        for(int i =0; i < balanceItemList.Count; i++)
-                        {                           
-                            BalanceItem bi = balanceItemList[i];
-                            balanceDataGridView.Rows.Add();
-
-                            balanceDataGridView["잔고_종목코드", i].Value = bi.주문번호;
-                            // outStandingDataGridView["잔고_평가금액", i].Value = osdi.평가금액;
-                            balanceDataGridView["잔고_종목명", i].Value = bi.종목명;
-                            balanceDataGridView["잔고_보유수량", i].Value = bi.주문수량;
-                            balanceDataGridView["잔고_평균단가", i].Value = bi.체결가;
-                            balanceDataGridView["잔고_현재가", i].Value = bi.현재가;
-                            balanceDataGridView["잔고_손익금액", i].Value = 0;
-                            balanceDataGridView["잔고_손익율", i].Value = 0;
-                            balanceDataGridView["잔고_최고율", i].Value = 0;
-                            balanceDataGridView["잔고_매입금액", i].Value = bi.주문가격;
-
-                            if (bi.미체결수량 > 0)
-                            {
-                                BalanceItem changeBi = changeOutStandingList.Find(o => o.종목코드 == bi.종목코드);
-                                if (changeBi != null)
-                                {
-                                    changeOutStandingList.Remove(changeBi);
-                                    changeOutStandingList.Add(bi);
-                                }
-                                else
-                                    changeOutStandingList.Add(bi);
-                            }
-                                
-                        }
-
-                        // 미체결 뷰에서 보여주기.
-                        outStandingDataGridView.Rows.Clear();
-                        outStandingDataGridView.DataSource = changeOutStandingList;
+                        Console.WriteLine("접수  항목");
+                     //  balanceItemList.Add(new BalanceItem(주문번호, 종목코드, 종목명, 주문수량, 주문가격, 미체결수량, 주문구분, 체결가, 현재가, 시간));
                     }
-                    #endregion 수동주문
+
+                    if (axKHOpenAPI1.GetChejanData(913).Trim() == "체결")
+                    {
+                        //Console.WriteLine("체결  항목"); //[ 미체결 항목 ]에 실시간으로 보여준다.
+                        OutStanding os = outStandingList.Find(o => o.종목코드 == 종목코드);
+                        if (os != null)
+                        {
+                            os.주문수량 = 주문수량;
+                            os.미체결수량 = 미체결수량;
+                            os.현재가 = 현재가;
+                            os.체결가 = 체결가;
+                            os.시간 = 시간;
+                            os.주문구분 = 주문구분;
+
+                            // 0 이면 완료 된것으로 간주.
+                            if (os.미체결수량 == 0)
+                                outStandingList.Remove(os);
+                        }
+                        else
+                        {
+                            outStandingList.Add(new OutStanding(주문번호,종목코드,종목명,주문수량,주문가격,
+                                미체결수량,주문구분,체결가,현재가,시간));
+                        }
+
+                        outStandingDataGridView.DataSource = null;
+                        outStandingDataGridView.DataSource = outStandingList;
+                        outStandingDataGridView.CurrentRow.Selected = false;
+
+                    }
                 }
                 catch (Exception exception)
                 {
@@ -782,7 +948,10 @@ namespace VeryGoodAuto
                 long 당일실현손익 = long.Parse(axKHOpenAPI1.GetChejanData(990));
                 long 예수금 = long.Parse(axKHOpenAPI1.GetChejanData(951));
 
+                //axKHOpenAPI.SetRealReg  함수 호출 , "9001;10", "1");
+
                 Console.WriteLine("종목명 : " + stockName + " | 현재 종가 : " + String.Format("{0:#,###}", currentPrice));
+              
                 Console.WriteLine("매입주문금액 : " + String.Format("{0:#,###}", 총매입금액) + " | 금일 실현손익 : " + String.Format("{0:#,###}", 당일실현손익));
                 realizationProfitLabel.Text = String.Format("{0:#,###}", 당일투자손익);
                 당일손익율Label.Text = 당일손익율;
@@ -844,7 +1013,7 @@ namespace VeryGoodAuto
             }
             catch (Exception exception)
             {
-                Console.WriteLine(exception.Message.ToString()+"597");
+                Console.WriteLine(exception.Message.ToString()+"1131");
             }         
         }
 
@@ -853,7 +1022,6 @@ namespace VeryGoodAuto
         private void AxKHOpenAPI1_OnReceiveTrCondition(object sender, _DKHOpenAPIEvents_OnReceiveTrConditionEvent e)
         {
             //TODO 실시간 검색만 하기 때문에  / 없어도 잘 작동되네.    문자열 오류가 사라졌다.. 나중에 확인.
-            /*
             //  e.sScrNo;
             int 조건번호 = e.nIndex;
             string codeList = e.strCodeList;
@@ -869,66 +1037,75 @@ namespace VeryGoodAuto
                 if (e.nIndex != 0) // 더받을것이 있다면   +추가;
                     axKHOpenAPI1.SendCondition(화면번호_조건식종목추가요청, e.strConditionName, e.nIndex, 1);               
             }
-            */
         }
 
         public void DataGridView_SelectionChanged(object sender, EventArgs e)
         {
-
-            if (sender.Equals(conditionDataGridView))
+            try
             {
-                if (conditionDataGridView.SelectedCells.Count > 0) //셀선택 된것!.
+
+                if (sender.Equals(conditionDataGridView))
                 {
-                    int rowIndex = conditionDataGridView.SelectedCells[0].RowIndex;
-
-                    if (rowIndex > -1 && rowIndex < conditionDataGridView.Rows.Count)
+                    if (conditionDataGridView.SelectedCells.Count > 0) //셀선택 된것!.
                     {
-                       
-                        string 조건명 = "";
-                        if (conditionDataGridView["조건식_조건번호", rowIndex].Value != null)
+                        int rowIndex = conditionDataGridView.SelectedCells[0].RowIndex;
+
+                        if (rowIndex > -1 && rowIndex < conditionDataGridView.Rows.Count)
                         {
-                            if (이전_조건식번호 != -1 && !이전_조건식명.Equals(String.Empty))
+
+                            string 조건명 = "";
+                            if (conditionDataGridView["조건식_조건번호", rowIndex].Value != null)
                             {
-                                Console.WriteLine("이전_스크린번호:" + 이전_스크린번호 + "/이전_조건식명:" + 이전_조건식명 + "/이전_조건식번호:" + 이전_조건식번호);
-                                axKHOpenAPI1.SendConditionStop(이전_스크린번호, 이전_조건식명, 이전_조건식번호);// 조건식에대한 정지.
-                                axKHOpenAPI1.SetRealRemove("ALL", "ALL"); //화면에 더이상 못나게 하고. 종목에 대한정지.                              
-                              
-                                deleteCode.Clear();
-                                condigionItemDataGridView.Rows.Clear(); // 화면청소. 
-                            }
+                                if (이전_조건식번호 != -1 && !이전_조건식명.Equals(String.Empty))
+                                {
+                                    Console.WriteLine("이전_스크린번호:" + 이전_스크린번호 + "/이전_조건식명:" + 이전_조건식명 + "/이전_조건식번호:" +
+                                                      이전_조건식번호);
+                                    axKHOpenAPI1.SendConditionStop(이전_스크린번호, 이전_조건식명, 이전_조건식번호); // 조건식에대한 정지.
+                                    axKHOpenAPI1.SetRealRemove("ALL", "ALL"); //화면에 더이상 못나게 하고. 종목에 대한정지.                              
 
-                            현재_선택된_조건식번호 = int.Parse(conditionDataGridView["조건식_조건번호", rowIndex].Value.ToString());
-                            현재_석택된_조건식명 = conditionDataGridView["조건식_조건식명", rowIndex].Value.ToString(); //OnReciveRealData 에서 매수에 사용하려고 저장용도.
+                                    deleteCode.Clear();
+                                    conditionViewList.Clear();
+                                    conditionItemDataGridView.DataSource = null;
+                                }
+
+                                현재_선택된_조건식번호 = int.Parse(conditionDataGridView["조건식_조건번호", rowIndex].Value.ToString());
+                                현재_석택된_조건식명 =
+                                    conditionDataGridView["조건식_조건식명", rowIndex].Value.ToString(); //OnReciveRealData 에서 매수에 사용하려고 저장용도.
 
 
-                            이전_조건식번호 = 현재_선택된_조건식번호;                            
-                            이전_조건식명 = 현재_석택된_조건식명;
+                                이전_조건식번호 = 현재_선택된_조건식번호;
+                                이전_조건식명 = 현재_석택된_조건식명;
 
-                            현재_스크린번호 = (현재_선택된_조건식번호 + 실시간조건검색수신화면번호).ToString().Trim();
-                            이전_스크린번호 =  현재_스크린번호;
+                                현재_스크린번호 = (현재_선택된_조건식번호 + 실시간조건검색수신화면번호).ToString().Trim();
+                                이전_스크린번호 = 현재_스크린번호;
 
-                            //잔고요청.
-                            RequestAccountEstimation();
-                            //미체결 요청.
-                            RequestOutStanding();
-                            //일자별 수익율.
-                            RequestRealizationProfit();
-                          // axKHOpenAPI1.SetRealReg(현재_스크린번호,"990","990",)
-                            int result = axKHOpenAPI1.SendCondition(화면번호_조건검색, 현재_석택된_조건식명, 현재_선택된_조건식번호, 1);                         
+                                //잔고요청.
+                                // RequestAccountEstimation();
+                                //미체결 요청.
+                                // RequestOutStanding();
+                                //일자별 수익율.
+                                // RequestRealizationProfit();
+                                // axKHOpenAPI1.SetRealReg(현재_스크린번호,"990","990",)
+                                int result = axKHOpenAPI1.SendCondition(화면번호_조건검색, 현재_석택된_조건식명, 현재_선택된_조건식번호, 1);
 
-                            if (result == 1)//성공
-                            {
-                                Console.WriteLine("조건검색 성공");
-                            }
-                            else
-                            {
-                                Console.WriteLine("조건검색 실패");
-                                MessageBox.Show("1분 후 다시 검색해주세요 \n 검색식패");
+                                if (result == 1) //성공
+                                {
+                                    Console.WriteLine("조건검색 성공");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("조건검색 실패");
+                                    MessageBox.Show("1분 후 다시 검색해주세요 \n 검색식패");
+                                }
                             }
                         }
                     }
                 }
-            }          
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message.ToString());
+            }
         }
 
         public void AxKHOpenAPI1_OnReceiveConditionVer(object sender, AxKHOpenAPILib._DKHOpenAPIEvents_OnReceiveConditionVerEvent e)
@@ -972,92 +1149,75 @@ namespace VeryGoodAuto
                 long 예탁자산평가액 = long.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "예탁자산평가액").Trim());
                 long 당일투자손익 = long.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "당일투자손익").Trim());
                 double 당일손익율 = double.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "당일손익율").Trim());
-                
+
                 예수금Label.Text = String.Format("{0:###,#}", 예수금);
                 총매입금액Label1.Text = String.Format("{0:###,#}", 총매입금액);
                 예탁자산평가액Label.Text = String.Format("{0:###,#}", 예탁자산평가액);
                 당일손익금액Label.Text = String.Format("{0:###,#}", 당일투자손익);
-                당일손익율Label.Text = String.Format("{0:F2}", 당일손익율) + "%";
-
-                //잔고 datalist 추가
-                int n = axKHOpenAPI1.GetRepeatCnt(e.sTrCode, e.sRQName);
-
-                balanceDataGridView.Rows.Clear();
-                for (int i = 0; i < n; i++)
+                당일손익율Label.Text = String.Format("{0:F2}", 당일손익율) + " %";
+                try
                 {
-                    string 종목코드 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "종목코드").Trim().Replace("A", "");
-                    string 종목명 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "종목명").Trim();
-                    long 보유수량 = long.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "보유수량"));
-                    double 평균단가 = double.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "평균단가"));//-???/
-                    long 현재가 = long.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "현재가"));
-                    long 평가금액 = long.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "평가금액"));
-                    long 손익금액 = long.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "손익금액"));
-                    double 손익율 = double.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "손익율"));
-                    long 매입금액 = long.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "매입금액"));
+                    //잔고 datalist 추가
+                    int n = axKHOpenAPI1.GetRepeatCnt(e.sTrCode, e.sRQName);
 
-                    balanceDataGridView.Rows.Add();//생성
-                    balanceDataGridView["잔고_종목코드", i].Value = 종목코드;
-                    balanceDataGridView["잔고_종목명", i].Value = 종목명;
-                    balanceDataGridView["잔고_보유수량", i].Value = String.Format("{0:###,#}", 보유수량);
-                    balanceDataGridView["잔고_평균단가", i].Value = String.Format("{0:###,#}", 평균단가);
-                    balanceDataGridView["잔고_현재가", i].Value = String.Format("{0:###,#}", 현재가);
-                    balanceDataGridView["잔고_평가금액", i].Value = String.Format("{0:###,#}", 평가금액);
-                    balanceDataGridView["잔고_손익금액", i].Value = String.Format("{0:###,#}", 손익금액);
-                    balanceDataGridView["잔고_손익율", i].Value = String.Format("{0:F2}", 손익율) + "%";
-                    balanceDataGridView["잔고_매입금액", i].Value = String.Format("{0:###,#}", 매입금액);
-                    /*
-                    if (balanceDataGridView["잔고_최고율", i].Value == null) //최고율에 값이 없다면
+                    // balanceDataGridView.Rows.Clear();
+                    for (int i = 0; i < n; i++)
                     {
-                        if (!highestRate.ContainsKey(종목코드))
+                        string 종목코드 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, 
+                            "종목코드").Replace("A", "").Trim();
+                        string 종목명 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "종목명").Trim();
+                        long 보유수량 = long.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "보유수량"));
+                        long 현재가 = long.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "현재가"));
+                        long 평가금액 = long.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "평가금액"));
+                        long 손익금액 = long.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "손익금액"));
+                        double 손익율 = double.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "손익율"));
+                        long 매수금 = long.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "매입금액"));
+
+                        double 손익비율 = double.Parse(손익율.ToString("N2"));
+                        balanceItemList.Add(new BalanceItem(종목코드, 평가금액, 종목명, 보유수량, 현재가, 손익금액, 
+                            손익비율, 손익비율, 매수금));
+                  
+                        //예수금951/손익율8019/당일실현손익990/당일신현손익율991/
+                        // axKHOpenAPI1.SetRealReg(화면번호_실시간데이터요청, 종목코드, "10;11;12;15", "1"); //실시간 잔고 요청.      
+                        axKHOpenAPI1.SetRealReg(화면번호_실시간데이터요청, 종목코드, "10;11;12;15;951;8019;990;991",
+                            "1"); //실시간 잔고 요청.     
+                    }
+
+                    balanceDataGridView.DataSource = balanceItemList;
+                    balanceDataGridView.CurrentRow.Selected = false;
+
+                    for (int i = 0; i < balanceDataGridView.RowCount; i++)
+                    {
+                        // 손익금액  값 비교.
+                        int val = int.Parse(balanceDataGridView.Rows[i].Cells[5].Value.ToString());
+                        // Console.WriteLine("val :" + val);
+                        if (val > 0)
                         {
-                            highestRate.Add(종목코드, 손익율);
+                            balanceDataGridView.Rows[i].Cells[5].Style.ForeColor = Color.Red;
+                            balanceDataGridView.Rows[i].Cells[6].Style.ForeColor = Color.Red;
                         }
-                        // balanceDataGridView["잔고_최고율", i].Value = String.Format("{0:F2}", 손익율);
-                    }
-                    */
-                   // if(balanceDataGridView["잔고_최고율", i].Value != null)
-                  //  {
-                        if (highestRate.ContainsKey(종목코드))
+                        else if (val < 0)
                         {
-                            double 저장최고율 = highestRate[종목코드];
-                            if (손익율 > 저장최고율)
-                                highestRate[종목코드] = 손익율;
+                            balanceDataGridView.Rows[i].Cells[5].Style.ForeColor = Color.Blue;
+                            balanceDataGridView.Rows[i].Cells[6].Style.ForeColor = Color.Blue;
+                        }
+                        else
+                        {
+                            balanceDataGridView.Rows[i].Cells[5].Style.ForeColor = Color.Black;
+                            balanceDataGridView.Rows[i].Cells[6].Style.ForeColor = Color.Black;
+                        }
 
-                        balanceDataGridView["잔고_최고율", i].Value = String.Format("{0:F2}", highestRate[종목코드]);
-                        balanceDataGridView["잔고_최고율", i].Style.ForeColor = Color.DarkViolet;
+                        balanceDataGridView.Rows[i].Cells[7].Style.ForeColor = Color.DarkViolet; //최고율
                     }
-                        //else
-                          //  highestRate.Add(종목코드, 손익율);
-                 //   }
-
-                   
-
-                    //색깔
-                    if (손익금액 > 0)
-                    {
-                        balanceDataGridView["잔고_손익금액", i].Style.ForeColor = Color.Red;
-                        balanceDataGridView["잔고_손익율", i].Style.ForeColor = Color.Red;
-                    }
-                    else if (손익금액 < 0)
-                    {
-                        balanceDataGridView["잔고_손익금액", i].Style.ForeColor = Color.Blue;
-                        balanceDataGridView["잔고_손익율", i].Style.ForeColor = Color.Blue;
-                    }
-                    else
-                    {
-                        balanceDataGridView["잔고_손익금액", i].Style.ForeColor = Color.Black;
-                        balanceDataGridView["잔고_손익율", i].Style.ForeColor = Color.Black;
-                    }
-                    //예수금951/손익율8019/당일실현손익990/당일신현손익율991/
-                    // axKHOpenAPI1.SetRealReg(화면번호_실시간데이터요청, 종목코드, "10;11;12;15", "1"); //실시간 잔고 요청.      
-                    axKHOpenAPI1.SetRealReg(화면번호_실시간데이터요청, 종목코드, "10;11;12;15;951;8019;990;991", "1"); //실시간 잔고 요청.     
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception.Message.ToString() + 1076);
                 }
             }
             else if (e.sRQName.Equals("실시간미체결요청"))
             {
                 int count = axKHOpenAPI1.GetRepeatCnt(e.sTrCode, e.sRQName);
-
-                outStandingDataGridView.Rows.Clear();
 
                 for (int i = 0; i < count; i++)
                 {
@@ -1068,30 +1228,34 @@ namespace VeryGoodAuto
                     int 주문가격 = int.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "주문가격"));
                     int 미체결수량 = int.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "미체결수량"));
                     string 주문구분 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "주문구분").Trim(); ;
-                    int 체결가 = int.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "체결가"));
+                    string 체결가 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "체결가");
                     // int 체결량 = int.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "체결량"));
                     int 현재가 = int.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "현재가"));
-                    string 시간 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "시간").Trim(); ;
-
-                    balanceItemList.Add(new BalanceItem(주문번호,종목코드,종목명,주문수량,주문가격,미체결수량, 주문구분,체결가,현재가,시간));
+                    string 시간 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "시간").Trim();
                    
-                    outStandingDataGridView.Rows.Add();//생성
-                    outStandingDataGridView["미체결_주문번호", i].Value = 주문번호;
-                    outStandingDataGridView["미체결_종목코드", i].Value = 종목코드;
-                    outStandingDataGridView["미체결_종목명", i].Value = 종목명;
-                    outStandingDataGridView["미체결_주문수량", i].Value = String.Format("{0:###,#}", 주문수량);
-                    outStandingDataGridView["미체결_주문가격", i].Value = String.Format("{0:###,#}", 주문가격);
-                    outStandingDataGridView["미체결_미체결수량", i].Value = String.Format("{0:###,#}", 미체결수량);
-                    outStandingDataGridView["미체결_주문구분", i].Value = 주문구분;
-                    outStandingDataGridView["미체결_체결가", i].Value = String.Format("{0:###,#}", 체결가);
-                    //  outStandingDataGridView["미체결_체결량", i].Value = String.Format("{0:###,#}" + 체결량);
-                    outStandingDataGridView["미체결_현재가", i].Value = String.Format("{0:###,#}", 현재가);
-                    outStandingDataGridView["미체결_시간", i].Value = 시간;  
-                  
+
+                    OutStanding os = outStandingList.Find(o => o.종목코드 == 종목코드);
+                    if (os != null)
+                    {
+                        os.주문번호 = 주문번호;
+                        os.주문수량 = 주문수량;
+                        os.주문가격 = 주문가격;
+                        os.미체결수량 = 미체결수량;
+                        os.주문구분 = 주문구분;
+                        os.체결가 = 체결가;
+                        os.현재가 = 현재가;
+                        os.시간 = 시간;
+                    }
+                    else
+                    {
+                        outStandingList.Add(new OutStanding(주문번호,종목코드,종목명,주문수량,주문가격,
+                            미체결수량,주문구분,체결가,현재가,시간));
+                    }
+
+                    outStandingDataGridView.DataSource = outStandingList;
+                    outStandingDataGridView.CurrentRow.Selected = false;
                 }
-                
             }
-         /* 
             else if (e.sRQName.Contains("조건식종목요청"))
             {
                 if (e.sRQName.Split(';').Length == 2)
@@ -1102,175 +1266,45 @@ namespace VeryGoodAuto
                     //종목코드,종목명,현재가,전일대비,등락율,거래량
                     int n = axKHOpenAPI1.GetRepeatCnt(e.sTrCode, e.sRQName);
 
-                    condigionItemDataGridView.Rows.Clear(); // 전 로우들 삭제.
-
                     for (int i = 0; i < n; i++)
                     {
-                        string 종목코드 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "종목코드");
-                        string 종목명 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "종목명");
-                        int 현재가 = int.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "현재가"));
+                        string 종목코드 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "종목코드").Trim();
+                        string 종목명 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "종목명").Trim();
+                        int 현재가 = int.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "현재가").Trim());
                         int 전일대비 = int.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "전일대비"));
-                        double 등락율 = double.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "등락율"));
-                        long 거래량 = long.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "거래량"));
-                        long 거래금 = long.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "거래금액"));
+                        double 등락율 = double.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "등락율").Trim());
+                        long 거래량 = long.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "거래량").Trim());
+                        long 거래금 = long.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "거래대금").Trim());
 
-                        condigionItemDataGridView.Rows.Add();// 생성.
-                        condigionItemDataGridView["조건종목_종목코드", i].Value = 종목코드.Trim();
-                        condigionItemDataGridView["조건종목_종목명", i].Value = 종목명.Trim();
-                        condigionItemDataGridView["조건종목_현재가", i].Value = String.Format("{0:###,#}", 현재가);
-                        condigionItemDataGridView["조건종목_전일대비", i].Value = String.Format("{0:###,#}", 전일대비);
-                        condigionItemDataGridView["조건종목_등락율", i].Value = String.Format("{0:F2}", 등락율) + "%";
-                        condigionItemDataGridView["조건종목_거래량", i].Value = String.Format("{0:###,#}", 거래량);
-                        condigionItemDataGridView["조건종목_거래량", i].Value = String.Format("{0:###,#}", 거래금);
+                        conditionViewList.Add(new StockItemObject(종목코드,종목명,현재가,전일대비,등락율,거래량,거래금));
+                    }
+                    //Console.WriteLine("리스트 : "+ conditionViewList.Count);
+                    conditionItemDataGridView.DataSource = conditionViewList;
+                    conditionItemDataGridView.CurrentRow.Selected = false;
 
-                        //색깔
-                        if (전일대비 > 0)
+                    for(int i =0; i < conditionItemDataGridView.RowCount;i++)
+                    {
+                      // 전일대비  값 비교.
+                        int val = int.Parse(conditionItemDataGridView.Rows[i].Cells[3].Value.ToString());
+                       // Console.WriteLine("val :" + val);
+                        if (val > 0)
                         {
-                            condigionItemDataGridView["조건종목_전일대비", i].Style.ForeColor = Color.Red;
-                            condigionItemDataGridView["조건종목_등락율", i].Style.ForeColor = Color.Red;
+                            conditionItemDataGridView.Rows[i].Cells[4].Style.ForeColor = Color.Red;
+                            conditionItemDataGridView.Rows[i].Cells[3].Style.ForeColor = Color.Red;
                         }
-                        else if (전일대비 < 0)
+                        else if (val < 0)
                         {
-                            condigionItemDataGridView["조건종목_전일대비", i].Style.ForeColor = Color.Blue;
-                            condigionItemDataGridView["조건종목_등락율", i].Style.ForeColor = Color.Blue;
+                            conditionItemDataGridView.Rows[i].Cells[4].Style.ForeColor = Color.Blue;
+                            conditionItemDataGridView.Rows[i].Cells[3].Style.ForeColor = Color.Blue;
                         }
                         else
                         {
-                            condigionItemDataGridView["조건종목_전일대비", i].Style.ForeColor = Color.Black;
-                            condigionItemDataGridView["조건종목_등락율", i].Style.ForeColor = Color.Black;
-                        }
-
-                        ConditionObject conditionObject = conditionList.Find(o => o.조건식번호 == 조건식번호);
-                        if (conditionObject != null)
-                        {
-                            conditionObject.stockItemList.Add(new StockItemObject(종목코드, 종목명, 현재가, 전일대비, 등락율, 거래량,거래금));
+                            conditionItemDataGridView.Rows[i].Cells[4].Style.ForeColor = Color.Black;
+                            conditionItemDataGridView.Rows[i].Cells[3].Style.ForeColor = Color.Black;
                         }
                     }
                 }
             }
-         */
-            /*
-            else if (e.sRQName.Contains("편입종목정보요청"))
-            {
-                try
-                {
-                    if (e.sRQName.Split(';').Length == 2)
-                    {
-                        int 조건식번호 = int.Parse(e.sRQName.Split(';')[1]);
-                        
-                        ConditionObject conditionObject = conditionList.Find(o => o.조건식번호 == 조건식번호); 
-                        
-                        if (conditionObject != null) // 조건식에 항목이 있고
-                        {                            
-                            string 종목코드 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "종목코드").Trim();
-                            string 종목명 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "종목명").Trim();
-                            int 현재가 = int.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "현재가"));
-                            int 전일대비 = int.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "전일대비"));
-                            double 등락율 = double.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "등락율"));
-                            long 거래량 = long.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, 0, "거래량"));
-
-                            StockItemObject stockItem = new StockItemObject(종목코드, 종목명, 현재가, 전일대비, 등락율, 거래량);
-                           
-                            //-----------------  추가 사항 ( 리스트의 각 항목중 중첩되는 리스트의 값만 바꿔준다.  ( List class에만 적용)
-                            // 이유 : 중첩으로 리스트가 계속만들어진다.
-                            StockItemObject checkStockItem = conditionObject.stockItemList.Find(o => o.종목명 == 종목명);
-                            if (checkStockItem != null) //조건식에 있고 -> 하위에 같은 종목명의 리스트가 있다면
-                            {
-                                //checkStockItem.종목코드 = 종목코드;
-                                //checkStockItem.종목명 = 종목명;
-                                checkStockItem.현재가 = 현재가;
-                                checkStockItem.등락율 = 등락율;
-                                checkStockItem.거래량 = 거래량;
-
-                                insertListBox.Items.Add("[종목 중첩 편입] 조건명 : " + conditionObject.조건식명 + " 종목명 :" + 종목명);
-                                insertListBox.SelectedIndex = insertListBox.Items.Count - 1;// 첫 line으로 항상 이동
-                            }
-                            else
-                            {
-                                conditionObject.stockItemList.Add(stockItem); //조건식 하위에 항목을 추가 한다.
-
-                                insertListBox.Items.Add("[종목편입] 조건명 : " + conditionObject.조건식명 + " 종목명 :" + 종목명);
-                                insertListBox.SelectedIndex = insertListBox.Items.Count - 1;// 첫 line으로 항상 이동
-
-                                if (conditionDataGridView.SelectedCells.Count > 0) //조건식 셀이 선택됬다.
-                                {
-                                    int rowIndex = conditionDataGridView.SelectedCells[0].RowIndex;
-                                    if (int.Parse(conditionDataGridView["조건식_조건번호", rowIndex].Value.ToString()) == 조건식번호)
-                                    {
-                                        condigionItemDataGridView.Rows.Insert(0);
-
-                                        condigionItemDataGridView["조건종목_종목코드", 0].Value = 종목코드.Trim();
-                                        condigionItemDataGridView["조건종목_종목명", 0].Value = 종목명.Trim();
-                                        condigionItemDataGridView["조건종목_현재가", 0].Value = String.Format("{0:###,#}", 현재가);
-                                        condigionItemDataGridView["조건종목_전일대비", 0].Value = String.Format("{0:###,#}", 전일대비);
-                                        condigionItemDataGridView["조건종목_등락율", 0].Value = String.Format("{0:F2}", 등락율) + "%";
-                                        condigionItemDataGridView["조건종목_거래량", 0].Value = String.Format("{0:###,#}", 거래량);
-                                    }
-                                }
-                                if (isTrading)
-                                {
-                                    if (buyConditionCheckBox.Checked)
-                                    {
-                                        if (buyConditionComboBox.Text.Equals(conditionObject.조건식명))
-                                        {
-                                            //해당 종목코드 자동매수 요청.
-                                            if (accountComboBox.Text.Length > 0)
-                                            {
-                                                int 총1회매수금액 = (int)totalAmountNumericUpDown.Value;
-
-                                                if (총1회매수금액 > 0 && 현재가 != 0)
-                                                {
-                                                    int 매수량 = 총1회매수금액 / 현재가;
-                                                    if (매수량 > 0)
-                                                    {
-                                                        //이미 매수한 같은 종목이 있는가 확인. -> balanceDataGridView
-                                                        if (BalanceListCheck(종목코드.Trim()))
-                                                        {
-                                                            insertListBox.Items.Add("=보유중인종목= 조건식명 : " + conditionObject.조건식명 + " 종목명 :" + 종목명);
-                                                            insertListBox.SelectedIndex = insertListBox.Items.Count - 1;// 첫 line으로 항상 이동
-                                                        }
-                                                        else
-                                                        {
-                                                            int orderResult = -1; //임의로 정했다.
-
-                                                          //  lock (lockThis)
-                                                          //  {
-                                                          //      var t = Task.Run(async delegate
-                                                           //     {
-                                                                    orderResult = axKHOpenAPI1.SendOrder("주식매수요청", 화면번호_주식매수요청, accountComboBox.Text, 1, 종목코드.Trim(), 매수량, 0, "03", "");
-
-                                                           //         await Task.Delay(250);
-                                                             //       return 0;
-                                                            //    });
-                                                            //    t.Wait();
-                                                              //  orderResult = t.Result;
-                                                          //  }
-                                                            Console.WriteLine("주식매수요청 orderResult : " + orderResult);
-
-                                                            if (orderResult == 0)
-                                                                insertListBox.Items.Add("[*주문요청 성공*] 조건식명 : " + conditionObject.조건식명 + " 종목명 :" + 종목명);
-                                                            else
-                                                                insertListBox.Items.Add("[*주문요청 실패*] 조건식명 : " + conditionObject.조건식명 + " 종목명 :" + 종목명);
-
-                                                            insertListBox.SelectedIndex = insertListBox.Items.Count - 1;// 첫 line으로 항상 이동
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            // --------------   추가사항 끝                        
-                         
-                        }
-                    }
-                }
-                catch (Exception exception)
-                {
-                    Console.WriteLine(exception.Message.ToString());
-                }
-            }*/
             else if (e.sRQName.Equals("일자별실현손익"))
             {
                 try
@@ -1287,7 +1321,7 @@ namespace VeryGoodAuto
                 }
                 catch (Exception exeption)
                 {
-                    Console.WriteLine(exeption.Message.ToString()+"1109");
+                    Console.WriteLine(exeption.Message.ToString()+"1400");
                 }
 
             }
@@ -1307,7 +1341,7 @@ namespace VeryGoodAuto
                 }
                 catch (Exception exception)
                 {
-                    Console.WriteLine(exception.Message.ToString()+"1129");
+                    Console.WriteLine(exception.Message.ToString()+"1459");
                 }
             }
         }
@@ -1422,17 +1456,14 @@ namespace VeryGoodAuto
             }
         }
 
-        bool BalanceListCheck(string kindName)
+        bool BalanceListCheck(string kindCode)
         {
             bool b = false;
-            for (int i = 0; i < balanceDataGridView.RowCount; i++)
-            {
-                if (balanceDataGridView["잔고_종목코드", i].Value != null && balanceDataGridView["잔고_종목코드", i].Value.ToString().Trim().Equals(kindName))
-                {
-                    b = true;
-                    break;
-                }                
-            }
+
+            BalanceItem bi = balanceItemList.Find(o => o.종목코드 == kindCode);
+            if (bi != null)
+                b = true;
+
             return b;
         }
 
@@ -1449,49 +1480,56 @@ namespace VeryGoodAuto
                 System.Windows.Forms.Application.DoEvents();
                 ThisMoment = DateTime.Now;
             }
-           
-            for (int i = 0; i < condigionItemDataGridView.RowCount; i++)
-            {
-                if (condigionItemDataGridView["조건종목_종목코드", i].Value.ToString().Trim() == 저장삭제코드.Trim())
-                {
-                    condigionItemDataGridView.Rows.RemoveAt(i);                    
-                    break;
-                }
-            }
-            
+
             if (deleteCode.Count > 0)
             {
                 string 삭제 = deleteCode.Find(o => o.Trim() == 저장삭제코드.Trim());
                 deleteCode.Remove(삭제);
-            }
-              // if (deleteCode.Find(o => o.Trim() == 저장삭제코드.Trim()) != null)//.RemoveAt(0);
 
+                StockItemObject sio = conditionViewList.Find(o => o.종목코드 == 저장삭제코드);
+                if (sio != null)
+                {
+                    conditionViewList.Remove(sio);
+                    //삭제와 상태를 보여주기.
+                    conditionItemDataGridView.DataSource = null;
+                    conditionItemDataGridView.DataSource = conditionViewList;
+                    conditionItemDataGridView.CurrentRow.Selected = false;
+                }
+
+                //  Console.WriteLine("삭제 코드 수 :: " + co.stockItemList.Count);
+            }
             return DateTime.Now;
         }
 
         public DateTime DelayOrder(int MS, OrderClass orderClass)
         {
-            //먼저 일하고 쉬었다 다음일 진행.
-            
-                int orderResult = axKHOpenAPI1.SendOrder(orderClass.주문형태, orderClass.화면번호, orderClass.계정,
-                                                                            orderClass.타입, orderClass.종목코드, orderClass.보유수량,
-                                                                            orderClass.가격, orderClass.호가구분, orderClass.원래주문번호);
-            if (orderClass.주문형태 == "주문매도")
+            //잔고창에 목록이 있는것은 재매수 하지 않는다.
+            BalanceItem bi = balanceItemList.Find(o => o.종목코드 == orderClass.종목코드);
+
+            if ((bi == null && orderClass.주문형태 == "주문매수") || (bi != null && orderClass.주문형태 == "주문매도"))
             {
-                for (int i = 0; i < balanceDataGridView.RowCount; i++)
+
+                //먼저 일하고 쉬었다 다음일 진행.
+                int orderResult = axKHOpenAPI1.SendOrder(orderClass.주문형태, orderClass.화면번호, orderClass.계정,
+                    orderClass.타입, orderClass.종목코드, orderClass.보유수량,
+                    orderClass.가격, orderClass.호가구분, orderClass.원래주문번호);
+
+                if (orderClass.주문형태 == "주문매도")
                 {
-                    if (balanceDataGridView["잔고_종목코드", i].Value.ToString().Equals(orderClass.종목코드))
-                        balanceDataGridView.Rows.RemoveAt(i);
+                    balanceItemList.Remove(bi); // 잔고창에서 삭제.
+
+                    balanceDataGridView.DataSource = null;
+                    balanceDataGridView.DataSource = balanceItemList;
+                    balanceDataGridView.CurrentRow.Selected = false;
                 }
 
-                highestRate.Remove(orderClass.종목코드);
-            }
-
                 if (orderResult == 0)
-                    insertListBox.Items.Add("[*" + orderClass.주문형태 + "=성공*]  종목명 :" + axKHOpenAPI1.GetMasterCodeName(orderClass.종목코드));
+                    insertListBox.Items.Add("[*" + orderClass.주문형태 + "=성공*]  종목명 :" +
+                                            axKHOpenAPI1.GetMasterCodeName(orderClass.종목코드));
                 else
-                    insertListBox.Items.Add("[*" + orderClass.주문형태 + "=실패*]  종목명 :" + axKHOpenAPI1.GetMasterCodeName(orderClass.종목코드));
-                            
+                    insertListBox.Items.Add("[*" + orderClass.주문형태 + "=실패*]  종목명 :" +
+                                            axKHOpenAPI1.GetMasterCodeName(orderClass.종목코드));
+
                 OrderClass order = orderClassList.Find(o => o.종목코드 == orderClass.종목코드);
                 orderClassList.Remove(order); // 앞에 있는 오더 삭제.
 
@@ -1505,7 +1543,9 @@ namespace VeryGoodAuto
                 {
                     System.Windows.Forms.Application.DoEvents();
                     ThisMoment = DateTime.Now;
-                }          
+                }
+            }
+
             return DateTime.Now;
         }       
     }
@@ -1545,13 +1585,13 @@ namespace VeryGoodAuto
     public class StockItemObject
     {
         //종목코드,종목명,현재가,전일대비,등락율,거래량
-        public string 종목코드;
-        public string 종목명;
-        public long 현재가;
-        public long 전일대비;
-        public double 등락율;
-        public long 거래량;
-        public long 거래금;
+        public string 종목코드 { get; set; }
+        public string 종목명 { get; set; }
+        public long 현재가 { get; set; }
+        public long 전일대비 { get; set; }
+        public double 등락율 { get; set; }
+        public long 거래량 { get; set; }
+        public long 거래금 { get; set; }
         public StockItemObject(string 종목코드, string 종목명, long 현재가, long 전일대비, double 등락율, long 거래량,long 거래금)
         {
             this.종목코드 = 종목코드;
@@ -1565,37 +1605,70 @@ namespace VeryGoodAuto
     }
 
     /// <summary>
-    /// 미체결 잔고 묶음.
+    /// 잔고 관리
     /// </summary>
     public class BalanceItem
     {
-        public string 주문번호;
-        public string 종목코드;
-        public string 종목명;
-        public int 주문수량;
-        public int 주문가격;
-        public int 미체결수량;
-        public string 주문구분;
-        public int 체결가;      
-        public int 현재가;
-        public string 시간;
+        public string 종목코드 { get; set; }
+        public long 평가금액 { get; set; }
+        public string 종목명 { get; set; }
+        public long 보유수량 { get; set; }
+        public long 현재가 { get; set; }
+        public long 손익금액 { get; set; }
+        public double 손익율 { get; set; }
+        public double 최고율 { get; set; }
+        public long 매수금 { get; set; }
 
-        public BalanceItem(string 주문번호, string 종목코드, string 종목명, int 주문수량, int 주문가격,
-            int 미체결수량, string 주문구분, int 체결가, int 현재가, string 시간)
+        public BalanceItem( string 종목코드, long 평가금액, string 종목명, long 보유수량,
+            long 현재가, long 손익금액,double 손익율,double 최고율, long 매수금)
         {
-          this. 주문번호= 주문번호;
-          this. 종목코드 = 종목코드;
+            this. 종목코드 = 종목코드;
+          this.평가금액 = 평가금액;
           this.종목명 = 종목명;
-          this.주문수량 = 주문수량;
-          this.주문가격 = 주문가격;
-          this.미체결수량 = 미체결수량;
-          this.주문구분= 주문구분;
-          this.체결가 = 체결가;         
-          this. 현재가 = 현재가;
-          this. 시간 = 시간;
+          this.보유수량 = 보유수량;
+          this.현재가 = 현재가;
+          this.손익금액 = 손익금액;
+          this.손익율 = 손익율;
+          this.최고율 = 최고율;
+          this.매수금 = 매수금;
         }
     }
 
+    /// <summary>
+    /// 미체결 관리
+    /// </summary>
+    public class OutStanding
+    {
+        public string 주문번호 { get; set; }
+        public string 종목코드 { get; set; }
+        public string 종목명 { get; set; }
+        public int 주문수량 { get; set; }
+        public int 주문가격 { get; set; }
+        public int 미체결수량 { get; set; }
+        public string 주문구분 { get; set; }
+        public string 체결가 { get; set; }
+        public int 현재가 { get; set; }
+        public string 시간 { get; set; }
+
+        public OutStanding(string 주문번호, string 종목코드, string 종목명, int 주문수량, int 주문가격,
+            int 미체결수량, string 주문구분, string 체결가, int 현재가, string 시간)
+        {
+            this.주문번호 = 주문번호;
+            this.종목코드 = 종목코드;
+            this.종목명 = 종목명;
+            this.주문수량 = 주문수량;
+            this.주문가격 = 주문가격;
+            this.미체결수량 = 미체결수량;
+            this.주문구분 = 주문구분;
+            this.체결가 = 체결가;
+            this.현재가 = 현재가;
+            this.시간 = 시간;
+        }
+    }
+
+    /// <summary>
+    /// 매수/매도 관리
+    /// </summary>
     public class OrderClass
     {
         public string 주문형태;
