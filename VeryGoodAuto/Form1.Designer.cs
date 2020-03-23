@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle17 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle18 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.buyConditionCheckBox = new System.Windows.Forms.CheckBox();
             this.buyConditionComboBox = new System.Windows.Forms.ComboBox();
@@ -117,9 +117,8 @@
             // 
             // tableLayoutPanel1
             // 
-            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.tableLayoutPanel1.BackColor = System.Drawing.Color.SkyBlue;
             this.tableLayoutPanel1.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
             this.tableLayoutPanel1.ColumnCount = 4;
@@ -386,7 +385,7 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(503, 170);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(901, 170);
             this.tableLayoutPanel2.TabIndex = 1;
             // 
             // priceManualNumericUpDown
@@ -394,14 +393,14 @@
             this.priceManualNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.priceManualNumericUpDown.Location = new System.Drawing.Point(143, 116);
+            this.priceManualNumericUpDown.Location = new System.Drawing.Point(253, 116);
             this.priceManualNumericUpDown.Maximum = new decimal(new int[] {
             1410065408,
             2,
             0,
             0});
             this.priceManualNumericUpDown.Name = "priceManualNumericUpDown";
-            this.priceManualNumericUpDown.Size = new System.Drawing.Size(149, 21);
+            this.priceManualNumericUpDown.Size = new System.Drawing.Size(272, 21);
             this.priceManualNumericUpDown.TabIndex = 14;
             // 
             // accountComboBox
@@ -410,9 +409,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.accountComboBox.FormattingEnabled = true;
-            this.accountComboBox.Location = new System.Drawing.Point(143, 4);
+            this.accountComboBox.Location = new System.Drawing.Point(253, 4);
             this.accountComboBox.Name = "accountComboBox";
-            this.accountComboBox.Size = new System.Drawing.Size(149, 20);
+            this.accountComboBox.Size = new System.Drawing.Size(272, 20);
             this.accountComboBox.TabIndex = 16;
             // 
             // label18
@@ -421,7 +420,7 @@
             this.label18.AutoSize = true;
             this.label18.Location = new System.Drawing.Point(4, 149);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(132, 12);
+            this.label18.Size = new System.Drawing.Size(242, 12);
             this.label18.TabIndex = 15;
             this.label18.Text = "원주문번호";
             this.label18.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -432,7 +431,7 @@
             this.label15.AutoSize = true;
             this.label15.Location = new System.Drawing.Point(4, 120);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(132, 12);
+            this.label15.Size = new System.Drawing.Size(242, 12);
             this.label15.TabIndex = 12;
             this.label15.Text = "주문가격";
             this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -443,7 +442,7 @@
             this.label12.AutoSize = true;
             this.label12.Location = new System.Drawing.Point(4, 92);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(132, 12);
+            this.label12.Size = new System.Drawing.Size(242, 12);
             this.label12.TabIndex = 9;
             this.label12.Text = "주문수량";
             this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -454,7 +453,7 @@
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(4, 64);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(132, 12);
+            this.label9.Size = new System.Drawing.Size(242, 12);
             this.label9.TabIndex = 6;
             this.label9.Text = "거래구분";
             this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -465,9 +464,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.itemNameLabel.AutoSize = true;
-            this.itemNameLabel.Location = new System.Drawing.Point(299, 29);
+            this.itemNameLabel.Location = new System.Drawing.Point(532, 29);
             this.itemNameLabel.Name = "itemNameLabel";
-            this.itemNameLabel.Size = new System.Drawing.Size(200, 27);
+            this.itemNameLabel.Size = new System.Drawing.Size(365, 27);
             this.itemNameLabel.TabIndex = 5;
             this.itemNameLabel.Text = "종목명";
             this.itemNameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -478,7 +477,7 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(4, 36);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(132, 12);
+            this.label6.Size = new System.Drawing.Size(242, 12);
             this.label6.TabIndex = 3;
             this.label6.Text = "종목코드";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -489,9 +488,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.userNameLabel.AutoSize = true;
-            this.userNameLabel.Location = new System.Drawing.Point(299, 1);
+            this.userNameLabel.Location = new System.Drawing.Point(532, 1);
             this.userNameLabel.Name = "userNameLabel";
-            this.userNameLabel.Size = new System.Drawing.Size(200, 27);
+            this.userNameLabel.Size = new System.Drawing.Size(365, 27);
             this.userNameLabel.TabIndex = 2;
             this.userNameLabel.Text = "사용자명";
             this.userNameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -502,7 +501,7 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(4, 8);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(132, 12);
+            this.label3.Size = new System.Drawing.Size(242, 12);
             this.label3.TabIndex = 0;
             this.label3.Text = "계좌번호";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -528,9 +527,9 @@
             "61 : 장전시간외종가",
             "62 : 시간외단일가매매",
             "81 : 장후시간외종가"});
-            this.guBunComboBox.Location = new System.Drawing.Point(143, 60);
+            this.guBunComboBox.Location = new System.Drawing.Point(253, 60);
             this.guBunComboBox.Name = "guBunComboBox";
-            this.guBunComboBox.Size = new System.Drawing.Size(149, 20);
+            this.guBunComboBox.Size = new System.Drawing.Size(272, 20);
             this.guBunComboBox.TabIndex = 17;
             this.guBunComboBox.Text = "00 : 지정가";
             // 
@@ -539,14 +538,14 @@
             this.amountManulNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.amountManulNumericUpDown.Location = new System.Drawing.Point(143, 88);
+            this.amountManulNumericUpDown.Location = new System.Drawing.Point(253, 88);
             this.amountManulNumericUpDown.Maximum = new decimal(new int[] {
             1410065408,
             2,
             0,
             0});
             this.amountManulNumericUpDown.Name = "amountManulNumericUpDown";
-            this.amountManulNumericUpDown.Size = new System.Drawing.Size(149, 21);
+            this.amountManulNumericUpDown.Size = new System.Drawing.Size(272, 21);
             this.amountManulNumericUpDown.TabIndex = 18;
             // 
             // itemCodeTextBox
@@ -554,9 +553,9 @@
             this.itemCodeTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.itemCodeTextBox.Location = new System.Drawing.Point(143, 32);
+            this.itemCodeTextBox.Location = new System.Drawing.Point(253, 32);
             this.itemCodeTextBox.Name = "itemCodeTextBox";
-            this.itemCodeTextBox.Size = new System.Drawing.Size(149, 21);
+            this.itemCodeTextBox.Size = new System.Drawing.Size(272, 21);
             this.itemCodeTextBox.TabIndex = 20;
             // 
             // originOrderNumtextBox
@@ -564,9 +563,9 @@
             this.originOrderNumtextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.originOrderNumtextBox.Location = new System.Drawing.Point(143, 144);
+            this.originOrderNumtextBox.Location = new System.Drawing.Point(253, 144);
             this.originOrderNumtextBox.Name = "originOrderNumtextBox";
-            this.originOrderNumtextBox.Size = new System.Drawing.Size(149, 21);
+            this.originOrderNumtextBox.Size = new System.Drawing.Size(272, 21);
             this.originOrderNumtextBox.TabIndex = 21;
             // 
             // tradeOptionComboBox
@@ -578,9 +577,9 @@
             this.tradeOptionComboBox.Items.AddRange(new object[] {
             "매수",
             "매도"});
-            this.tradeOptionComboBox.Location = new System.Drawing.Point(299, 144);
+            this.tradeOptionComboBox.Location = new System.Drawing.Point(532, 144);
             this.tradeOptionComboBox.Name = "tradeOptionComboBox";
-            this.tradeOptionComboBox.Size = new System.Drawing.Size(200, 20);
+            this.tradeOptionComboBox.Size = new System.Drawing.Size(365, 20);
             this.tradeOptionComboBox.TabIndex = 19;
             this.tradeOptionComboBox.Text = "필수 정정 구분 선택";
             // 
@@ -591,9 +590,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.flowLayoutPanel1.Controls.Add(this.searchButton);
             this.flowLayoutPanel1.Controls.Add(this.searchTextBox);
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(299, 60);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(532, 60);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(200, 21);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(365, 21);
             this.flowLayoutPanel1.TabIndex = 22;
             // 
             // searchButton
@@ -632,7 +631,7 @@
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(503, 73);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(901, 73);
             this.tableLayoutPanel3.TabIndex = 2;
             // 
             // cancelButton
@@ -641,9 +640,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cancelButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
-            this.cancelButton.Location = new System.Drawing.Point(254, 39);
+            this.cancelButton.Location = new System.Drawing.Point(453, 39);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(246, 31);
+            this.cancelButton.Size = new System.Drawing.Size(445, 31);
             this.cancelButton.TabIndex = 3;
             this.cancelButton.Text = "취소(수동)";
             this.cancelButton.UseVisualStyleBackColor = false;
@@ -657,7 +656,7 @@
             this.changeButton.ForeColor = System.Drawing.Color.White;
             this.changeButton.Location = new System.Drawing.Point(3, 39);
             this.changeButton.Name = "changeButton";
-            this.changeButton.Size = new System.Drawing.Size(245, 31);
+            this.changeButton.Size = new System.Drawing.Size(444, 31);
             this.changeButton.TabIndex = 2;
             this.changeButton.Text = "정정(수동)";
             this.changeButton.UseVisualStyleBackColor = false;
@@ -669,9 +668,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.sellButton.BackColor = System.Drawing.SystemColors.Highlight;
             this.sellButton.ForeColor = System.Drawing.Color.White;
-            this.sellButton.Location = new System.Drawing.Point(254, 3);
+            this.sellButton.Location = new System.Drawing.Point(453, 3);
             this.sellButton.Name = "sellButton";
-            this.sellButton.Size = new System.Drawing.Size(246, 30);
+            this.sellButton.Size = new System.Drawing.Size(445, 30);
             this.sellButton.TabIndex = 1;
             this.sellButton.Text = "매도주문(수동)";
             this.sellButton.UseVisualStyleBackColor = false;
@@ -685,7 +684,7 @@
             this.buyButton.ForeColor = System.Drawing.Color.White;
             this.buyButton.Location = new System.Drawing.Point(3, 3);
             this.buyButton.Name = "buyButton";
-            this.buyButton.Size = new System.Drawing.Size(245, 30);
+            this.buyButton.Size = new System.Drawing.Size(444, 30);
             this.buyButton.TabIndex = 0;
             this.buyButton.Text = "매수주문(수동)";
             this.buyButton.UseVisualStyleBackColor = false;
@@ -694,9 +693,8 @@
             // 
             this.conditionDataGridView.AllowUserToAddRows = false;
             this.conditionDataGridView.AllowUserToDeleteRows = false;
-            this.conditionDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.conditionDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.conditionDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.conditionDataGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
             this.conditionDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -728,18 +726,17 @@
             // 
             this.conditionItemDataGridView.AllowUserToAddRows = false;
             this.conditionItemDataGridView.AllowUserToDeleteRows = false;
-            this.conditionItemDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.conditionItemDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.conditionItemDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.conditionItemDataGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
-            dataGridViewCellStyle16.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle16.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            dataGridViewCellStyle16.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle16.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle16.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle16.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.conditionItemDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle16;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.conditionItemDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.conditionItemDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.conditionItemDataGridView.Location = new System.Drawing.Point(172, 211);
             this.conditionItemDataGridView.MultiSelect = false;
@@ -768,15 +765,18 @@
             this.deleteListBox.ItemHeight = 12;
             this.deleteListBox.Location = new System.Drawing.Point(385, 693);
             this.deleteListBox.Name = "deleteListBox";
-            this.deleteListBox.Size = new System.Drawing.Size(374, 136);
+            this.deleteListBox.Size = new System.Drawing.Size(772, 136);
             this.deleteListBox.TabIndex = 6;
             // 
             // groupBox1
             // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.outStandingDataGridView);
             this.groupBox1.Location = new System.Drawing.Point(768, 259);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(503, 216);
+            this.groupBox1.Size = new System.Drawing.Size(909, 216);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "미체결";
@@ -790,13 +790,13 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.outStandingDataGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
             this.outStandingDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.outStandingDataGridView.Location = new System.Drawing.Point(5, 20);
+            this.outStandingDataGridView.Location = new System.Drawing.Point(3, 11);
             this.outStandingDataGridView.MultiSelect = false;
             this.outStandingDataGridView.Name = "outStandingDataGridView";
             this.outStandingDataGridView.RowHeadersVisible = false;
             this.outStandingDataGridView.RowTemplate.Height = 23;
             this.outStandingDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.outStandingDataGridView.Size = new System.Drawing.Size(498, 190);
+            this.outStandingDataGridView.Size = new System.Drawing.Size(906, 190);
             this.outStandingDataGridView.TabIndex = 10;
             // 
             // tableLayoutPanel4
@@ -963,7 +963,7 @@
             this.groupBox2.Controls.Add(this.tableLayoutPanel4);
             this.groupBox2.Location = new System.Drawing.Point(773, 481);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(512, 348);
+            this.groupBox2.Size = new System.Drawing.Size(910, 348);
             this.groupBox2.TabIndex = 9;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "잔고";
@@ -977,36 +977,36 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.balanceDataGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
             this.balanceDataGridView.CausesValidation = false;
-            dataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle17.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle17.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            dataGridViewCellStyle17.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle17.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle17.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle17.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.balanceDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle17;
-            dataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
-            dataGridViewCellStyle18.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle18.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            dataGridViewCellStyle18.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle18.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle18.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle18.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.balanceDataGridView.DefaultCellStyle = dataGridViewCellStyle18;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.balanceDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.balanceDataGridView.DefaultCellStyle = dataGridViewCellStyle3;
             this.balanceDataGridView.Location = new System.Drawing.Point(5, 127);
             this.balanceDataGridView.MultiSelect = false;
             this.balanceDataGridView.Name = "balanceDataGridView";
             this.balanceDataGridView.RowHeadersVisible = false;
             this.balanceDataGridView.RowTemplate.Height = 23;
             this.balanceDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.balanceDataGridView.Size = new System.Drawing.Size(501, 215);
+            this.balanceDataGridView.Size = new System.Drawing.Size(899, 215);
             this.balanceDataGridView.TabIndex = 11;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1285, 841);
+            this.ClientSize = new System.Drawing.Size(1683, 841);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.deleteListBox);

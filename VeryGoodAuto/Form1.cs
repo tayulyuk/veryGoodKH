@@ -89,9 +89,9 @@ namespace VeryGoodAuto
         private int 매수할종목평균수량;
 
         /// <summary>
-        /// 매수종목의 최고 수익율 저장.
+        /// 매수 종목을 저장하고 사용후 삭제용도.
         /// </summary>
-        Dictionary<string, double> highestRate;  
+        List<BalanceItem> storeOrderList;  
         
         public Form1()
         {
@@ -108,7 +108,7 @@ namespace VeryGoodAuto
             lockThis = new object(); // lock
             lockRemove = new object();// 삭제 종목명.
 
-            highestRate = new Dictionary<string, double>();
+            storeOrderList = new List<BalanceItem>();
 
             conditionDataGridView.SelectionChanged += DataGridView_SelectionChanged;
             tradingStartButton.Click += Button_Click;
@@ -212,7 +212,7 @@ namespace VeryGoodAuto
                         {
                             this.Invoke(new Action(delegate ()
                             {
-                                Delay(500, deleteCode.First().Trim());
+                                Delay(250, deleteCode.First().Trim());
                             }));
                         });
 
@@ -234,12 +234,12 @@ namespace VeryGoodAuto
                 {
                     if (orderClassList.Count > 0)
                     {
-                        Thread t = new Thread(delegate ()
+                        Console.WriteLine("orderClassList.Count ::" + orderClassList.Count);
+
+                        Thread t = new Thread(delegate()
                         {
-                            this.Invoke(new Action(delegate ()
-                            {
-                                DelayOrder(1000, orderClassList.First());
-                            }));
+                            Console.WriteLine("오더 쓰레드");
+                            this.Invoke(new Action(delegate() { DelayOrder(500, orderClassList.First()); }));
                         });
                         t.Start();
                         t.Join();
@@ -287,12 +287,12 @@ namespace VeryGoodAuto
                                   
                 if (매매구분.Equals("매수"))
                 {
-                    orderClassList.Add(new OrderClass("매수주문 변경", 주식주문, 계좌번호, 5, 종목코드, 수량, 가격, 거래구분, 주문번호));
+                    orderClassList.Add(new OrderClass("매수주문변경", 주식주문, 계좌번호, 5, 종목코드, 수량, 가격, 거래구분, 주문번호));
                 }
                         //axKHOpenAPI1.SendOrder("주식주문", 주식주문, 계좌번호, 5, 종목코드, 수량, 가격, 거래구분, 주문번호);
                 else if (매매구분.Equals("매도"))
                 {
-                    orderClassList.Add(new OrderClass("매도주문 변경", 주식주문, 계좌번호, 6, 종목코드, 수량, 가격, 거래구분, 주문번호));
+                    orderClassList.Add(new OrderClass("매도주문변경", 주식주문, 계좌번호, 6, 종목코드, 수량, 가격, 거래구분, 주문번호));
                 }
                         //axKHOpenAPI1.SendOrder("주식주문", 주식주문, 계좌번호, 6, 종목코드, 수량, 가격, 거래구분, 주문번호);               
             }
@@ -303,12 +303,12 @@ namespace VeryGoodAuto
               
                 if (매매구분.Equals("매수"))
                 {
-                    orderClassList.Add(new OrderClass("매수 취소", 주식주문,계좌번호, 3, 종목코드, 수량, 가격, 거래구분, 주문번호));
+                    orderClassList.Add(new OrderClass("매수취소", 주식주문,계좌번호, 3, 종목코드, 수량, 가격, 거래구분, 주문번호));
                 }
                     //axKHOpenAPI1.SendOrder("주식주문", 주식주문, 계좌번호, 3, 종목코드, 수량, 가격, 거래구분, 주문번호);
                 else if (매매구분.Equals("매도"))
                 {
-                    orderClassList.Add(new OrderClass("매도 취소", 주식주문, 계좌번호, 4, 종목코드, 수량, 가격, 거래구분, 주문번호));
+                    orderClassList.Add(new OrderClass("매도취소", 주식주문, 계좌번호, 4, 종목코드, 수량, 가격, 거래구분, 주문번호));
                 }
                     //axKHOpenAPI1.SendOrder("주식주문", 주식주문, 계좌번호, 4, 종목코드, 수량, 가격, 거래구분, 주문번호);
                
@@ -345,7 +345,7 @@ namespace VeryGoodAuto
                 }
         }
 
-        string 저장타입 = "";        
+        string 저장타입 = "";
 
         private void AxKHOpenAPI1_OnReceiveRealData(object sender, _DKHOpenAPIEvents_OnReceiveRealDataEvent e)
         {
@@ -390,22 +390,22 @@ namespace VeryGoodAuto
                 long 거래금 = long.Parse(axKHOpenAPI1.GetCommRealData(e.sRealKey, 14).Trim());
                 long 보유수량 = 0; // 처음 감시 되면 무조건 보유수량은 없으니까.
 
+               
                 try
                 {
-                    long 현재가 = 0;
-                    if (현재가1 < 0)// - 부호를 없애기 위해 -현재가를 곱해  양수로 만든다.                          
-                        현재가 = -현재가1;
-
                     BalanceItem bi = balanceItemList.Find(o => o.종목코드.Equals(종목코드));
                     if (bi != null)
                     {
                         Console.WriteLine("있다");
-                        bi.현재가 = 현재가;
+                        bi.현재가 = 현재가1;
 
-                        long 평가금액 = bi.보유수량 * 현재가; //  -(세금 + 수수료)
+                        long 평가금액 =  bi.보유수량 * 현재가1; //  -(세금 + 수수료)
 
                         bi.손익금액 = 평가금액 - bi.매수금;
-                        bi.손익율 = 100 * (평가금액 - bi.매수금) / (double) bi.매수금;
+
+                        double 손익비율 = 100 * (bi.손익금액) / (double)bi.매수금;
+                       
+                        bi.손익율 = double.Parse(손익비율.ToString("N2"));
 
                         if (bi.손익율 > bi.최고율)
                             bi.최고율 = bi.손익율;
@@ -419,10 +419,6 @@ namespace VeryGoodAuto
                         {
                             if (isTrailingStopCheckBox.Checked)
                             {
-                                // double 최고치 = 0;
-                                // if (highestRate.ContainsKey(종목코드))
-                                // 최고치 = highestRate[종목코드];
-
                                 if (2 < bi.최고율)
                                 {
 
@@ -507,7 +503,7 @@ namespace VeryGoodAuto
                         {
                             Console.WriteLine("없 다");
 
-                            sio.현재가 = 현재가;
+                            sio.현재가 = 현재가1;
                             sio.거래금 = 거래금;
                             sio.거래량 = 거래량;
                             sio.등락율 = 등락율;
@@ -518,7 +514,7 @@ namespace VeryGoodAuto
                         else
                         {
                             Console.WriteLine("없 다   =============");
-                            conditionViewList.Add(new StockItemObject(종목코드, 종목명, 현재가, 전일대비, 등락율, 거래량, 거래금));
+                            conditionViewList.Add(new StockItemObject(종목코드, 종목명, 현재가1, 전일대비, 등락율, 거래량, 거래금));
                             conditionItemDataGridView.DataSource = null;
                             conditionItemDataGridView.DataSource = conditionViewList;
                         }
@@ -582,12 +578,28 @@ namespace VeryGoodAuto
                                                         int 예탁자산 = int.Parse(예탁자산평가액Label.Text.Replace(",", "").Trim());
                                                         int 예탁자산총매수량 = 예탁자산 / (int)현재가1;
                                                         적정매수량 = AdjustQuantity(매수할종목평균수량, 예탁자산총매수량);
-                                                        orderClassList.Add(new OrderClass("주식매수요청", 화면번호_주식매수요청,
+                                                        orderClassList.Add(new OrderClass("매수주문", 화면번호_주식매수요청,
                                                                                                    accountComboBox.Text, 1, 종목코드.Trim(), 적정매수량, 0, "03", ""));
                                                     }
                                                     else
-                                                        orderClassList.Add(new OrderClass("주식매수요청", 화면번호_주식매수요청,
+                                                        orderClassList.Add(new OrderClass("매수주문", 화면번호_주식매수요청,
                                                                                                 accountComboBox.Text, 1, 종목코드.Trim(), 매수량, 0, "03", ""));
+                                                    //order정보를 저장해서 쓰레드에서 처리하고 삭제한다.
+                                                    long 매수금 = 현재가1 * 매수량;
+                                                    long 평가금액 = 매수량 * 현재가1; //  -(세금 + 수수료)
+
+                                                    long 손익금액 = 평가금액 - bi.매수금;
+
+                                                    double 손익비율 = 100 * (bi.손익금액) / (double)bi.매수금;
+
+                                                    double 손익율 = double.Parse(손익비율.ToString("N2"));
+                                                    double 최고율 = 0;
+                                                    if (손익율 > 0)
+                                                       최고율 = 손익율;
+
+                                                    // 매수할경우 balanceItemView에 보여주기 위해.
+                                                    storeOrderList.Add(new BalanceItem(종목코드, 평가금액, 종목명, 매수량, 현재가1, 손익금액,
+                                                        손익율, 최고율, 매수금));
                                                 }
                                                 insertListBox.SelectedIndex = insertListBox.Items.Count - 1;// 첫 line으로 항상 이동
                                             }
@@ -923,6 +935,9 @@ namespace VeryGoodAuto
                                 미체결수량,주문구분,체결가,현재가,시간));
                         }
 
+                        if (os.미체결수량 == 0)
+                            outStandingList.Remove(os);
+
                         outStandingDataGridView.DataSource = null;
                         outStandingDataGridView.DataSource = outStandingList;
                         outStandingDataGridView.CurrentRow.Selected = false;
@@ -931,7 +946,7 @@ namespace VeryGoodAuto
                 }
                 catch (Exception exception)
                 {
-                    Console.WriteLine(exception.Message.ToString()+"589");
+                    Console.WriteLine(exception.Message.ToString()+"935");
                 }
 
             }
@@ -950,9 +965,9 @@ namespace VeryGoodAuto
 
                 //axKHOpenAPI.SetRealReg  함수 호출 , "9001;10", "1");
 
-                Console.WriteLine("종목명 : " + stockName + " | 현재 종가 : " + String.Format("{0:#,###}", currentPrice));
+                Console.WriteLine("종목명 : " + stockName + " | 현재 종가 : " + currentPrice);
               
-                Console.WriteLine("매입주문금액 : " + String.Format("{0:#,###}", 총매입금액) + " | 금일 실현손익 : " + String.Format("{0:#,###}", 당일실현손익));
+                Console.WriteLine("매입주문금액 : " + 총매입금액 + " | 금일 실현손익 : " +  당일실현손익);
                 realizationProfitLabel.Text = String.Format("{0:#,###}", 당일투자손익);
                 당일손익율Label.Text = 당일손익율;
                 //당일손익율Label.Text = 당일실현손익률;
@@ -1183,8 +1198,12 @@ namespace VeryGoodAuto
                             "1"); //실시간 잔고 요청.     
                     }
 
-                    balanceDataGridView.DataSource = balanceItemList;
-                    balanceDataGridView.CurrentRow.Selected = false;
+                    if (n > 0)
+                    {
+                        balanceDataGridView.DataSource = null;
+                        balanceDataGridView.DataSource = balanceItemList;
+                        balanceDataGridView.CurrentRow.Selected = false;
+                    }
 
                     for (int i = 0; i < balanceDataGridView.RowCount; i++)
                     {
@@ -1493,7 +1512,7 @@ namespace VeryGoodAuto
                     //삭제와 상태를 보여주기.
                     conditionItemDataGridView.DataSource = null;
                     conditionItemDataGridView.DataSource = conditionViewList;
-                    conditionItemDataGridView.CurrentRow.Selected = false;
+                    //conditionItemDataGridView.CurrentRow.Selected = false;
                 }
 
                 //  Console.WriteLine("삭제 코드 수 :: " + co.stockItemList.Count);
@@ -1505,24 +1524,43 @@ namespace VeryGoodAuto
         {
             //잔고창에 목록이 있는것은 재매수 하지 않는다.
             BalanceItem bi = balanceItemList.Find(o => o.종목코드 == orderClass.종목코드);
+           
+            if ((bi == null && orderClass.주문형태 == "매수주문") || (bi != null && orderClass.주문형태 == "매도주문" ) ||
+                (bi == null && orderClass.주문형태 == "매수주문변경") || (bi == null && orderClass.주문형태 == "매도주문변경") ||
+                (bi == null && orderClass.주문형태 == "매수취소") || (bi == null && orderClass.주문형태 == "매도취소") )
 
-            if ((bi == null && orderClass.주문형태 == "주문매수") || (bi != null && orderClass.주문형태 == "주문매도"))
             {
-
+                Console.WriteLine("주문형태 : " + orderClass.주문형태);
                 //먼저 일하고 쉬었다 다음일 진행.
                 int orderResult = axKHOpenAPI1.SendOrder(orderClass.주문형태, orderClass.화면번호, orderClass.계정,
                     orderClass.타입, orderClass.종목코드, orderClass.보유수량,
                     orderClass.가격, orderClass.호가구분, orderClass.원래주문번호);
-
-                if (orderClass.주문형태 == "주문매도")
+                //매도는 리스트에서 삭제해주고
+                //나머지는 변경된 내용을 
+                //아이템에 입력해준다.
+                if (orderClass.주문형태 == "매도주문")
                 {
                     balanceItemList.Remove(bi); // 잔고창에서 삭제.
 
                     balanceDataGridView.DataSource = null;
                     balanceDataGridView.DataSource = balanceItemList;
-                    balanceDataGridView.CurrentRow.Selected = false;
+                    if(balanceDataGridView.RowCount > 0)
+                        balanceDataGridView.CurrentRow.Selected = false;
                 }
-
+              
+                else if (orderClass.주문형태 == "매수주문")
+                {
+                    BalanceItem bii =  storeOrderList.Find(o => o.종목코드 == orderClass.종목코드);
+                    if (bii != null)
+                    {
+                        balanceItemList.Add(bii);// 잔고창에 보여주고.
+                        storeOrderList.Remove(bii);//저장에선 삭제하라
+                    }
+                   
+                    balanceDataGridView.DataSource = null;
+                    balanceDataGridView.DataSource = balanceItemList;
+                }
+                
                 if (orderResult == 0)
                     insertListBox.Items.Add("[*" + orderClass.주문형태 + "=성공*]  종목명 :" +
                                             axKHOpenAPI1.GetMasterCodeName(orderClass.종목코드));
@@ -1533,6 +1571,7 @@ namespace VeryGoodAuto
                 OrderClass order = orderClassList.Find(o => o.종목코드 == orderClass.종목코드);
                 orderClassList.Remove(order); // 앞에 있는 오더 삭제.
 
+                Console.WriteLine("orderClassList  count :; " + orderClassList.Count);
                 // 먼저 일 끝.
 
                 DateTime ThisMoment = DateTime.Now;
@@ -1545,9 +1584,8 @@ namespace VeryGoodAuto
                     ThisMoment = DateTime.Now;
                 }
             }
-
             return DateTime.Now;
-        }       
+        }
     }
     /// <summary>
     /// 전체 종목 각각 담을 묶음.
