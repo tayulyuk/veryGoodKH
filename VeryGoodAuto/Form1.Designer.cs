@@ -46,9 +46,10 @@
             this.takeProfitCheckBox = new System.Windows.Forms.CheckBox();
             this.stopLossChheckBox = new System.Windows.Forms.CheckBox();
             this.axKHOpenAPI1 = new AxKHOpenAPILib.AxKHOpenAPI();
-            this.label5 = new System.Windows.Forms.Label();
             this.isTrailingStopCheckBox = new System.Windows.Forms.CheckBox();
             this.isAdjustQuantityCheckBox = new System.Windows.Forms.CheckBox();
+            this.itmeCountlabel = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.priceManualNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.accountComboBox = new System.Windows.Forms.ComboBox();
@@ -95,6 +96,7 @@
             this.예수금Label = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.잔고label = new System.Windows.Forms.Label();
             this.balanceDataGridView = new System.Windows.Forms.DataGridView();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.takeProfitNumericUpDown)).BeginInit();
@@ -139,9 +141,10 @@
             this.tableLayoutPanel1.Controls.Add(this.takeProfitCheckBox, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.stopLossChheckBox, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.axKHOpenAPI1, 0, 4);
-            this.tableLayoutPanel1.Controls.Add(this.label5, 1, 4);
             this.tableLayoutPanel1.Controls.Add(this.isTrailingStopCheckBox, 2, 2);
             this.tableLayoutPanel1.Controls.Add(this.isAdjustQuantityCheckBox, 3, 1);
+            this.tableLayoutPanel1.Controls.Add(this.itmeCountlabel, 1, 4);
+            this.tableLayoutPanel1.Controls.Add(this.label5, 2, 3);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(5, 4);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 5;
@@ -313,16 +316,6 @@
             this.axKHOpenAPI1.TabIndex = 17;
             this.axKHOpenAPI1.Visible = false;
             // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.ForeColor = System.Drawing.Color.Red;
-            this.label5.Location = new System.Drawing.Point(155, 141);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(205, 12);
-            this.label5.TabIndex = 18;
-            this.label5.Text = "% 손절은 음수(-0.0)방식으로 입력 %";
-            // 
             // isTrailingStopCheckBox
             // 
             this.isTrailingStopCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -348,6 +341,26 @@
             this.isAdjustQuantityCheckBox.TabIndex = 20;
             this.isAdjustQuantityCheckBox.Text = "매수량(자동설정기능)";
             this.isAdjustQuantityCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // itmeCountlabel
+            // 
+            this.itmeCountlabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.itmeCountlabel.AutoSize = true;
+            this.itmeCountlabel.Location = new System.Drawing.Point(319, 187);
+            this.itmeCountlabel.Name = "itmeCountlabel";
+            this.itmeCountlabel.Size = new System.Drawing.Size(55, 12);
+            this.itmeCountlabel.TabIndex = 21;
+            this.itmeCountlabel.Text = "종목수: 0";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.ForeColor = System.Drawing.Color.Red;
+            this.label5.Location = new System.Drawing.Point(381, 106);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(179, 24);
+            this.label5.TabIndex = 18;
+            this.label5.Text = "% 손절은 음수(-0.0)방식으로 입력 %";
             // 
             // tableLayoutPanel2
             // 
@@ -693,8 +706,7 @@
             // 
             this.conditionDataGridView.AllowUserToAddRows = false;
             this.conditionDataGridView.AllowUserToDeleteRows = false;
-            this.conditionDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
+            this.conditionDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.conditionDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.conditionDataGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
             this.conditionDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -726,8 +738,7 @@
             // 
             this.conditionItemDataGridView.AllowUserToAddRows = false;
             this.conditionItemDataGridView.AllowUserToDeleteRows = false;
-            this.conditionItemDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
+            this.conditionItemDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.conditionItemDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.conditionItemDataGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
@@ -749,6 +760,8 @@
             // 
             // insertListBox
             // 
+            this.insertListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.insertListBox.FormattingEnabled = true;
             this.insertListBox.ItemHeight = 12;
             this.insertListBox.Location = new System.Drawing.Point(5, 693);
@@ -758,8 +771,7 @@
             // 
             // deleteListBox
             // 
-            this.deleteListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.deleteListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.deleteListBox.FormattingEnabled = true;
             this.deleteListBox.ItemHeight = 12;
@@ -785,9 +797,7 @@
             // 
             this.outStandingDataGridView.AllowUserToAddRows = false;
             this.outStandingDataGridView.AllowUserToDeleteRows = false;
-            this.outStandingDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.outStandingDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.outStandingDataGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
             this.outStandingDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.outStandingDataGridView.Location = new System.Drawing.Point(3, 11);
@@ -959,6 +969,7 @@
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.잔고label);
             this.groupBox2.Controls.Add(this.balanceDataGridView);
             this.groupBox2.Controls.Add(this.tableLayoutPanel4);
             this.groupBox2.Location = new System.Drawing.Point(773, 481);
@@ -967,6 +978,15 @@
             this.groupBox2.TabIndex = 9;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "잔고";
+            // 
+            // 잔고label
+            // 
+            this.잔고label.AutoSize = true;
+            this.잔고label.Location = new System.Drawing.Point(566, 96);
+            this.잔고label.Name = "잔고label";
+            this.잔고label.Size = new System.Drawing.Size(55, 12);
+            this.잔고label.TabIndex = 12;
+            this.잔고label.Text = "항목수: 0";
             // 
             // balanceDataGridView
             // 
@@ -1040,6 +1060,7 @@
             this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel4.PerformLayout();
             this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.balanceDataGridView)).EndInit();
             this.ResumeLayout(false);
 
@@ -1111,6 +1132,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn 조건식_조건식명;
         private System.Windows.Forms.CheckBox isTrailingStopCheckBox;
         private System.Windows.Forms.CheckBox isAdjustQuantityCheckBox;
+        private System.Windows.Forms.Label itmeCountlabel;
+        private System.Windows.Forms.Label 잔고label;
     }
 }
 
