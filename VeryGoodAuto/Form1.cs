@@ -84,8 +84,11 @@ namespace VeryGoodAuto
         /// <summary>
         /// 매수와 매도를 함깨 동기화하여 시간제한 4회/1초 를 넘지 않게 관리한다.
         /// </summary>
-        public List<OrderClass> orderClassList; 
-        public List<ConditionViewObject> conditionViewList; // 단순 컨디션 뷰 보여주기위한 목록,
+        public List<OrderClass> orderClassList;
+        /// <summary>
+        /// 단순 컨디션 뷰 보여주기위한 목록,
+        /// </summary>
+        public List<ConditionViewObject> conditionViewList; 
         /// <summary>
         /// 실시간으로 받아오는 매수평균치 -> 매도시 언제라도 팔수 있는 량을 매수에 사용한다.
         /// </summary>
@@ -1148,8 +1151,8 @@ namespace VeryGoodAuto
             {
                 string 종목코드 = e.sTrCode;
                 int 조건식번호 = int.Parse(e.strConditionIndex);
-                string 조건식명 = e.strConditionName;
-                string 종목타입 = e.strType;
+               // string 조건식명 = e.strConditionName;
+               // string 종목타입 = e.strType;
                 string 종목명 = axKHOpenAPI1.GetMasterCodeName(e.sTrCode);
 
                 if (e.strType.Equals("I"))//종목 편입
@@ -1162,12 +1165,14 @@ namespace VeryGoodAuto
                     //종목코드와 종목명을  List에 없을경우 올려라 
 
                     string stockName = axKHOpenAPI1.GetMasterCodeName(e.sTrCode);
-                    insertListBox.Items.Add("편입| 조건식번호 : " + e.strConditionIndex + " |종목코드 : " + e.sTrCode + "|" + "종목명 : " + stockName);
+                    insertListBox.Items.Add("+편입| 조건식번호 : " + e.strConditionIndex + " |종목코드 : " + e.sTrCode + "|" + "종목명 : " + stockName);
                     //현재가10,전일대비11,등락율12,누적거래량13,누적거래대금14,매수총잔량125,실현손익990;손익율8019,예수금951,매수호가총잔량125
                   
                     //axKHOpenAPI1.SetRealReg(스크린번호.Trim(), 종목코드, "10;11;12;13;14", "1");       
                     axKHOpenAPI1.SetRealReg(현재_스크린번호, 종목코드, "10;11;12;15;951;8019;990;991;125", "1"); //매수호가 총잔량 추가 /적정매수량 계산시필요
                   
+                    //conditionViewList.Add(new ConditionViewObject(종목코드,종목명,0,0,0,0,0));
+
                     insertListBox.SelectedIndex = insertListBox.Items.Count - 1;// 첫 line으로 항상 이동  
                   
                 }
@@ -1178,13 +1183,17 @@ namespace VeryGoodAuto
                         currentConditionCode = 조건식번호;
 
                     string 스크린번호 = (실시간조건검색수신화면번호 + 조건식번호).ToString().Trim();
-                    deleteListBox.Items.Add("[이탈]  : 조건식번호 : " + e.strConditionIndex + "  종목명 : " + 종목명);
+                    deleteListBox.Items.Add("[-이탈]  : 조건식번호 : " + e.strConditionIndex + "  종목명 : " + 종목명);
                     deleteListBox.SelectedIndex = deleteListBox.Items.Count - 1;// 첫 line으로 항상 이동
 
                     삭제코드 = e.sTrCode.Trim();
                     
                     //종목리스트에서 더이상 나머지 data가 나오지 못하게 차단한다.           
                     axKHOpenAPI1.SetRealRemove(스크린번호.Trim(), e.sTrCode);// 실시간 시세해지                   
+
+                   // ConditionViewObject cvo = conditionViewList.Find(o => o.종목코드 == 종목코드);
+                  //  if(cvo != null)
+                   //     conditionViewList.Remove(cvo);
 
                     deleteCode.Add(삭제코드); // 단순히 삭제코드만 입력한다.
                 }
