@@ -402,7 +402,7 @@ namespace VeryGoodAuto
 
             if (e.sRealType.Equals("주식체결"))
             {
-                string 종목코드 = e.sRealKey;
+                string 종목코드 = e.sRealKey.Replace("A","").Trim(); // test 해보고 값도 출력해봐라.   매도에서 왜 안팔리지는지.확인해라. 그리고 삭제.
                 if (종목코드.Equals(String.Empty))
                     return;
 
@@ -473,7 +473,7 @@ namespace VeryGoodAuto
                                         }
                                     }
                                 }
-                                else if ((0.5 <= bo.최고율) && (bo.최고율 < 2))
+                                else if ((0.5 <= bo.최고율) && (  2 > bo.최고율))
                                 {
                                     if (bo.손익율 < (bo.최고율 - 0.5f))
                                     {
@@ -494,7 +494,7 @@ namespace VeryGoodAuto
                                 }
                             }
                             //수익매도 처리
-                            else if (takeProfitCheckBox.Checked)
+                            if (takeProfitCheckBox.Checked)
                             {
                                 double takeProfit = (double) takeProfitNumericUpDown.Value;
                                 if (bo.손익율 >= takeProfit)
@@ -570,7 +570,7 @@ namespace VeryGoodAuto
                         Console.WriteLine(exception.Message.ToString() + "628");
                     }
                 }
-                else// 잔고에 없으면    컨디션뷰와 
+                else// 잔고에 없으면    컨디션뷰에 보여주기.
                 {
                     try
                     {
@@ -638,9 +638,9 @@ namespace VeryGoodAuto
                     //매수  시작--
                     if (isTrading)
                     {
-                        if (buyConditionCheckBox.Checked)
+                        if (buyConditionCheckBox.Checked) // 체크?
                         {
-                            if (buyConditionComboBox.Text.Equals(현재_석택된_조건식명.Trim()))
+                            if (buyConditionComboBox.Text.Equals(현재_석택된_조건식명.Trim())) //조건식명.
                             {
                                 //해당 종목코드 자동매수 요청.
                                 if (accountComboBox.Text.Length > 0)
@@ -906,11 +906,15 @@ namespace VeryGoodAuto
                         {
                             orderClassList.Remove(oc);
                         }
-                        Console.WriteLine("채잔 접수 & orderClassList 삭제 남은수  ! " + orderClassList.Count);
+                        Console.WriteLine("--------------------------");
+                        Console.WriteLine("접수 --");
+                        Console.WriteLine(" orderClassList 삭제 남은수  : " + orderClassList.Count);
                     }
 
                     if (axKHOpenAPI1.GetChejanData(913).Trim() == "체결")
                     {
+                        Console.WriteLine("--------------------------");
+                        Console.WriteLine("+매수 --");
                         // 체결 됬다면   매수 일경우에는 등록시키면 된다.  - 쓰레드에서 잘되면 결과는 나올것이고 안되면 패스 될것이다.
                         if (주문구분.Equals("+매수")) //915= 단위체결량,903=계결누계금액
                         {
@@ -970,7 +974,8 @@ namespace VeryGoodAuto
                             //orderClassList 리스트는 1번 명령(쓰래드처리)하면  매도가 걸려 있는 상태기 때문에
                             //매도가 1주가 아니더라도  0주라도 실행되야 하되   
                             //balanceList 리스트에서는 미체결량이 0이 되야 삭제한다.
-                            Console.WriteLine("매도 --");
+                            Console.WriteLine("--------------------------");
+                            Console.WriteLine("-매도 --");
 
                             BalanceObject bo = balanceItemList.Find(o => o.종목코드 == 종목코드);
                             if (bo != null)
@@ -1025,6 +1030,7 @@ namespace VeryGoodAuto
             }
             else if (e.sGubun.Equals("1"))//잔고
             {
+                Console.WriteLine("--------------------------");
                 Console.WriteLine("잔고 --");
                 try
                 {
@@ -1350,16 +1356,22 @@ namespace VeryGoodAuto
                         double 손익율 = double.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "손익율"));
                         long 매수금 = long.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "매입금액"));
 
+                        double 최고율 = 0;
+                        if (손익율 > 0)
+                            최고율 = 손익율;
+                        else 
+                            최고율 = 0;
+                        
                         double 손익비율 = double.Parse(손익율.ToString("N2"));
                         balanceItemList.Add(new BalanceObject(종목코드, 평가금액, 종목명, 보유수량, 현재가, 손익금액, 
-                            손익비율, 손익비율, 매수금));
+                            손익비율, 최고율, 매수금));
                   
                         //예수금951/손익율8019/당일실현손익990/당일신현손익율991/
                         // axKHOpenAPI1.SetRealReg(화면번호_실시간데이터요청, 종목코드, "10;11;12;15", "1"); //실시간 잔고 요청.      
                         axKHOpenAPI1.SetRealReg(화면번호_실시간데이터요청, 종목코드, "10;11;12;15;951;8019;990;991",
                             "1"); //실시간 잔고 요청.     
                     }
-
+                    
                     if (n > 0)
                     {
                         balanceDataGridView.DataSource = null;
