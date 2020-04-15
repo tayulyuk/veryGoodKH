@@ -45,11 +45,11 @@
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.takeProfitCheckBox = new System.Windows.Forms.CheckBox();
             this.stopLossChheckBox = new System.Windows.Forms.CheckBox();
-            this.axKHOpenAPI1 = new AxKHOpenAPILib.AxKHOpenAPI();
             this.isTrailingStopCheckBox = new System.Windows.Forms.CheckBox();
             this.isAdjustQuantityCheckBox = new System.Windows.Forms.CheckBox();
             this.itmeCountlabel = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
+            this.axKHOpenAPI1 = new AxKHOpenAPILib.AxKHOpenAPI();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.priceManualNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.accountComboBox = new System.Windows.Forms.ComboBox();
@@ -140,11 +140,11 @@
             this.tableLayoutPanel1.Controls.Add(this.checkBox2, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.takeProfitCheckBox, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.stopLossChheckBox, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.axKHOpenAPI1, 0, 4);
             this.tableLayoutPanel1.Controls.Add(this.isTrailingStopCheckBox, 2, 2);
             this.tableLayoutPanel1.Controls.Add(this.isAdjustQuantityCheckBox, 3, 1);
             this.tableLayoutPanel1.Controls.Add(this.itmeCountlabel, 1, 4);
             this.tableLayoutPanel1.Controls.Add(this.label5, 2, 3);
+            this.tableLayoutPanel1.Controls.Add(this.axKHOpenAPI1, 0, 4);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(5, 4);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 5;
@@ -306,16 +306,6 @@
             this.stopLossChheckBox.Text = "손절";
             this.stopLossChheckBox.UseVisualStyleBackColor = true;
             // 
-            // axKHOpenAPI1
-            // 
-            this.axKHOpenAPI1.Enabled = true;
-            this.axKHOpenAPI1.Location = new System.Drawing.Point(4, 144);
-            this.axKHOpenAPI1.Name = "axKHOpenAPI1";
-            this.axKHOpenAPI1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axKHOpenAPI1.OcxState")));
-            this.axKHOpenAPI1.Size = new System.Drawing.Size(144, 50);
-            this.axKHOpenAPI1.TabIndex = 17;
-            this.axKHOpenAPI1.Visible = false;
-            // 
             // isTrailingStopCheckBox
             // 
             this.isTrailingStopCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -362,11 +352,18 @@
             this.label5.TabIndex = 18;
             this.label5.Text = "% 손절은 음수(-0.0)방식으로 입력 %";
             // 
+            // axKHOpenAPI1
+            // 
+            this.axKHOpenAPI1.Enabled = true;
+            this.axKHOpenAPI1.Location = new System.Drawing.Point(4, 144);
+            this.axKHOpenAPI1.Name = "axKHOpenAPI1";
+            this.axKHOpenAPI1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axKHOpenAPI1.OcxState")));
+            this.axKHOpenAPI1.Size = new System.Drawing.Size(100, 28);
+            this.axKHOpenAPI1.TabIndex = 22;
+            // 
             // tableLayoutPanel2
             // 
-            this.tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel2.BackColor = System.Drawing.Color.MistyRose;
             this.tableLayoutPanel2.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
             this.tableLayoutPanel2.ColumnCount = 3;
@@ -629,9 +626,7 @@
             // 
             // tableLayoutPanel3
             // 
-            this.tableLayoutPanel3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel3.ColumnCount = 2;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -760,8 +755,7 @@
             // 
             // insertListBox
             // 
-            this.insertListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.insertListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.insertListBox.FormattingEnabled = true;
             this.insertListBox.ItemHeight = 12;
             this.insertListBox.Location = new System.Drawing.Point(5, 693);
@@ -771,20 +765,17 @@
             // 
             // deleteListBox
             // 
-            this.deleteListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.deleteListBox.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.deleteListBox.FormattingEnabled = true;
             this.deleteListBox.ItemHeight = 12;
             this.deleteListBox.Location = new System.Drawing.Point(385, 693);
             this.deleteListBox.Name = "deleteListBox";
-            this.deleteListBox.Size = new System.Drawing.Size(772, 136);
+            this.deleteListBox.Size = new System.Drawing.Size(376, 136);
             this.deleteListBox.TabIndex = 6;
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.outStandingDataGridView);
             this.groupBox1.Location = new System.Drawing.Point(768, 259);
             this.groupBox1.Name = "groupBox1";
@@ -966,9 +957,7 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.잔고label);
             this.groupBox2.Controls.Add(this.balanceDataGridView);
             this.groupBox2.Controls.Add(this.tableLayoutPanel4);
@@ -1123,7 +1112,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.DataGridView balanceDataGridView;
-        private AxKHOpenAPILib.AxKHOpenAPI axKHOpenAPI1;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.Button searchButton;
@@ -1134,6 +1122,7 @@
         private System.Windows.Forms.CheckBox isAdjustQuantityCheckBox;
         private System.Windows.Forms.Label itmeCountlabel;
         private System.Windows.Forms.Label 잔고label;
+        private AxKHOpenAPILib.AxKHOpenAPI axKHOpenAPI1;
     }
 }
 

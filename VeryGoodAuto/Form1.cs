@@ -46,7 +46,7 @@ namespace VeryGoodAuto
         /// <summary>
         /// 바로 직적의 조건검색식 번호.
         /// </summary>
-        public int beforeConditionCode;
+       // public int beforeConditionCode;
 
         /// <summary>
         /// 잔고와 미체결 관리를 한다.
@@ -54,7 +54,7 @@ namespace VeryGoodAuto
         List<BalanceObject> balanceItemList;
 
         /// <summary>
-        /// 잔고에서 미체결 리스트를 별도 관리 저장.
+        /// 미체결 리스트를 별도 관리 저장.
         /// </summary>
         List<OutStanding> outStandingList;
 
@@ -76,9 +76,9 @@ namespace VeryGoodAuto
 
         public string 삭제코드 = "";
 
-        //Thread autoViews;
-        Thread startThead; // 무한 while 하면서 삭제할 종목이 있다면 계속 삭제하는 일만 한다.
-        Thread orderClassManagerThread; // 매수와 매도가 orderClassList에 있다면 무조건 실행해라. 제한 넘지 않게.
+        //Thread autoViews;  CPU 부하를 줄이기 위해 test
+      //  Thread startThead; // 무한 while 하면서 삭제할 종목이 있다면 계속 삭제하는 일만 한다.
+      //  Thread orderClassManagerThread; // 매수와 매도가 orderClassList에 있다면 무조건 실행해라. 제한 넘지 않게.
 
         public List<string> deleteCode;// 삭제할 종목
         /// <summary>
@@ -103,6 +103,22 @@ namespace VeryGoodAuto
         /// 중첩 매도/매수 를 방지 관리 한다.
         /// </summary>
         List<UseDeleteOrderClass> deletOrderManager;
+
+        /// <summary>
+        /// 1초/2회만 전송를 하기위해
+        /// 시간지연후 다음 일이 있을경우를 알려주는 싸인.
+        /// true : 다음 일이 있을경우    false: 다음 일이 없을 경우.
+        /// </summary>
+        private bool isSend = false;
+
+        /// <summary>
+        /// OrderClass 를 SendOrder 할때 받는 신호.
+        /// </summary>
+       // public event InfoEventHandler eventHandler;
+        /// <summary>
+        /// conditonView 항목 삭제  받는 신호.
+        /// </summary>
+      //  public event InfoEventHandler eventHandlerDeleteOrder;
 
         public Form1()
         {
@@ -144,13 +160,14 @@ namespace VeryGoodAuto
             deleteCode = new List<string>();
             orderClassList = new List<OrderClass>();
 
-            startThead = new Thread(new ThreadStart(UseDeleteMethod));
-            startThead.IsBackground = true;
-            startThead.Start();         
+            //startThead = new Thread(new ThreadStart(UseDeleteMethod));
+           // startThead.IsBackground = true;
+            //startThead.Start();         
 
-            orderClassManagerThread = new Thread(new ThreadStart(UseOrderClassMethod));
-            orderClassManagerThread.IsBackground = true;
-            orderClassManagerThread.Start();            
+           // orderClassManagerThread = new Thread(new ThreadStart(UseOrderClassMethod));
+           // orderClassManagerThread.IsBackground = true;
+          //  orderClassManagerThread.Start(); 
+
             //----
             #region 수동모드
             itemCodeTextBox.TextChanged += TextBox_TextChanged;
@@ -166,7 +183,76 @@ namespace VeryGoodAuto
 
             #endregion 수동모드
         }
+        /// <summary>
+        /// SendOrder 작업의 새로운 Thread를 만든다.
+        /// </summary>
+        public void LetsSend3()
+        {
+            lock (lockThis)
+            {
+                try
+                {
 
+                    OrderClass oc = IsOrderClassListCheck();
+                    if (oc != null)
+                    {
+                        Console.WriteLine("LetsSend :: =LetsSend 시작 =  orderClassList.Count ::" + orderClassList.Count);
+
+                        DelayOrder(500, oc);
+
+                        Console.WriteLine("LetsSend :: orderClassList  count   =LetsSend  끝=  작업끝난 수 2222 :;  " +
+                                          orderClassList.Count);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception.Message.ToString() + 201);
+                }
+            }
+        }
+
+        /// <summary>
+        /// SendOrder 작업의 새로운 Thread를 만든다.
+        /// </summary>
+        public void LetsSend()
+        {
+            try
+            {
+                OrderClass oc = IsOrderClassListCheck();
+                if (oc != null)
+                {
+                    Console.WriteLine("LetsSend :: =LetsSend 시작 =  orderClassList.Count ::" + orderClassList.Count);
+
+                    DelayOrder2(500, oc);
+
+                    Console.WriteLine("LetsSend :: orderClassList  count   =LetsSend  끝=  작업끝난 수 2222 :;  " +
+                                      orderClassList.Count);
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message.ToString() + 233);
+            }
+         
+        }
+
+        /// <summary>
+        /// conditionView 항목을 삭제하는 Thread를 생성한다.
+        /// </summary>
+        public void DeleteOrderCode(string 삭제대상)
+        {
+           // lock (lockRemove)
+          //  {
+                try
+                {
+                    Delay(500, 삭제대상);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception.Message.ToString() + 225);
+                }
+          //  }
+        }
 
         private void DataGridView_SelectedBalanceDataGridView(object sender, DataGridViewCellEventArgs e)
         {
@@ -237,6 +323,7 @@ namespace VeryGoodAuto
             }
         }
 
+
         /// <summary>
         /// 삭제 종목을 확인하여 계속 삭제하는 일만 한다.
         /// </summary>
@@ -246,31 +333,57 @@ namespace VeryGoodAuto
             {
                 lock (lockThis)
                 {
-                    if (orderClassList.Count > 0)
+                    try
                     {
-                        Console.WriteLine("T :: =쓰래드 시작 =  orderClassList.Count ::" + orderClassList.Count);
-                        OrderClass oc = orderClassList.First();
+                        OrderClass oc = IsOrderClassListCheck();
                         if (oc != null)
                         {
+                            Console.WriteLine("T :: =쓰래드 시작 =  orderClassList.Count ::" + orderClassList.Count);
+
                             Thread t = new Thread(delegate()
                             {
                                 Console.WriteLine("T :: 쓰레드 진입..");
+
                                 this.Invoke(new Action(delegate() { DelayOrder(500, oc); }));
-                              //  orderClassList.Remove(oc);
-                                Console.WriteLine("T :: orderClassList  count   =쓰래드 끝=  작업끝난 수 2222 :;  " + orderClassList.Count);
+
+                                Console.WriteLine("T :: orderClassList  count   =쓰래드 끝=  작업끝난 수 2222 :;  " +
+                                                  orderClassList.Count);
                             });
                             t.Start();
                             t.Join();
                         }
-                        else
-                        {
-                            Console.WriteLine("T :: order class null   -- Thread  251");
-                        }
                     }
+                    catch { }
+
+                    //else
+                       // Console.WriteLine("T :: order class null   -- Thread  251");
                 }
             }
         }
 
+        /// <summary>
+        /// 처음 시도하는 ->매도/매수 종목의 첫번째 class를 찾는다.
+        /// </summary>
+        /// <returns></returns>
+        public OrderClass IsOrderClassListCheck()
+        {
+            OrderClass oc = null;
+            for (int i = 0; i < orderClassList.Count; i++)
+            {
+                try
+                {
+                    UseDeleteOrderClass udoc = deletOrderManager.Find(o =>
+                        o.종목코드 == orderClassList[i].종목코드 && o.거래형태 == orderClassList[i].주문형태);
+                    if (udoc != null)
+                        continue;
+                    oc = orderClassList[i];
+                }
+                catch { }
+
+                break;
+            }
+            return oc;
+        }
         /// <summary>
         /// 수동 매매 -- 버튼들
         /// </summary>      
@@ -282,17 +395,17 @@ namespace VeryGoodAuto
             int 가격 = (int)priceManualNumericUpDown.Value;
             string 거래구분 = guBunComboBox.Text;
             거래구분 = 거래구분.Substring(0, 2);
-
-             // orderClass.주문형태, orderClass.화면번호, orderClass.계정,
-            //  orderClass.타입, orderClass.종목코드, orderClass.보유수량,
-            //  orderClass.가격, orderClass.호가구분, orderClass.원래주문번호);
+           
             if (sender.Equals(buyButton))
             {
                 if (계좌번호.Length > 0 && 종목코드.Length == 6 && 수량 > 0 && 가격 > 0 && 거래구분.Length == 2)
                 {
                     orderClassList.Add(new OrderClass("매수주문", 주식주문, 계좌번호, 1, 종목코드, 수량, 가격, 거래구분, ""));
+                    
+                    // 전송작업 실행.
+                    if(!isSend)
+                        LetsSend();
                 }
-                   // axKHOpenAPI1.SendOrder("주식주문", 주식주문, 계좌번호, 1, 종목코드, 수량, 가격, 거래구분, "");
             }
             else if (sender.Equals(sellButton))
             {
@@ -300,8 +413,10 @@ namespace VeryGoodAuto
                 {
                     orderClassList.Add(new OrderClass("매도주문", 주식주문,
                                                                                             계좌번호, 2, 종목코드, 수량, 가격, 거래구분, ""));
+                    // 전송작업 실행.
+                    if (!isSend)
+                        LetsSend();
                 }
-                    //axKHOpenAPI1.SendOrder("주식주문", 주식주문, 계좌번호, 2, 종목코드, 수량, 가격, 거래구분, "");
             }
             else if (sender.Equals(changeButton))
             {
@@ -311,13 +426,18 @@ namespace VeryGoodAuto
                 if (매매구분.Equals("매수"))
                 {
                     orderClassList.Add(new OrderClass("매수주문변경", 주식주문, 계좌번호, 5, 종목코드, 수량, 가격, 거래구분, 주문번호));
+                    // 전송작업 실행.
+                    if (!isSend)
+                        LetsSend();
+
                 }
-                        //axKHOpenAPI1.SendOrder("주식주문", 주식주문, 계좌번호, 5, 종목코드, 수량, 가격, 거래구분, 주문번호);
                 else if (매매구분.Equals("매도"))
                 {
                     orderClassList.Add(new OrderClass("매도주문변경", 주식주문, 계좌번호, 6, 종목코드, 수량, 가격, 거래구분, 주문번호));
+                    // 전송작업 실행.
+                    if (!isSend)
+                        LetsSend();
                 }
-                        //axKHOpenAPI1.SendOrder("주식주문", 주식주문, 계좌번호, 6, 종목코드, 수량, 가격, 거래구분, 주문번호);               
             }
             else if (sender.Equals(cancelButton))
             {
@@ -327,14 +447,17 @@ namespace VeryGoodAuto
                 if (매매구분.Equals("매수"))
                 {
                     orderClassList.Add(new OrderClass("매수취소", 주식주문,계좌번호, 3, 종목코드, 수량, 가격, 거래구분, 주문번호));
+                    // 전송작업 실행.
+                    if (!isSend)
+                        LetsSend();
                 }
-                    //axKHOpenAPI1.SendOrder("주식주문", 주식주문, 계좌번호, 3, 종목코드, 수량, 가격, 거래구분, 주문번호);
                 else if (매매구분.Equals("매도"))
                 {
                     orderClassList.Add(new OrderClass("매도취소", 주식주문, 계좌번호, 4, 종목코드, 수량, 가격, 거래구분, 주문번호));
+                    // 전송작업 실행.
+                    if (!isSend)
+                        LetsSend();
                 }
-                    //axKHOpenAPI1.SendOrder("주식주문", 주식주문, 계좌번호, 4, 종목코드, 수량, 가격, 거래구분, 주문번호);
-               
             }
 
             //종목검색용도.
@@ -379,7 +502,18 @@ namespace VeryGoodAuto
             if (!저장타입.Equals(e.sRealType))
             {
                 저장타입 = e.sRealType;
-             //   Console.WriteLine(e.sRealType);
+                //   Console.WriteLine(e.sRealType);
+            }
+
+            if (e.sRealType.Equals("주식시세"))
+            {
+                try
+                {
+                    Console.WriteLine("주식시세 / 등락율 ->" + double.Parse(axKHOpenAPI1.GetCommRealData(e.sRealType, 8019)));
+                }
+                catch
+                {
+                }
             }
 
             if (e.sRealType.Equals("주식종목정보"))
@@ -391,9 +525,9 @@ namespace VeryGoodAuto
             {
                 //,매수총잔량125,실현손익990;손익율8019,예수금951,
                 int 실현손익 = int.Parse(axKHOpenAPI1.GetCommRealData(e.sRealType, 990));
-                double 손익율 = int.Parse(axKHOpenAPI1.GetCommRealData(e.sRealType, 8019));
+                double 손익율 = double.Parse(axKHOpenAPI1.GetCommRealData(e.sRealType, 8019));
                 int 예수금 = int.Parse(axKHOpenAPI1.GetCommRealData(e.sRealType, 951));
-                Console.WriteLine("실현손익 : " + 실현손익 + "/ 손익율" + 손익율 + "/ 예수금" + 예수금);
+                Console.WriteLine("잔고 _실현손익 : " + 실현손익 + "/ 잔고 _손익율: " + 손익율 + "/ 잔고 _예수금: " + 예수금);
             }
 
             if (e.sRealType.Equals("주식호가잔량"))
@@ -405,7 +539,7 @@ namespace VeryGoodAuto
 
             if (e.sRealType.Equals("주식체결"))
             {
-                string 종목코드 = e.sRealKey.Replace("A","").Trim(); // test 해보고 값도 출력해봐라.   매도에서 왜 안팔리지는지.확인해라. 그리고 삭제.
+                string 종목코드 = e.sRealKey.Replace("A", "").Trim(); // test 해보고 값도 출력해봐라.   매도에서 왜 안팔리지는지.확인해라. 그리고 삭제.
                 if (종목코드.Equals(String.Empty))
                     return;
 
@@ -417,6 +551,8 @@ namespace VeryGoodAuto
                 long 거래금 = long.Parse(axKHOpenAPI1.GetCommRealData(e.sRealKey, 14).Trim());
                 //long 보유수량 = 0; // 처음 감시 되면 무조건 보유수량은 없으니까.
 
+                if (현재가1 < 0)
+                    현재가1 = 현재가1 * -1;
 
                 // Console.WriteLine("종목 코드 ::::: " + 종목코드);
                 BalanceObject bo = null;
@@ -433,7 +569,7 @@ namespace VeryGoodAuto
                 {
                     try
                     {
-                      //  Console.WriteLine("있다");
+                        //  Console.WriteLine("있다");
                         bo.현재가 = 현재가1;
 
                         long 평가금액 = bo.보유수량 * 현재가1; //  -(세금 + 수수료)
@@ -442,7 +578,7 @@ namespace VeryGoodAuto
 
                         double 손익비율 = 100 * (bo.손익금액) / (double) bo.매수금;
 
-                        bo.손익율 = double.Parse(손익비율.ToString("N2"));
+                        bo.손익율 = double.Parse(손익비율.ToString("N2").Trim());
 
                         if (bo.손익율 > bo.최고율)
                             bo.최고율 = bo.손익율;
@@ -452,95 +588,116 @@ namespace VeryGoodAuto
                         balanceDataGridView.DataSource = balanceItemList;
                         balanceDataGridView.CurrentRow.Selected = false;
 
-                        if (isTrading) //시작버튼 활성시.
-                        {
-                            if (isTrailingStopCheckBox.Checked)
-                            {
-                                if (2 < bo.최고율)
-                                {
-
-                                    if (bo.손익율 < (bo.최고율 - 1))
-                                    {
-                                        if (!IsOrderClass(종목코드, "매도주문"))
-                                        {
-                                            if (!IsDeleteOrderManage(종목코드, "매도주문")) //중복생성 방지.
-                                            {
-                                                deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매도주문")); // 중복방지.
-
-                                                orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
-                                                    accountComboBox.Text, 2, 종목코드.Trim(), (int) bo.보유수량, 0, "03", ""));
-
-                                                insertListBox.SelectedIndex =
-                                                    insertListBox.Items.Count - 1; // 첫 line으로 항상 이동
-                                            }
-                                        }
-                                    }
-                                }
-                                else if ((0.5 <= bo.최고율) && (  2 > bo.최고율))
-                                {
-                                    if (bo.손익율 < (bo.최고율 - 0.5f))
-                                    {
-                                        if (!IsOrderClass(종목코드, "매도주문"))
-                                        {
-                                            if (!IsDeleteOrderManage(종목코드, "매도주문"))// 중복 매도 방지.
-                                            {
-                                                deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매도주문")); // 중복 매도 방지.
-
-                                                orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
-                                                    accountComboBox.Text, 2, 종목코드.Trim(), (int) bo.보유수량, 0, "03", ""));
-
-                                                insertListBox.SelectedIndex =
-                                                    insertListBox.Items.Count - 1; // 첫 line으로 항상 이동
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            //수익매도 처리
-                            if (takeProfitCheckBox.Checked)
-                            {
-                                double takeProfit = (double) takeProfitNumericUpDown.Value;
-                                if (bo.손익율 >= takeProfit)
-                                {
-                                    if (!IsOrderClass(종목코드, "매도주문"))
-                                    {
-                                        if (!IsDeleteOrderManage(종목코드, "매도주문")) // 중복 매도 방지.
-                                        {
-                                            deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매도주문")); // 중복 매도 방지.
-
-                                            orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
-                                                accountComboBox.Text, 2, 종목코드.Trim(), (int) bo.보유수량, 0, "03", ""));
-
-                                            insertListBox.SelectedIndex =
-                                                insertListBox.Items.Count - 1; // 첫 line으로 항상 이동
-                                        }
-                                    }
-                                }
-                            }
-
-                            //손절 처리
-                            if (stopLossChheckBox.Checked)
-                            {
-                                double stopLoss = (double) stopLossNumericUpDown.Value;
-                                if (bo.손익율 <= stopLoss)
-                                {
-                                    if (!IsOrderClass(종목코드, "매도주문"))
-                                    {
-                                        if (!IsDeleteOrderManage(종목코드, "매도주문")) // 중복 매도 방지.
-                                        {
-                                            deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매도주문")); // 중복 매도 방지.
-
-                                            orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
-                                                accountComboBox.Text, 2, 종목코드.Trim(), (int) bo.보유수량, 0, "03", ""));
-
-                                            insertListBox.SelectedIndex =
-                                                insertListBox.Items.Count - 1; // 첫 line으로 항상 이동
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
+                        //잔고에 있는 종목은 conditionViewList 에는 없어야 한다.
+                        //   ConditionViewObject cvo = conditionViewList.Find(o => o.종목코드 == 종목코드);
+                        //   if (cvo != null)
+                        //      conditionViewList.Remove(cvo);
+                        //에러가 나네.. 일단 주석.
+                        /*
+                          if (isTrading) //시작버튼 활성시.
+                          {
+                              if (isTrailingStopCheckBox.Checked)
+                              {
+                                  if (2 < bo.최고율)
+                                  {
+  
+                                      if (bo.손익율 < (bo.최고율 - 1))
+                                      {
+                                          if (!IsOrderClass(종목코드, "매도주문"))
+                                          {
+                                              if (!IsDeleteOrderManage(종목코드, "매도주문")) //중복생성 방지.
+                                              {
+                                                 // deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매도주문")); // 중복방지.
+  
+                                                  orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                                      accountComboBox.Text, 2, 종목코드.Trim(), (int) bo.보유수량, 0, "03", ""));
+  
+                                                  // 전송작업 실행.
+                                                  if (!isSend)
+                                                      LetsSend();
+  
+                                                  insertListBox.SelectedIndex =
+                                                      insertListBox.Items.Count - 1; // 첫 line으로 항상 이동
+                                              }
+                                          }
+                                      }
+                                  }
+                                  else if ((0.5 <= bo.최고율) && (  2 > bo.최고율))
+                                  {
+                                      if (bo.손익율 < (bo.최고율 - 0.5f))
+                                      {
+                                          if (!IsOrderClass(종목코드, "매도주문"))
+                                          {
+                                              if (!IsDeleteOrderManage(종목코드, "매도주문"))// 중복 매도 방지.
+                                              {
+                                                  //deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매도주문")); // 중복 매도 방지.
+  
+                                                  orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                                      accountComboBox.Text, 2, 종목코드.Trim(), (int) bo.보유수량, 0, "03", ""));
+  
+                                                  // 전송작업 실행.
+                                                  if (!isSend)
+                                                      LetsSend();
+  
+                                                  insertListBox.SelectedIndex =
+                                                      insertListBox.Items.Count - 1; // 첫 line으로 항상 이동
+                                              }
+                                          }
+                                      }
+                                  }
+                              }
+                              //수익매도 처리
+                              if (takeProfitCheckBox.Checked)
+                              {
+                                  double takeProfit = (double) takeProfitNumericUpDown.Value;
+                                  if (bo.손익율 >= takeProfit)
+                                  {
+                                      if (!IsOrderClass(종목코드, "매도주문"))
+                                      {
+                                          if (!IsDeleteOrderManage(종목코드, "매도주문")) // 중복 매도 방지.
+                                          {
+                                              //deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매도주문")); // 중복 매도 방지.
+  
+                                              orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                                  accountComboBox.Text, 2, 종목코드.Trim(), (int) bo.보유수량, 0, "03", ""));
+  
+                                              // 전송작업 실행.
+                                              if (!isSend)
+                                                  LetsSend();
+  
+                                              insertListBox.SelectedIndex =
+                                                  insertListBox.Items.Count - 1; // 첫 line으로 항상 이동
+                                          }
+                                      }
+                                  }
+                              }
+  
+                              //손절 처리
+                              if (stopLossChheckBox.Checked)
+                              {
+                                  double stopLoss = (double) stopLossNumericUpDown.Value;
+                                  if (bo.손익율 < stopLoss)
+                                  {
+                                      if (!IsOrderClass(종목코드, "매도주문"))
+                                      {
+                                          if (!IsDeleteOrderManage(종목코드, "매도주문")) // 중복 매도 방지.
+                                          {
+                                              //deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매도주문")); // 중복 매도 방지.
+  
+                                              orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                                  accountComboBox.Text, 2, 종목코드.Trim(), (int) bo.보유수량, 0, "03", ""));
+                                              // 전송작업 실행.
+                                              if (!isSend)
+                                                  LetsSend();
+  
+                                              insertListBox.SelectedIndex =
+                                                  insertListBox.Items.Count - 1; // 첫 line으로 항상 이동
+                                          }
+                                      }
+                                  }
+                              }
+                          }
+                          */
                         balanceDataGridView.CurrentRow.Selected = false; //cosor
 
                         //Color
@@ -573,7 +730,7 @@ namespace VeryGoodAuto
                         Console.WriteLine(exception.Message.ToString() + "628");
                     }
                 }
-                else// 잔고에 없으면    컨디션뷰에 보여주기.
+                else // 잔고에 없으면    컨디션뷰에 보여주기.
                 {
                     try
                     {
@@ -591,7 +748,7 @@ namespace VeryGoodAuto
 
                         if (cvo != null) // 입력되고 있는 조건식번호 입력  
                         {
-                           // Console.WriteLine("없 다");
+                            // Console.WriteLine("없 다");
 
                             cvo.현재가 = 현재가1;
                             cvo.거래금 = 거래금;
@@ -599,8 +756,9 @@ namespace VeryGoodAuto
                             cvo.등락율 = 등락율;
                             cvo.전일대비 = 전일대비;
                         }
-                        else// 미체결 /0일 경우만 올리고 ??  order 해야하지 않나?// 매수 하면 order가 자동으로 되는가?
+                        else
                         {
+                            // if(! deleteCode.Contains(종목코드))
                             conditionViewList.Add(new ConditionViewObject(종목코드, 종목명, 현재가1, 전일대비, 등락율, 거래량, 거래금));
                         }
 
@@ -649,13 +807,13 @@ namespace VeryGoodAuto
                                 if (accountComboBox.Text.Length > 0)
                                 {
                                     int 예탁금 = int.Parse(예탁자산평가액Label.Text.Replace(",", "").Trim());
-                               
+
                                     int 총1회매수금액 = (int) totalAmountNumericUpDown.Value;
-                               
+
                                     if ((총1회매수금액 > 0) && (현재가1 > 0) && (예탁금 > 총1회매수금액) && 예탁금 > 0)
                                     {
                                         int 매수량 = 총1회매수금액 / (int) 현재가1;
-                                    
+
                                         if (매수량 > 0)
                                         {
                                             //이미 매수한 같은 종목이 있는가 확인. -> balanceItemList
@@ -680,10 +838,15 @@ namespace VeryGoodAuto
                                                             {
                                                                 if (!IsDeleteOrderManage(종목코드, "매수주문")) // 중복 [매수] 방지.
                                                                 {
-                                                                    deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매수주문")); // 중복 [매수] 방지.
-                                                                    orderClassList.Add(new OrderClass("매수주문", 화면번호_주식매수요청,
-                                                                        accountComboBox.Text, 1, 종목코드.Trim(), 적정매수량, 
+                                                                    //deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매수주문")); // 중복 [매수] 방지.
+                                                                    orderClassList.Add(new OrderClass("매수주문",
+                                                                        화면번호_주식매수요청,
+                                                                        accountComboBox.Text, 1, 종목코드.Trim(), 적정매수량,
                                                                         0, "03", ""));
+
+                                                                    // 전송작업 실행.
+                                                                    if (!isSend)
+                                                                        LetsSend();
                                                                 }
                                                             }
                                                         }
@@ -696,41 +859,49 @@ namespace VeryGoodAuto
                                                             {
                                                                 if (!IsDeleteOrderManage(종목코드, "매수주문")) // 중복 [매수] 방지.
                                                                 {
-                                                                    deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매수주문")); // 중복 [매수] 방지.
+                                                                    //deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매수주문")); // 중복 [매수] 방지.
 
                                                                     orderClassList.Add(new OrderClass("매수주문",
                                                                         화면번호_주식매수요청,
                                                                         accountComboBox.Text, 1, 종목코드.Trim(), 매수량, 0,
                                                                         "03",
                                                                         ""));
+
+                                                                    // 전송작업 실행.
+                                                                    if (!isSend)
+                                                                        LetsSend();
                                                                 }
                                                             }
                                                         }
                                                     }
 
 
-                                                    //order정보를 저장해서 쓰레드에서 처리하고 삭제한다.
+                                                    //order정보를 저장하고 채잔함수에서 사용하고 삭제한다.
                                                     long 매수금 = 현재가1 * 매수량;
                                                     long 평가금액 = 매수량 * 현재가1; //  -(세금 + 수수료)
 
                                                     long 손익금액 = 평가금액 - 매수금;
 
                                                     double 손익비율 = 100 * (손익금액) / (double) 매수금;
-
+                                                    Console.WriteLine("리시브 손익비율 : " + 손익비율);
                                                     double 손익율 = double.Parse(손익비율.ToString("N2"));
                                                     double 최고율 = 0;
+
                                                     if (손익율 > 0)
                                                         최고율 = 손익율;
-                                                  
+                                                    else if (손익율 < 0)
+                                                        최고율 = 0;
+
                                                     // 매수할경우 balanceItemView에 보여주기 위해.
                                                     //storeOrderList -> 저장하면  chajaData에서 "체결" 될경우만 호출하여 balanceGridView에 보여주고.
                                                     //storeOrderList에 중복 체크후  체잔Data에서  balanceList 에 입력하자.
                                                     if (!IsStoreOrderClass(종목코드))
-                                                        storeOrderList.Add(new BalanceObject(종목코드, 평가금액, 종목명, 매수량, 현재가1,손익금액,손익율, 최고율, 매수금));
-                                                    
-                                                     //balanceItemList -> 저장하면  무조건 (체결됬다 또는 체결됬다고 가정하고 임의로 입력한다)  balanceGridView에 보여주고.
-                                                   // balanceItemList.Add(new BalanceObject(종목코드, 평가금액, 종목명, 매수량, 현재가1,
-                                                  //      손익금액, 손익율, 최고율, 매수금));
+                                                        storeOrderList.Add(new BalanceObject(종목코드, 평가금액, 종목명, 매수량, 현재가1,
+                                                            손익금액, 손익율, 최고율, 매수금));
+
+                                                    //balanceItemList -> 저장하면  무조건 (체결됬다 또는 체결됬다고 가정하고 임의로 입력한다)  balanceGridView에 보여주고.
+                                                    // balanceItemList.Add(new BalanceObject(종목코드, 평가금액, 종목명, 매수량, 현재가1,
+                                                    //      손익금액, 손익율, 최고율, 매수금));
                                                 }
                                                 catch (Exception exception)
                                                 {
@@ -751,9 +922,119 @@ namespace VeryGoodAuto
                         }
                     }
                 }
-            }
 
-            itmeCountlabel.Text = "종목수: "+ conditionItemDataGridView.RowCount.ToString().Trim();
+                //---- 수정 시작.
+                //실시간 매도 검색후 매도.
+                if (isTrading) //시작버튼 활성시.
+                {
+
+                    for (int i = 0; i < balanceItemList.Count; i++)
+                    {
+                        if (isTrailingStopCheckBox.Checked)
+                        {
+                            if (2 < balanceItemList[i].최고율)
+                            {
+                                if (balanceItemList[i].손익율 < (balanceItemList[i].최고율 - 1))
+                                {
+                                    if (!IsOrderClass(종목코드, "매도주문"))
+                                    {
+                                        if (!IsDeleteOrderManage(종목코드, "매도주문")) //중복생성 방지.
+                                        {
+                                            // deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매도주문")); // 중복방지.
+
+                                            orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                                accountComboBox.Text, 2, 종목코드.Trim(), (int) bo.보유수량, 0, "03", ""));
+
+                                            // 전송작업 실행.
+                                            if (!isSend)
+                                                LetsSend();
+
+                                            insertListBox.SelectedIndex =
+                                                insertListBox.Items.Count - 1; // 첫 line으로 항상 이동
+                                        }
+                                    }
+                                }
+                            }
+                            else if ((0.5 <= balanceItemList[i].최고율) && (2 > balanceItemList[i].최고율))
+                            {
+                                if (balanceItemList[i].손익율 < (balanceItemList[i].최고율 - 0.5f))
+                                {
+                                    if (!IsOrderClass(종목코드, "매도주문"))
+                                    {
+                                        if (!IsDeleteOrderManage(종목코드, "매도주문")) // 중복 매도 방지.
+                                        {
+                                            //deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매도주문")); // 중복 매도 방지.
+
+                                            orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                                accountComboBox.Text, 2, 종목코드.Trim(), (int) bo.보유수량, 0, "03", ""));
+
+                                            // 전송작업 실행.
+                                            if (!isSend)
+                                                LetsSend();
+
+                                            insertListBox.SelectedIndex =
+                                                insertListBox.Items.Count - 1; // 첫 line으로 항상 이동
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        //수익매도 처리
+                        if (takeProfitCheckBox.Checked)
+                        {
+                            double takeProfit = (double) takeProfitNumericUpDown.Value;
+                            if (balanceItemList[i].손익율 >= takeProfit)
+                            {
+                                if (!IsOrderClass(종목코드, "매도주문"))
+                                {
+                                    if (!IsDeleteOrderManage(종목코드, "매도주문")) // 중복 매도 방지.
+                                    {
+                                        //deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매도주문")); // 중복 매도 방지.
+
+                                        orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                            accountComboBox.Text, 2, 종목코드.Trim(), (int) bo.보유수량, 0, "03", ""));
+
+                                        // 전송작업 실행.
+                                        if (!isSend)
+                                            LetsSend();
+
+                                        insertListBox.SelectedIndex =
+                                            insertListBox.Items.Count - 1; // 첫 line으로 항상 이동
+                                    }
+                                }
+                            }
+                        }
+
+                        //손절 처리
+                        if (stopLossChheckBox.Checked)
+                        {
+                            double stopLoss = (double) stopLossNumericUpDown.Value;
+                            if (balanceItemList[i].손익율 < stopLoss)
+                            {
+                                if (!IsOrderClass(종목코드, "매도주문"))
+                                {
+                                    if (!IsDeleteOrderManage(종목코드, "매도주문")) // 중복 매도 방지.
+                                    {
+                                        //deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매도주문")); // 중복 매도 방지.
+
+                                        orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                            accountComboBox.Text, 2, 종목코드.Trim(), (int) bo.보유수량, 0, "03", ""));
+                                        // 전송작업 실행.
+                                        if (!isSend)
+                                            LetsSend();
+
+                                        insertListBox.SelectedIndex =
+                                            insertListBox.Items.Count - 1; // 첫 line으로 항상 이동
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                //----- 수정 끝
+            }
+            itmeCountlabel.Text = "종목수: " + conditionItemDataGridView.RowCount.ToString().Trim();
             잔고label.Text = "항목수 : " + balanceDataGridView.RowCount.ToString().Trim();
         }
 
@@ -782,13 +1063,17 @@ namespace VeryGoodAuto
 
         /// <summary>
         /// deletOrderManager 에 있으면 true 반환.
+        /// OrderClass 처리된  매수:1주라도 매수 /매도: 완전 매도거래 됬을 경우 보조하기 위한.
         /// </summary>
         bool IsDeleteOrderManage(string 종목코드, string 주문형태)
         {
             bool b = false;
             try
             {
-                 UseDeleteOrderClass  udoc = deletOrderManager.Find(o => o.종목코드 == 종목코드 && o.거래형태 == 주문형태);
+                // UseDeleteOrderClass  udoc = deletOrderManager.Find(o => o.종목코드 == 종목코드 && o.거래형태 == 주문형태);
+                //if (udoc != null)
+                //    b = true;
+                UseDeleteOrderClass udoc = deletOrderManager.Find(o => o.종목코드 == 종목코드);
                 if (udoc != null)
                     b = true;
             }
@@ -870,11 +1155,14 @@ namespace VeryGoodAuto
             string 체결가 = ""; 
             string 주문구분 = ""; 
             string 시간 = "";
-           
+
+           // Console.WriteLine("sGubun : " + e.sGubun);
+          // Console.WriteLine("sFIdList : " + e.sFIdList);
+          //  Console.WriteLine("nItemCnt : " + e.nItemCnt);
+
             if (e.sGubun.Equals("0"))//접수 or 체결
             {
-                // Console.WriteLine("sGubun : " +e.sGubun);
-                // Console.WriteLine("sFIdList : " + e.sFIdList);
+
                 try
                 {
                     //911=체결량,914=단위체결가,915=단위체결량
@@ -896,6 +1184,7 @@ namespace VeryGoodAuto
                   
                     if (axKHOpenAPI1.GetChejanData(913).Trim() == "접수")
                     {
+                        //Console.WriteLine("접수 구분  :  " + 주문구분);
                         //체결이 0이라도 보여줘야 한다. 미체결창에
                         OutStanding os = outStandingList.Find(o => o.종목코드 == 종목코드);
                         if (os == null)
@@ -904,23 +1193,27 @@ namespace VeryGoodAuto
                         }
 
                         //쓰래드 처리한 명령을 삭제 해줘야 1회만 실행된다.
-                        OrderClass oc = orderClassList.Find(o => o.종목코드 == 종목코드);
+                        //접수구분을 변환시켜보자.
+                        string 변환된주문 =  ChangeOrderString(주문구분);
+                        OrderClass oc = orderClassList.Find(o => o.종목코드 == 종목코드 && o.주문형태 == 변환된주문);
                         if (oc != null)
                         {
                             orderClassList.Remove(oc);
                         }
                         Console.WriteLine("--------------------------");
-                        Console.WriteLine("접수 --");
+                        Console.WriteLine("접수 --: " + 주문구분);
                         Console.WriteLine(" orderClassList 삭제 남은수  : " + orderClassList.Count);
                     }
 
                     if (axKHOpenAPI1.GetChejanData(913).Trim() == "체결")
                     {
                         Console.WriteLine("--------------------------");
-                        Console.WriteLine("+매수 --");
+                        
                         // 체결 됬다면   매수 일경우에는 등록시키면 된다.  - 쓰레드에서 잘되면 결과는 나올것이고 안되면 패스 될것이다.
                         if (주문구분.Equals("+매수")) //915= 단위체결량,903=계결누계금액
                         {
+                            Console.WriteLine("+매수 --");
+
                             //쓰래드의 결과만 오는것이 아니라 체결 될 때도 값은 들어온다.
 
                             if (BalanceListCheck(종목코드))
@@ -943,6 +1236,14 @@ namespace VeryGoodAuto
                             }
                             else // 없으면 
                             {
+                                //매수에 대한 쓰래드 오더 삭제.
+                                OrderClass oc = orderClassList.Find(o => o.종목코드 == 종목코드 && o.주문형태 == "매수주문");
+                                if (oc != null)
+                                {
+                                    orderClassList.Remove(oc);
+                                }
+                                Console.WriteLine(" chajan +매수  orderClassList count :  " + orderClassList.Count);
+
                                 //1주라도 거래가 되면 잔고에 입력.   
                                 BalanceObject sbo = storeOrderList.Find(o => o.종목코드 == 종목코드);
                                 if (sbo != null)
@@ -963,22 +1264,21 @@ namespace VeryGoodAuto
                                     }
                                 }
                             }
-                            //매수에 대한 쓰래드 오더 삭제.
-                            OrderClass oc = orderClassList.Find(o => o.종목코드 == 종목코드 && o.주문형태 == "매수주문");
-                            if (oc != null)
-                            {
-                                orderClassList.Remove(oc);
-                            }
-
-                            Console.WriteLine(" chajan +매수  orderClassList count :  " + orderClassList.Count);
                         }
                         else if (주문구분.Equals("-매도"))// 915= 단위체결량,902=회원사코드(거래원) ??
                         {
+                            Console.WriteLine("--------------------------");
+                            Console.WriteLine("-매도 --");
+
+                            //매도에 의한 쓰래드 오더 삭제.
+                            OrderClass oc = orderClassList.Find(o => o.종목코드 == 종목코드 && o.주문형태 == "매도주문");
+                            if (oc != null)
+                                orderClassList.Remove(oc); // 매도 명령 1번 만 실행한다.
+                            Console.WriteLine(" chajan -매도  orderClassList count 전 :  " + orderClassList.Count);//후  매도에 대한 명령 오더는 1회 로 제거 됬고.
+
                             //orderClassList 리스트는 1번 명령(쓰래드처리)하면  매도가 걸려 있는 상태기 때문에
                             //매도가 1주가 아니더라도  0주라도 실행되야 하되   
                             //balanceList 리스트에서는 미체결량이 0이 되야 삭제한다.
-                            Console.WriteLine("--------------------------");
-                            Console.WriteLine("-매도 --");
 
                             BalanceObject bo = balanceItemList.Find(o => o.종목코드 == 종목코드);
                             if (bo != null)
@@ -986,25 +1286,19 @@ namespace VeryGoodAuto
                                 // 미체결수량을 [업로드] 해준다.  // 보유수량을 직접 넣줘서 test해보자.
                                 bo.보유수량 = 미체결수량;
 
-                                Console.WriteLine("bo.보유수량 매도 업로드 수:" + 미체결수량);
-                               
+                                Console.WriteLine("bo.보유수량 :" + 미체결수량);
                             }
 
-                            Console.WriteLine(" chajan -매도  orderClassList count 전 :  " + orderClassList.Count);
-                            
-                            //매도에 의한 쓰래드 오더 삭제.
-                            OrderClass oc = orderClassList.Find(o => o.종목코드 == 종목코드 && o.주문형태 == "매도주문");
-                            if (oc != null)
-                                orderClassList.Remove(oc); // 매도 명령 1번 만 실행한다.
-                            Console.WriteLine(" chajan -매도  orderClassList count 후 :  " + orderClassList.Count);//후  매도에 대한 명령 오더는 1회 로 제거 됬고.
-                            
+                            Console.WriteLine(" chajan -매도  orderClassList count 후 :  " + orderClassList.Count);
+
                         }
+
                         balanceDataGridView.DataSource = null;
                         balanceDataGridView.DataSource = balanceItemList;
                         if (balanceDataGridView.RowCount > 0)
                             balanceDataGridView.CurrentRow.Selected = false;
 
-                        //Console.WriteLine("체결  항목"); //[ 미체결 항목 ]에 실시간으로 보여준다.
+                        //Console.WriteLine("체결  항목"); //[ 미체결 항목 ]에 실시간으로 보여준다. //순환 사이클.
                         OutStanding os = outStandingList.Find(o => o.종목코드 == 종목코드);
                         if (os != null)
                         {
@@ -1037,18 +1331,31 @@ namespace VeryGoodAuto
                 Console.WriteLine("잔고 --");
                 try
                 {
+                     long 예수금 = long.Parse(axKHOpenAPI1.GetChejanData(951));//test
+                    double 손익율 = double.Parse(axKHOpenAPI1.GetChejanData(8019));//test
+
+                     Console.WriteLine("예수금 : "  + 예수금);
+                    Console.WriteLine("손익율 : " + 손익율.ToString("N2"));
+
                     //930=보유수량 ,933=주문가능수량   .GetMarketType??
                     string 잔고종목명 = axKHOpenAPI1.GetChejanData(302).Trim();
+                    Console.WriteLine("잔고종목명 : " + 잔고종목명);
                     long currentPrice = long.Parse(axKHOpenAPI1.GetChejanData(10).Replace("-", "").Trim());
-
+                    Console.WriteLine("currentPrice : " + currentPrice);
                     string 당일손익율 = axKHOpenAPI1.GetChejanData(8019);
+                    Console.WriteLine("당일손익율 : " + 당일손익율);
                     // string 당일실현손익률 = axKHOpenAPI1.GetChejanData(991);
                     long 총매입금액 = long.Parse(axKHOpenAPI1.GetChejanData(932));
+                    Console.WriteLine("총매입금액 : " + 총매입금액);
                     long 당일총매도손일 = long.Parse(axKHOpenAPI1.GetChejanData(950));
+                    Console.WriteLine("당일총매도손일 : " + 당일총매도손일);
 
                     long 당일실현손익 = long.Parse(axKHOpenAPI1.GetChejanData(990));
+                    Console.WriteLine("당일실현손익 : " + 당일실현손익);
                     long 주문가능수량 = long.Parse(axKHOpenAPI1.GetChejanData(933));//test
                     long 보유수량 = long.Parse(axKHOpenAPI1.GetChejanData(930));//test
+
+                  
                     //?? 보유수량 - 보유수량 - 주문가능수량???? 꼭 확인.!
                     //---------------------------------
 
@@ -1058,19 +1365,64 @@ namespace VeryGoodAuto
                     {
                         if (bo.보유수량 == 0)
                         {
+                            UseDeleteOrderClass udoc = deletOrderManager.Find(o => o.종목코드 == bo.종목코드);
+                            if (udoc != null)
+                            {
+                                if (udoc.거래형태 == "매도주문")
+                                    deletOrderManager.Remove(udoc); // 중복 매도 방지의 해지.
+                                else if (udoc.거래형태 == "매수주문")
+                                {
+                                    Console.WriteLine("매수 주문으로 아무것도 안함");
+                                }
+                                else
+                                    Console.WriteLine("거래형태 : " + udoc.거래형태);
+                            }
+                            else
+                                Console.WriteLine("잔고 -- 이미 deletOrderManager 에서 삭제되었다");
+
                             balanceItemList.Remove(bo); //잔고 목록에서 빼주고.
 
                             balanceDataGridView.DataSource = null;
                             balanceDataGridView.DataSource = balanceItemList;
                             if (balanceDataGridView.RowCount > 0)
-                                balanceDataGridView.CurrentRow.Selected = false;
+                                if (balanceDataGridView.CurrentRow != null)
+                                   balanceDataGridView.CurrentRow.Selected = false;
 
-                            UseDeleteOrderClass udoc = deletOrderManager.Find(o => o.종목코드 == 종목코드 && o.거래형태 == "매도주문");
-                            if (udoc != null)
-                                deletOrderManager.Remove(udoc);  // 중복 매도 방지의 해지.
+                            //UseDeleteOrderClass udoc = deletOrderManager.Find(o => o.종목코드 == 종목코드 && o.거래형태 == "매도주문");
+                            //if (udoc != null)
+                            //    deletOrderManager.Remove(udoc);  // 중복 매도 방지의 해지.
+                            //else
+                            //    Console.WriteLine("잔고 -- 이미 deletOrderManager 중복에서 삭제되었다");
 
-                            Console.WriteLine("잔고 -- balanceDataGridView 삭제됬나?   보유수량 : " + bo.보유수량);
+                           
                         }
+
+                        // 매수
+                        UseDeleteOrderClass udocr = deletOrderManager.Find(o => o.종목코드 == bo.종목코드 && o.거래형태 == "매수주문");
+                        if (udocr != null)
+                        {
+                           // if (bo.보유수량 == 주문수량)
+                                deletOrderManager.Remove(udocr); // 중복 매도 방지의 해지.
+
+                            Console.WriteLine("매수 주문 .. ");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("????????");
+                        //UseDeleteOrderClass udoc = deletOrderManager.Find(o => o.종목코드 == 종목코드);
+                        //if (udoc != null)
+                        //{
+                        //    if (udoc.거래형태 == "매도주문")
+                        //        deletOrderManager.Remove(udoc); // 중복 매도 방지의 해지.
+                        //    else if (udoc.거래형태 == "매수주문")
+                        //    {
+                        //        Console.WriteLine("매수 주문으로 아무것도 안함");
+                        //    }
+                        //    else
+                        //        Console.WriteLine("거래형태 : " + udoc.거래형태);
+                        //}
+
                     }
                     /*
                     //매수시 ?
@@ -1136,13 +1488,33 @@ namespace VeryGoodAuto
                     //RequestAccountEstimation(); //잔고 요청 함수. //예수금,총매입금액,예탁자산평가액,당일투자손익,당일손익율
                     //RequestOutStanding(); //미채결 요청 함수. -- ?? 필요 없다   실시간으로 남은수치를 보여주니까. 처음1회 만보여주고 나머진 x
                     // RequestRealizationProfit(); //일자별 수익율.-단순한 손익만 보여주는 것으로 처음1회만 보여주고 후엔 실시간 로딩.
-                  
+                    Console.WriteLine("--체잔-------------deletOrderManager list---------------------");
+                    for (int i = 0; i < deletOrderManager.Count; i++)
+                    {
+                        Console.WriteLine("종목명 : " +axKHOpenAPI1.GetMasterCodeName( deletOrderManager[i].종목코드) + " 거래형태 : " + deletOrderManager[i].거래형태);
+                    }
+                    Console.WriteLine("--체잔-------------남은 Order list ---------------------");
+                    for (int i = 0; i < orderClassList.Count; i++)
+                    {
+                        Console.WriteLine("종목명 : " + axKHOpenAPI1.GetMasterCodeName(orderClassList[i].종목코드) );
+                    }
+                    Console.WriteLine("-- ---------------------");
                 }
                 catch (Exception exception)
                 {
                     Console.WriteLine(exception.Message.ToString()+ 984);
                 }
             }
+        }
+
+        private string ChangeOrderString(string 주문구분)
+        {
+            string order = "";
+            if (주문구분.Equals("+매수"))
+                order = "매수주문";
+            else if (주문구분.Equals("-매도"))
+                order = "매도주문";
+            return order;
         }
 
         private void AxKHOpenAPI1_OnReceiveRealCondition(object sender, _DKHOpenAPIEvents_OnReceiveRealConditionEvent e)
@@ -1165,37 +1537,45 @@ namespace VeryGoodAuto
                     //종목코드와 종목명을  List에 없을경우 올려라 
 
                     string stockName = axKHOpenAPI1.GetMasterCodeName(e.sTrCode);
-                    insertListBox.Items.Add("+편입| 조건식번호 : " + e.strConditionIndex + " |종목코드 : " + e.sTrCode + "|" + "종목명 : " + stockName);
+                    insertListBox.Items.Add("------- [+편입] : " + e.strConditionIndex + " 코드 :  " + e.sTrCode + " :  " + stockName);
                     //현재가10,전일대비11,등락율12,누적거래량13,누적거래대금14,매수총잔량125,실현손익990;손익율8019,예수금951,매수호가총잔량125
                   
                     //axKHOpenAPI1.SetRealReg(스크린번호.Trim(), 종목코드, "10;11;12;13;14", "1");       
                     axKHOpenAPI1.SetRealReg(현재_스크린번호, 종목코드, "10;11;12;15;951;8019;990;991;125", "1"); //매수호가 총잔량 추가 /적정매수량 계산시필요
                   
                     //conditionViewList.Add(new ConditionViewObject(종목코드,종목명,0,0,0,0,0));
-
                     insertListBox.SelectedIndex = insertListBox.Items.Count - 1;// 첫 line으로 항상 이동  
-                  
                 }
                 else if (e.strType.Equals("D"))//종목 이탈
-                {                    
-                    ConditionObject conditionObject = conditionList.Find(o => o.조건식번호 == 조건식번호);
-                    if (conditionObject != null) // 입력되고 있는 조건식번호 입력
-                        currentConditionCode = 조건식번호;
-
-                    string 스크린번호 = (실시간조건검색수신화면번호 + 조건식번호).ToString().Trim();
-                    deleteListBox.Items.Add("[-이탈]  : 조건식번호 : " + e.strConditionIndex + "  종목명 : " + 종목명);
-                    deleteListBox.SelectedIndex = deleteListBox.Items.Count - 1;// 첫 line으로 항상 이동
-
-                    삭제코드 = e.sTrCode.Trim();
+                {
                     
-                    //종목리스트에서 더이상 나머지 data가 나오지 못하게 차단한다.           
-                    axKHOpenAPI1.SetRealRemove(스크린번호.Trim(), e.sTrCode);// 실시간 시세해지                   
+                        ConditionObject conditionObject = conditionList.Find(o => o.조건식번호 == 조건식번호);
+                        if (conditionObject != null) // 입력되고 있는 조건식번호 입력
+                            currentConditionCode = 조건식번호;
 
-                   // ConditionViewObject cvo = conditionViewList.Find(o => o.종목코드 == 종목코드);
-                  //  if(cvo != null)
-                   //     conditionViewList.Remove(cvo);
+                        string 스크린번호 = (실시간조건검색수신화면번호 + 조건식번호).ToString().Trim();
+                        deleteListBox.Items.Add("------ [-이탈]  : " + e.strConditionIndex + "  종목명 : " + 종목명);
+                        deleteListBox.SelectedIndex = deleteListBox.Items.Count - 1; // 첫 line으로 항상 이동
 
-                    deleteCode.Add(삭제코드); // 단순히 삭제코드만 입력한다.
+                        삭제코드 = e.sTrCode.Trim();
+
+                        //종목리스트에서 더이상 나머지 data가 나오지 못하게 차단한다.           
+                        axKHOpenAPI1.SetRealRemove(스크린번호.Trim(), e.sTrCode); // 실시간 시세해지                   
+
+                    // ConditionViewObject cvo = conditionViewList.Find(o => o.종목코드 == 종목코드);
+                    //  if(cvo != null)
+                    //     conditionViewList.Remove(cvo);
+                    try
+                    {
+                        deleteCode.Add(삭제코드); // 단순히 삭제코드만 입력한다.
+                            // 삭제 작업을 한다
+                        DeleteOrderCode(삭제코드); // 
+                        
+                    }
+                    catch (Exception exception)
+                    {
+                        Console.WriteLine(exception.Message.ToString() +1372);
+                    }
                 }
             }
             catch (Exception exception)
@@ -1339,6 +1719,8 @@ namespace VeryGoodAuto
 
                 try
                 {
+                    balanceItemList.Clear();// 초기화.
+
                     예수금Label.Text = String.Format("{0:###,#}", 예수금);
                     총매입금액Label1.Text = ((총매입금액==0) ? "0" : String.Format("{0:###,#}", 총매입금액));
                     예탁자산평가액Label.Text = String.Format("{0:###,#}", 예탁자산평가액);
@@ -1365,12 +1747,18 @@ namespace VeryGoodAuto
                         double 손익율 = double.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "손익율"));
                         long 매수금 = long.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "매입금액"));
 
+                        if (현재가 < 0)
+                            현재가 = -현재가;
+
                         double 최고율 = 0;
                         if (손익율 > 0)
                             최고율 = 손익율;
                         else 
                             최고율 = 0;
-                        
+
+                        if(최고율 > 0)
+                            최고율 = double.Parse(최고율.ToString("N2"));
+
                         double 손익비율 = double.Parse(손익율.ToString("N2"));
                         balanceItemList.Add(new BalanceObject(종목코드, 평가금액, 종목명, 보유수량, 현재가, 손익금액, 
                             손익비율, 최고율, 매수금));
@@ -1434,7 +1822,9 @@ namespace VeryGoodAuto
                     // int 체결량 = int.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "체결량"));
                     int 현재가 = int.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "현재가"));
                     string 시간 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "시간").Trim();
-                   
+
+                    if (현재가 < 0)
+                        현재가 = -현재가;
 
                     OutStanding os = outStandingList.Find(o => o.종목코드 == 종목코드);
                     if (os != null)
@@ -1478,6 +1868,9 @@ namespace VeryGoodAuto
                         double 등락율 = double.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "등락율").Trim());
                         long 거래량 = long.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "거래량").Trim());
                         long 거래금 = long.Parse(axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, "거래대금").Trim());
+
+                        if (현재가 < 0)
+                            현재가 = -현재가;
 
                         conditionViewList.Add(new ConditionViewObject(종목코드,종목명,현재가,전일대비,등락율,거래량,거래금));
                     }
@@ -1686,6 +2079,7 @@ namespace VeryGoodAuto
 
         public   DateTime Delay(int MS,string 삭제코드)
         {
+            
             DateTime ThisMoment = DateTime.Now;
             TimeSpan duration = new TimeSpan(0, 0, 0, 0, MS);
             DateTime AfterWards = ThisMoment.Add(duration);
@@ -1695,7 +2089,7 @@ namespace VeryGoodAuto
                 System.Windows.Forms.Application.DoEvents();
                 ThisMoment = DateTime.Now;
             }
-
+           
             if (deleteCode.Count > 0)
             {
                string 삭제 = deleteCode.Find(o => o.Trim() == 삭제코드.Trim());
@@ -1736,20 +2130,24 @@ namespace VeryGoodAuto
                 (bi == null && orderClass.주문형태 == "매수취소") || (bi == null && orderClass.주문형태 == "매도취소") )
 
             {
-                Console.WriteLine("T :: (DelayOrder 함수실행 : 주문 형태  ) : " + orderClass.주문형태);
+                Console.WriteLine("LetsSend :: 종목명: " + axKHOpenAPI1.GetMasterCodeName(orderClass.종목코드)+"/주문 형태  : " + orderClass.주문형태);
                 //먼저 일하고 쉬었다 다음일 진행.
                 int orderResult = axKHOpenAPI1.SendOrder(orderClass.주문형태, orderClass.화면번호, orderClass.계정,
                     orderClass.타입, orderClass.종목코드, orderClass.보유수량,
                     orderClass.가격, orderClass.호가구분, orderClass.원래주문번호);
-               
+
                 if (orderResult == 0)
-                    insertListBox.Items.Add("[*" + orderClass.주문형태 + "=성공*]  종목명 :" +
+                {
+                    deletOrderManager.Add(new UseDeleteOrderClass(orderClass.종목코드, orderClass.주문형태)); // 중복방지.
+                    RequestAccountEstimation();// 잔고 보여주기.
+                    insertListBox.Items.Add("+ [*" + orderClass.주문형태 + "=성공*]  종목명 :" +
                                             axKHOpenAPI1.GetMasterCodeName(orderClass.종목코드));
+                }
                 else
-                    insertListBox.Items.Add("[*" + orderClass.주문형태 + "=실패*]  종목명 :" +
+                    insertListBox.Items.Add("- [*" + orderClass.주문형태 + "=실패*]  종목명 :" +
                                             axKHOpenAPI1.GetMasterCodeName(orderClass.종목코드));
 
-                Console.WriteLine("T:: orderClassList  count :  쓰래드 (DelayOrder 함수 안에서) 작업끝난 수 :;  " + orderClassList.Count);
+                Console.WriteLine("LetsSend :: orderClassList  count :  쓰래드 (DelayOrder 함수 안에서) 작업끝난 수 :;  " + orderClassList.Count);
                 // 먼저 일 끝.
 
                 DateTime ThisMoment = DateTime.Now;
@@ -1764,7 +2162,69 @@ namespace VeryGoodAuto
             }
             return DateTime.Now;
         }
+
+        public DateTime DelayOrder2(int MS, OrderClass orderClass)
+        {
+
+            BalanceObject bi = null;
+            //잔고창에 목록이 있는것은 재매수 하지 않는다.
+            try
+            {
+                bi = balanceItemList.Find(o => o.종목코드 == orderClass.종목코드);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message.ToString() + 1376);
+            }
+
+            if ((bi == null && orderClass.주문형태 == "매수주문") || (bi != null && orderClass.주문형태 == "매도주문") ||
+                (bi == null && orderClass.주문형태 == "매수주문변경") || (bi == null && orderClass.주문형태 == "매도주문변경") ||
+                (bi == null && orderClass.주문형태 == "매수취소") || (bi == null && orderClass.주문형태 == "매도취소"))
+
+            {
+                Console.WriteLine("LetsSend :: 종목명: " + axKHOpenAPI1.GetMasterCodeName(orderClass.종목코드) + "/주문 형태  : " + orderClass.주문형태);
+                //먼저 일하고 쉬었다 다음일 진행.
+                int orderResult = axKHOpenAPI1.SendOrder(orderClass.주문형태, orderClass.화면번호, orderClass.계정,
+                    orderClass.타입, orderClass.종목코드, orderClass.보유수량,
+                    orderClass.가격, orderClass.호가구분, orderClass.원래주문번호);
+
+                if (orderResult == 0)
+                {
+                    deletOrderManager.Add(new UseDeleteOrderClass(orderClass.종목코드, orderClass.주문형태)); // 중복방지.
+                    RequestAccountEstimation();// 잔고 보여주기.
+                    insertListBox.Items.Add("+ [*" + orderClass.주문형태 + "=성공*]  종목명 :" +
+                                            axKHOpenAPI1.GetMasterCodeName(orderClass.종목코드));
+                }
+                else
+                    insertListBox.Items.Add("- [*" + orderClass.주문형태 + "=실패*]  종목명 :" +
+                                            axKHOpenAPI1.GetMasterCodeName(orderClass.종목코드));
+
+                Console.WriteLine("LetsSend :: orderClassList  count :  쓰래드 (DelayOrder 함수 안에서) 작업끝난 수 :;  " + orderClassList.Count);
+                // 먼저 일 끝.
+
+                DateTime ThisMoment = DateTime.Now;
+                TimeSpan duration = new TimeSpan(0, 0, 0, 0, MS);
+                DateTime AfterWards = ThisMoment.Add(duration);
+
+                while (AfterWards >= ThisMoment)
+                {
+                    System.Windows.Forms.Application.DoEvents();
+                    ThisMoment = DateTime.Now;
+                }
+            }
+
+            OrderClass oc = IsOrderClassListCheck();
+            if (oc != null)
+                isSend = true;
+            else
+                isSend = false;
+
+            return DateTime.Now;
+        }
+
     }
+
+
     /// <summary>
     /// 전체 종목 각각 담을 묶음.
     /// </summary>
