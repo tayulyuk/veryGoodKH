@@ -28,10 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.buyConditionCheckBox = new System.Windows.Forms.CheckBox();
             this.buyConditionComboBox = new System.Windows.Forms.ComboBox();
@@ -49,7 +49,6 @@
             this.isAdjustQuantityCheckBox = new System.Windows.Forms.CheckBox();
             this.itmeCountlabel = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.axKHOpenAPI1 = new AxKHOpenAPILib.AxKHOpenAPI();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.priceManualNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.accountComboBox = new System.Windows.Forms.ComboBox();
@@ -77,7 +76,6 @@
             this.conditionDataGridView = new System.Windows.Forms.DataGridView();
             this.조건식_조건번호 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.조건식_조건식명 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.conditionItemDataGridView = new System.Windows.Forms.DataGridView();
             this.insertListBox = new System.Windows.Forms.ListBox();
             this.deleteListBox = new System.Windows.Forms.ListBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -98,23 +96,25 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.잔고label = new System.Windows.Forms.Label();
             this.balanceDataGridView = new System.Windows.Forms.DataGridView();
+            this.conditionItemDataGridView = new System.Windows.Forms.DataGridView();
+            this.axKHOpenAPI1 = new AxKHOpenAPILib.AxKHOpenAPI();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.takeProfitNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.stopLossNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalAmountNumericUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.axKHOpenAPI1)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.priceManualNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.amountManulNumericUpDown)).BeginInit();
             this.flowLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.conditionDataGridView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.conditionItemDataGridView)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.outStandingDataGridView)).BeginInit();
             this.tableLayoutPanel4.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.balanceDataGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.conditionItemDataGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axKHOpenAPI1)).BeginInit();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -351,15 +351,6 @@
             this.label5.Size = new System.Drawing.Size(179, 24);
             this.label5.TabIndex = 18;
             this.label5.Text = "% 손절은 음수(-0.0)방식으로 입력 %";
-            // 
-            // axKHOpenAPI1
-            // 
-            this.axKHOpenAPI1.Enabled = true;
-            this.axKHOpenAPI1.Location = new System.Drawing.Point(4, 144);
-            this.axKHOpenAPI1.Name = "axKHOpenAPI1";
-            this.axKHOpenAPI1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axKHOpenAPI1.OcxState")));
-            this.axKHOpenAPI1.Size = new System.Drawing.Size(100, 28);
-            this.axKHOpenAPI1.TabIndex = 22;
             // 
             // tableLayoutPanel2
             // 
@@ -729,30 +720,6 @@
             this.조건식_조건식명.Name = "조건식_조건식명";
             this.조건식_조건식명.ReadOnly = true;
             // 
-            // conditionItemDataGridView
-            // 
-            this.conditionItemDataGridView.AllowUserToAddRows = false;
-            this.conditionItemDataGridView.AllowUserToDeleteRows = false;
-            this.conditionItemDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.conditionItemDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.conditionItemDataGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.conditionItemDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            this.conditionItemDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.conditionItemDataGridView.Location = new System.Drawing.Point(172, 211);
-            this.conditionItemDataGridView.MultiSelect = false;
-            this.conditionItemDataGridView.Name = "conditionItemDataGridView";
-            this.conditionItemDataGridView.RowHeadersVisible = false;
-            this.conditionItemDataGridView.RowTemplate.Height = 23;
-            this.conditionItemDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.conditionItemDataGridView.Size = new System.Drawing.Size(589, 476);
-            this.conditionItemDataGridView.TabIndex = 4;
-            // 
             // insertListBox
             // 
             this.insertListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -986,22 +953,22 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.balanceDataGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
             this.balanceDataGridView.CausesValidation = false;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.balanceDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
             dataGridViewCellStyle2.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
             dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.balanceDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.balanceDataGridView.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.balanceDataGridView.DefaultCellStyle = dataGridViewCellStyle2;
             this.balanceDataGridView.Location = new System.Drawing.Point(5, 127);
             this.balanceDataGridView.MultiSelect = false;
             this.balanceDataGridView.Name = "balanceDataGridView";
@@ -1010,6 +977,39 @@
             this.balanceDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.balanceDataGridView.Size = new System.Drawing.Size(899, 215);
             this.balanceDataGridView.TabIndex = 11;
+            // 
+            // conditionItemDataGridView
+            // 
+            this.conditionItemDataGridView.AllowUserToAddRows = false;
+            this.conditionItemDataGridView.AllowUserToDeleteRows = false;
+            this.conditionItemDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.conditionItemDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.conditionItemDataGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.conditionItemDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            this.conditionItemDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.conditionItemDataGridView.Location = new System.Drawing.Point(172, 211);
+            this.conditionItemDataGridView.MultiSelect = false;
+            this.conditionItemDataGridView.Name = "conditionItemDataGridView";
+            this.conditionItemDataGridView.RowHeadersVisible = false;
+            this.conditionItemDataGridView.RowTemplate.Height = 23;
+            this.conditionItemDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.conditionItemDataGridView.Size = new System.Drawing.Size(589, 476);
+            this.conditionItemDataGridView.TabIndex = 4;
+            // 
+            // axKHOpenAPI1
+            // 
+            this.axKHOpenAPI1.Enabled = true;
+            this.axKHOpenAPI1.Location = new System.Drawing.Point(4, 144);
+            this.axKHOpenAPI1.Name = "axKHOpenAPI1";
+            this.axKHOpenAPI1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axKHOpenAPI1.OcxState")));
+            this.axKHOpenAPI1.Size = new System.Drawing.Size(100, 28);
+            this.axKHOpenAPI1.TabIndex = 22;
             // 
             // Form1
             // 
@@ -1034,7 +1034,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.takeProfitNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.stopLossNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalAmountNumericUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.axKHOpenAPI1)).EndInit();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.priceManualNumericUpDown)).EndInit();
@@ -1043,7 +1042,6 @@
             this.flowLayoutPanel1.PerformLayout();
             this.tableLayoutPanel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.conditionDataGridView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.conditionItemDataGridView)).EndInit();
             this.groupBox1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.outStandingDataGridView)).EndInit();
             this.tableLayoutPanel4.ResumeLayout(false);
@@ -1051,6 +1049,8 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.balanceDataGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.conditionItemDataGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axKHOpenAPI1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1092,7 +1092,6 @@
         private System.Windows.Forms.Button sellButton;
         private System.Windows.Forms.Button buyButton;
         private System.Windows.Forms.DataGridView conditionDataGridView;
-        private System.Windows.Forms.DataGridView conditionItemDataGridView;
         private System.Windows.Forms.ListBox insertListBox;
         private System.Windows.Forms.ListBox deleteListBox;
         private System.Windows.Forms.GroupBox groupBox1;
@@ -1122,6 +1121,8 @@
         private System.Windows.Forms.CheckBox isAdjustQuantityCheckBox;
         private System.Windows.Forms.Label itmeCountlabel;
         private System.Windows.Forms.Label 잔고label;
+    
+        private System.Windows.Forms.DataGridView conditionItemDataGridView;
         private AxKHOpenAPILib.AxKHOpenAPI axKHOpenAPI1;
     }
 }
