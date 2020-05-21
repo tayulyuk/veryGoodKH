@@ -77,7 +77,7 @@ namespace VeryGoodAuto
 
         //Thread autoViews;  CPU 부하를 줄이기 위해 test
       //  Thread startThead; // 무한 while 하면서 삭제할 종목이 있다면 계속 삭제하는 일만 한다.
-      //  Thread orderClassManagerThread; // 매수와 매도가 orderClassList에 있다면 무조건 실행해라. 제한 넘지 않게.
+       Thread orderClassManagerThread; // 매수와 매도가 orderClassList에 있다면 무조건 실행해라. 제한 넘지 않게.
 
         public List<string> deleteCode;// 삭제할 종목
         /// <summary>
@@ -159,12 +159,12 @@ namespace VeryGoodAuto
             orderClassList = new List<OrderClass>();
 
             //startThead = new Thread(new ThreadStart(UseDeleteMethod));
-           // startThead.IsBackground = true;
+            // startThead.IsBackground = true;
             //startThead.Start();         
 
-           // orderClassManagerThread = new Thread(new ThreadStart(UseOrderClassMethod));
-           // orderClassManagerThread.IsBackground = true;
-          //  orderClassManagerThread.Start(); 
+            orderClassManagerThread = new Thread(new ThreadStart(UseOrderClassMethod));
+            orderClassManagerThread.IsBackground = true;
+            orderClassManagerThread.Start();
 
             //----
             #region 수동모드
@@ -222,9 +222,10 @@ namespace VeryGoodAuto
 
                     DelayOrder(500, oc);
 
-                   // Console.WriteLine("LetsSend :: orderClassList  count   =LetsSend  끝=  작업끝난 수  :  " +
+                    // Console.WriteLine("LetsSend :: orderClassList  count   =LetsSend  끝=  작업끝난 수  :  " +
                     //                  orderClassList.Count);
                 }
+                else Console.WriteLine("LetsSend  order 없다.");
             }
             catch (Exception exception)
             {
@@ -836,24 +837,24 @@ namespace VeryGoodAuto
                                                                     if (!IsDeleteOrderManage(종목코드, "매수주문")) // 중복 [매수] 방지.
                                                                     {
                                                                         //deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매수주문")); // 중복 [매수] 방지.
-                                                                       
+
                                                                         // 전송작업 실행.
-                                                                        if (!isSend)
-                                                                        {
+                                                                        //if (!isSend)
+                                                                        //{
                                                                             orderClassList.Add(new OrderClass("매수주문",
                                                                                 화면번호_주식매수요청,
                                                                                 accountComboBox.Text, 1, 종목코드.Trim(), 적정매수량,
                                                                                 0, "03", ""));
 
-                                                                            LetsSend();
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            orderClassList.Add(new OrderClass("매수주문",
-                                                                                화면번호_주식매수요청,
-                                                                                accountComboBox.Text, 1, 종목코드.Trim(), 적정매수량,
-                                                                                0, "03", ""));
-                                                                        }
+                                                                            //LetsSend();
+                                                                        //}
+                                                                        //else
+                                                                        //{
+                                                                        //    orderClassList.Add(new OrderClass("매수주문",
+                                                                        //        화면번호_주식매수요청,
+                                                                        //        accountComboBox.Text, 1, 종목코드.Trim(), 적정매수량,
+                                                                        //        0, "03", ""));
+                                                                        //}
                                                                     }
                                                                 }
                                                             }
@@ -866,25 +867,25 @@ namespace VeryGoodAuto
                                                                 {
                                                                     if (!IsDeleteOrderManage(종목코드, "매수주문")) // 중복 [매수] 방지.
                                                                     {
-                                                                        //deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매수주문")); // 중복 [매수] 방지.
+                                                                        deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매수주문")); // 중복 [매수] 방지.
 
                                                                         // 전송작업 실행.
-                                                                        if (!isSend)
-                                                                        {
-                                                                            orderClassList.Add(new OrderClass("매수주문",
-                                                                                화면번호_주식매수요청,
-                                                                                accountComboBox.Text, 1, 종목코드.Trim(), 적정매수량,
-                                                                                0, "03", ""));
+                                                                        //if (!isSend)
+                                                                        //{
+                                                                        orderClassList.Add(new OrderClass("매수주문",
+                                                                            화면번호_주식매수요청,
+                                                                            accountComboBox.Text, 1, 종목코드.Trim(), 적정매수량,
+                                                                            0, "03", ""));
 
-                                                                            LetsSend();
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            orderClassList.Add(new OrderClass("매수주문",
-                                                                                화면번호_주식매수요청,
-                                                                                accountComboBox.Text, 1, 종목코드.Trim(), 적정매수량,
-                                                                                0, "03", ""));
-                                                                        }
+                                                                        //    LetsSend();
+                                                                        //}
+                                                                        //else
+                                                                        //{
+                                                                        //    orderClassList.Add(new OrderClass("매수주문",
+                                                                        //        화면번호_주식매수요청,
+                                                                        //        accountComboBox.Text, 1, 종목코드.Trim(), 적정매수량,
+                                                                        //        0, "03", ""));
+                                                                        //}
                                                                     }
                                                                 }
                                                             }
@@ -957,27 +958,27 @@ namespace VeryGoodAuto
                                         {
                                             if (!IsDeleteOrderManage(종목코드, "매도주문")) //중복생성 방지.
                                             {
-                                                // deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매도주문")); // 중복방지.
+                                            // deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매도주문")); // 중복방지.
 
-                                              //  orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
-                                                //    accountComboBox.Text, 2, 종목코드.Trim(), (int) balanceItemList[i].보유수량,
-                                              //      0, "03", ""));
+                                            orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                                accountComboBox.Text, 2, 종목코드.Trim(), (int)balanceItemList[i].보유수량,
+                                                0, "03", ""));
 
                                             // 전송작업 실행.
-                                            if (isSend)
-                                            {
-                                                orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
-                                                    accountComboBox.Text, 2, 종목코드.Trim(), (int)balanceItemList[i].보유수량, 0,
-                                                    "03", ""));
-                                            }
-                                            else
-                                            {
-                                                orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
-                                                    accountComboBox.Text, 2, 종목코드.Trim(), (int)balanceItemList[i].보유수량, 0,
-                                                    "03", ""));
+                                            //if (isSend)
+                                            //{
+                                            //    orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                            //        accountComboBox.Text, 2, 종목코드.Trim(), (int)balanceItemList[i].보유수량, 0,
+                                            //        "03", ""));
+                                            //}
+                                            //else
+                                            //{
+                                            //    orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                            //        accountComboBox.Text, 2, 종목코드.Trim(), (int)balanceItemList[i].보유수량, 0,
+                                            //        "03", ""));
 
-                                                LetsSend();
-                                            }
+                                            //    LetsSend();
+                                            //}
 
                                             insertListBox.SelectedIndex =
                                                     insertListBox.Items.Count - 1; // 첫 line으로 항상 이동
@@ -993,27 +994,27 @@ namespace VeryGoodAuto
                                         {
                                             if (!IsDeleteOrderManage(종목코드, "매도주문")) // 중복 매도 방지.
                                             {
-                                                //deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매도주문")); // 중복 매도 방지.
+                                            //deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매도주문")); // 중복 매도 방지.
 
-                                              //  orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
-                                              //      accountComboBox.Text, 2, 종목코드.Trim(), (int) balanceItemList[i].보유수량,
-                                               //     0, "03", ""));
+                                            orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                                accountComboBox.Text, 2, 종목코드.Trim(), (int)balanceItemList[i].보유수량,
+                                                0, "03", ""));
 
                                             // 전송작업 실행.
-                                            if (isSend)
-                                            {
-                                                orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
-                                                    accountComboBox.Text, 2, 종목코드.Trim(), (int)balanceItemList[i].보유수량, 0,
-                                                    "03", ""));
-                                            }
-                                            else
-                                            {
-                                                orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
-                                                    accountComboBox.Text, 2, 종목코드.Trim(), (int)balanceItemList[i].보유수량, 0,
-                                                    "03", ""));
+                                            //if (isSend)
+                                            //{
+                                            //    orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                            //        accountComboBox.Text, 2, 종목코드.Trim(), (int)balanceItemList[i].보유수량, 0,
+                                            //        "03", ""));
+                                            //}
+                                            //else
+                                            //{
+                                            //    orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                            //        accountComboBox.Text, 2, 종목코드.Trim(), (int)balanceItemList[i].보유수량, 0,
+                                            //        "03", ""));
 
-                                                LetsSend();
-                                            }
+                                            //    LetsSend();
+                                            //}
 
                                             insertListBox.SelectedIndex =
                                                     insertListBox.Items.Count - 1; // 첫 line으로 항상 이동
@@ -1035,25 +1036,25 @@ namespace VeryGoodAuto
                                         {
                                         //deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매도주문")); // 중복 매도 방지.
                                         Console.WriteLine("takeProfit : " + takeProfit + "현재 손익율 : " + balanceItemList[i].손익율);
-                                        //orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
-                                         //       accountComboBox.Text, 2, 종목코드.Trim(), (int) balanceItemList[i].보유수량, 0,
-                                          //      "03", ""));
+                                        orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                                accountComboBox.Text, 2, 종목코드.Trim(), (int)balanceItemList[i].보유수량, 0,
+                                                "03", ""));
 
                                         // 전송작업 실행.
-                                        if (isSend)
-                                        {
-                                            orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
-                                                accountComboBox.Text, 2, 종목코드.Trim(), (int)balanceItemList[i].보유수량, 0,
-                                                "03", ""));
-                                        }
-                                        else
-                                        {
-                                            orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
-                                                accountComboBox.Text, 2, 종목코드.Trim(), (int)balanceItemList[i].보유수량, 0,
-                                                "03", ""));
+                                        //if (isSend)
+                                        //{
+                                        //    orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                        //        accountComboBox.Text, 2, 종목코드.Trim(), (int)balanceItemList[i].보유수량, 0,
+                                        //        "03", ""));
+                                        //}
+                                        //else
+                                        //{
+                                        //    orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                        //        accountComboBox.Text, 2, 종목코드.Trim(), (int)balanceItemList[i].보유수량, 0,
+                                        //        "03", ""));
 
-                                            LetsSend();
-                                        }
+                                        //    LetsSend();
+                                        //}
 
                                         insertListBox.SelectedIndex =
                                                 insertListBox.Items.Count - 1; // 첫 line으로 항상 이동
@@ -1074,30 +1075,30 @@ namespace VeryGoodAuto
                                         {
                                             //deletOrderManager.Add(new UseDeleteOrderClass(종목코드, "매도주문")); // 중복 매도 방지.
                                             Console.WriteLine("stopLoss : " + stopLoss + " / 현재 손익율 : " + balanceItemList[i].손익율 + " /종목 : "+ axKHOpenAPI1.GetMasterCodeName(종목코드));
-                                           // orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
-                                           //     accountComboBox.Text, 2, 종목코드.Trim(), (int) balanceItemList[i].보유수량, 0,
-                                           //     "03", ""));
-                                            // 전송작업 실행.
-                                           // if (!isSend)
-                                           //     LetsSend();
+                                        orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                            accountComboBox.Text, 2, 종목코드.Trim(), (int)balanceItemList[i].보유수량, 0,
+                                            "03", ""));
+                                        // 전송작업 실행.
+                                        // if (!isSend)
+                                        //     LetsSend();
 
-                                            // 전송작업 실행.
-                                            if (isSend)
-                                            {
-                                                orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
-                                                accountComboBox.Text, 2, 종목코드.Trim(), (int)balanceItemList[i].보유수량, 0,
-                                                "03", ""));
-                                            }
-                                            else
-                                            {
-                                                orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
-                                                accountComboBox.Text, 2, 종목코드.Trim(), (int)balanceItemList[i].보유수량, 0,
-                                                "03", ""));
+                                        // 전송작업 실행.
+                                        //if (isSend)
+                                        //{
+                                        //    orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                        //    accountComboBox.Text, 2, 종목코드.Trim(), (int)balanceItemList[i].보유수량, 0,
+                                        //    "03", ""));
+                                        //}
+                                        //else
+                                        //{
+                                        //    orderClassList.Add(new OrderClass("매도주문", 화면번호_주식매도요청,
+                                        //    accountComboBox.Text, 2, 종목코드.Trim(), (int)balanceItemList[i].보유수량, 0,
+                                        //    "03", ""));
 
-                                                LetsSend();
-                                            }
+                                        //    LetsSend();
+                                        //}
 
-                                            insertListBox.SelectedIndex =
+                                        insertListBox.SelectedIndex =
                                                 insertListBox.Items.Count - 1; // 첫 line으로 항상 이동
                                         }
                                     }
@@ -1810,7 +1811,7 @@ namespace VeryGoodAuto
 
                     //잔고 datalist 추가
                     int n = axKHOpenAPI1.GetRepeatCnt(e.sTrCode, e.sRQName);
-                 
+                    Console.WriteLine("N : " + n);
                     for (int i = 0; i < n; i++)
                     {
                         string 종목코드 = axKHOpenAPI1.GetCommData(e.sTrCode, e.sRQName, i, 
@@ -1841,8 +1842,7 @@ namespace VeryGoodAuto
                   
                         //예수금951/손익율8019/당일실현손익990/당일신현손익율991/
                         // axKHOpenAPI1.SetRealReg(화면번호_실시간데이터요청, 종목코드, "10;11;12;15", "1"); //실시간 잔고 요청.      
-                        axKHOpenAPI1.SetRealReg(화면번호_실시간데이터요청, 종목코드, "10;11;12;15;951;8019;990;991",
-                            "1"); //실시간 잔고 요청.     
+                        axKHOpenAPI1.SetRealReg(화면번호_실시간데이터요청, 종목코드, "10;11;12;15;951;8019;990;991","1"); //실시간 잔고 요청.     
                     }
                     
                     if (n > 0)
@@ -2170,21 +2170,27 @@ namespace VeryGoodAuto
                 ThisMoment = DateTime.Now;
             }
 
-            ConditionViewObject sio = conditionViewList.Find(o => o.종목코드 == 삭제코드);
-            if (sio != null)
+            try
             {
-                conditionViewList.Remove(sio);
-                // real data 에서 보여주는 이유로 리스트에서 삭제만 해봤다.
+                ConditionViewObject sio = conditionViewList.Find(o => o.종목코드 == 삭제코드);
+                if (sio != null)
+                {
+                    conditionViewList.Remove(sio);
+                    // real data 에서 보여주는 이유로 리스트에서 삭제만 해봤다.
 
-                //삭제와 상태를 보여주기.
-               // conditionItemDataGridView.DataSource = null;
-               // conditionItemDataGridView.DataSource = conditionViewList;
-               // if (conditionItemDataGridView.RowCount > 0)
-               //     conditionItemDataGridView.CurrentRow.Selected = false;
-            }
-            else
+                    //삭제와 상태를 보여주기.
+                    // conditionItemDataGridView.DataSource = null;
+                    // conditionItemDataGridView.DataSource = conditionViewList;
+                    // if (conditionItemDataGridView.RowCount > 0)
+                    //     conditionItemDataGridView.CurrentRow.Selected = false;
+                }
+                else
+                {
+                    Console.WriteLine("삭제코드가 없습니다. 종목명 : " + axKHOpenAPI1.GetMasterCodeName(삭제코드));
+                }
+            }catch(Exception exception)
             {
-                Console.WriteLine("삭제코드가 없습니다. 종목명 : " + axKHOpenAPI1.GetMasterCodeName(삭제코드));
+                Console.WriteLine(exception.Message.ToString() + "2193");
             }
             return DateTime.Now;
         }
@@ -2286,12 +2292,12 @@ namespace VeryGoodAuto
             }
             catch (Exception exception)
             {
-                Console.WriteLine(exception.Message.ToString() + 1376);
+                Console.WriteLine(exception.Message.ToString() + 2289);
             }
 
             if ((bi == null && orderClass.주문형태 == "매수주문") || (bi != null && orderClass.주문형태 == "매도주문") ||
-                (bi == null && orderClass.주문형태 == "매수주문변경") || (bi == null && orderClass.주문형태 == "매도주문변경") ||
-                (bi == null && orderClass.주문형태 == "매수취소") || (bi == null && orderClass.주문형태 == "매도취소"))
+                (bi != null && orderClass.주문형태 == "매수주문변경") || (bi != null && orderClass.주문형태 == "매도주문변경") ||
+                (bi != null && orderClass.주문형태 == "매수취소") || (bi != null && orderClass.주문형태 == "매도취소"))
 
             {
                 Console.WriteLine("LetsSend :: 종목명: " + axKHOpenAPI1.GetMasterCodeName(orderClass.종목코드) + "/주문 형태  : " + orderClass.주문형태);
@@ -2313,7 +2319,7 @@ namespace VeryGoodAuto
 
                 Console.WriteLine("LetsSend :: orderClassList  count :  쓰래드 (DelayOrder 함수 안에서) 작업끝난 수 :;  " + orderClassList.Count);
 
-                isSend = true;
+                //isSend = true;
                
                 // 먼저 일 끝.
                 DateTime ThisMoment = DateTime.Now;
@@ -2327,13 +2333,13 @@ namespace VeryGoodAuto
                 }
             }
 
-            OrderClass oc = IsOrderClassListCheck();
-            if (oc != null)
-            {
-                LetsSend();
-            }
-            else
-                isSend = false;
+            //OrderClass oc = IsOrderClassListCheck();
+            //if (oc != null)
+            //{
+            //    LetsSend();
+            //}
+            //else
+            //    isSend = false;
 
             Console.WriteLine("isSend :  " + isSend);
             return DateTime.Now;

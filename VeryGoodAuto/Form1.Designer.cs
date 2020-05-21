@@ -28,10 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.buyConditionCheckBox = new System.Windows.Forms.CheckBox();
             this.buyConditionComboBox = new System.Windows.Forms.ComboBox();
@@ -49,6 +49,7 @@
             this.isAdjustQuantityCheckBox = new System.Windows.Forms.CheckBox();
             this.itmeCountlabel = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
+            this.axKHOpenAPI1 = new AxKHOpenAPILib.AxKHOpenAPI();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.priceManualNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.accountComboBox = new System.Windows.Forms.ComboBox();
@@ -97,11 +98,11 @@
             this.잔고label = new System.Windows.Forms.Label();
             this.balanceDataGridView = new System.Windows.Forms.DataGridView();
             this.conditionItemDataGridView = new System.Windows.Forms.DataGridView();
-            this.axKHOpenAPI1 = new AxKHOpenAPILib.AxKHOpenAPI();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.takeProfitNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.stopLossNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalAmountNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axKHOpenAPI1)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.priceManualNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.amountManulNumericUpDown)).BeginInit();
@@ -114,7 +115,6 @@
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.balanceDataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.conditionItemDataGridView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.axKHOpenAPI1)).BeginInit();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -351,6 +351,16 @@
             this.label5.Size = new System.Drawing.Size(179, 24);
             this.label5.TabIndex = 18;
             this.label5.Text = "% 손절은 음수(-0.0)방식으로 입력 %";
+            // 
+            // axKHOpenAPI1
+            // 
+            this.axKHOpenAPI1.Enabled = true;
+            this.axKHOpenAPI1.Location = new System.Drawing.Point(4, 144);
+            this.axKHOpenAPI1.Name = "axKHOpenAPI1";
+            this.axKHOpenAPI1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axKHOpenAPI1.OcxState")));
+            this.axKHOpenAPI1.Size = new System.Drawing.Size(100, 28);
+            this.axKHOpenAPI1.TabIndex = 22;
+            this.axKHOpenAPI1.Visible = false;
             // 
             // tableLayoutPanel2
             // 
@@ -1002,15 +1012,6 @@
             this.conditionItemDataGridView.Size = new System.Drawing.Size(589, 476);
             this.conditionItemDataGridView.TabIndex = 4;
             // 
-            // axKHOpenAPI1
-            // 
-            this.axKHOpenAPI1.Enabled = true;
-            this.axKHOpenAPI1.Location = new System.Drawing.Point(4, 144);
-            this.axKHOpenAPI1.Name = "axKHOpenAPI1";
-            this.axKHOpenAPI1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axKHOpenAPI1.OcxState")));
-            this.axKHOpenAPI1.Size = new System.Drawing.Size(100, 28);
-            this.axKHOpenAPI1.TabIndex = 22;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -1034,6 +1035,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.takeProfitNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.stopLossNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalAmountNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.axKHOpenAPI1)).EndInit();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.priceManualNumericUpDown)).EndInit();
@@ -1050,7 +1052,6 @@
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.balanceDataGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.conditionItemDataGridView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.axKHOpenAPI1)).EndInit();
             this.ResumeLayout(false);
 
         }
